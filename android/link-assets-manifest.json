@@ -1,0 +1,25 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/bold.ttf",
+      "sha1": "eb2b7042895e0fe98ea023f3e45048f9d152127e"
+    },
+    {
+      "path": "src/assets/fonts/light.ttf",
+      "sha1": "510faebaff56ce8b518fc84bdd1aefeefae00b65"
+    },
+    {
+      "path": "src/assets/fonts/regular.ttf",
+      "sha1": "a737c19356e50cb9a50eb64ca7446c80dd3aa3e3"
+    },
+    {
+      "path": "src/assets/images/avatar.png",
+      "sha1": "0338d8160cdf0771a85ce4b8fb5579b9e4f48bdd"
+    },
+    {
+      "path": "src/assets/images/close.png",
+      "sha1": "c8890cbd36dfa3e59c7524ed0ba5cbd7594522c2"
+    }
+  ]
+}

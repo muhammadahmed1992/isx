@@ -1,0 +1,586 @@
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  Platform,
+  Pressable,
+} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
+import {RFValue} from 'react-native-responsive-fontsize';
+import TableComponent from '../components/TableComponent';
+import DatePicker from 'react-native-date-picker';
+import moment from 'moment';
+import ApiService from '../services/ApiService';
+import Loader from '../components/loader';
+import {useRoute} from '@react-navigation/native';
+import Toast from 'react-native-easy-toast';
+import SearchableDropDown from '../components/searchableDropdown';
+import Modal from 'react-native-modal';
+
+const SalesAnalystReport = props => {
+  const toastRef = useRef(null);
+  const route = useRoute();
+  const currentRouteName = route.name;
+  const [stockGroup, setStockGroup] = useState('');
+  const [warehouse, setWarehouse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [openFrom, setOpenFrom] = useState(false);
+  const [openTo, setOpenTo] = useState(false);
+  const [dateFrom, setDateFrom] = useState(new Date());
+  const [dateTo, setDateTo] = useState(new Date());
+  const [dateValFrom, setDateValFrom] = useState();
+  const [dateValTo, setDateValTo] = useState();
+  const [stocksModal, setStocksModal] = useState(false);
+  const [stocks, setStocks] = useState([]);
+  const [warehouseModal, setWarehouseModal] = useState(false);
+  const [warehouses, setWarehouses] = useState([]);
+
+  useEffect(() => {
+    fetchAllStocks();
+    fetchAllWarehouses();
+  }, []);
+
+  const fetchAllStocks = async () => {
+    await ApiService.get(Endpoints.fetchStocks)
+      .then(res => {
+        const data = res.data.data;
+        setStocks(data);
+      })
+      .catch(err => {
+        console.log('Fetch All Stock Groups: ', err);
+      });
+  };
+
+  const fetchAllWarehouses = async () => {
+    await ApiService.get(Endpoints.fetchWarehouses)
+      .then(res => {
+        const data = res.data.data;
+        setWarehouses(data);
+      })
+      .catch(err => {
+        console.log('Fetch All Warehouses: ', err);
+      });
+  };
+
+  const filter = async () => {
+    setLoading(true);
+
+    let query = '';
+    if (dateValFrom && dateValFrom.length) {
+      query += `?startDate=${encodeURIComponent(dateValFrom)}`;
+
+      if (dateValTo && dateValTo.length) {
+        query += `&endDate=${encodeURIComponent(dateValTo)}`;
+      }
+
+      if (stockGroup && stockGroup.length) {
+        query += `&stockGroup=${encodeURIComponent(
+          stocks.find(s => s.cgrpdesc === stockGroup).cgrppk,
+        )}`;
+      }
+
+      if (warehouse && warehouse.length) {
+        query += `&warehouse=${encodeURIComponent(
+          warehouses.find(s => s.cwhsdesc === warehouse).cwhspk,
+        )}`;
+      }
+    } else if (dateValTo && dateValTo.length) {
+      query += `?endDate=${encodeURIComponent(dateValTo)}`;
+
+      if (stockGroup && stockGroup.length) {
+        query += `&stockGroup=${encodeURIComponent(
+          stocks.find(s => s.cgrpdesc === stockGroup).cgrppk,
+        )}`;
+      }
+
+      if (warehouse && warehouse.length) {
+        query += `&warehouse=${encodeURIComponent(
+          warehouses.find(s => s.cwhsdesc === warehouse).cwhspk,
+        )}`;
+      }
+    } else if (stockGroup && stockGroup.length) {
+      query += `?stockGroup=${encodeURIComponent(
+        stocks.find(s => s.cgrpdesc === stockGroup).cgrppk,
+      )}`;
+
+      if (warehouse && warehouse.length) {
+        query += `&warehouse=${encodeURIComponent(
+          warehouses.find(s => s.cwhsdesc === warehouse).cwhspk,
+        )}`;
+      }
+    } else if (warehouse && warehouse.length) {
+      query += `?warehouse=${encodeURIComponent(
+        warehouses.find(s => s.cwhsdesc === warehouse).cwhspk,
+      )}`;
+    }
+
+    try {
+      await ApiService.get(
+        currentRouteName === 'sales_analyst_report'
+          ? `${Endpoints.salesAnalystReport}${query}`
+          : `${Endpoints.salesAnalyst2Report}${query}`,
+      )
+        .then(res => {
+          let data = res.data.data;
+          let newData = [];
+          for (const obj of data) {
+            let x = {...obj};
+            x.Qty = Commons.formatBalance(obj.Qty);
+            x.Amount = Commons.formatBalance(obj.Amount);
+            x.Amount_Tax = Commons.formatBalance(obj.Amount_Tax);
+            newData.push(x);
+          }
+          setData(newData);
+          setLoading(false);
+        })
+        .catch(err => {
+          setLoading(false);
+          if (err.code && err.code == 404) {
+            setData([]);
+          } else {
+            showToast(typeof err === 'string' ? err : err.message);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      showToast(typeof error === 'string' ? error : error.message);
+      setLoading(false);
+    }
+  };
+
+  const showToast = msg => {
+    toastRef.current.show(msg, 2000);
+  };
+
+  return (
+    <View style={{flex: 1, backgroundColor: 'white'}}>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
+
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: Colors.primary,
+          paddingHorizontal: RFValue(15),
+          paddingBottom: RFValue(15),
+          paddingTop: Platform.OS === 'android' ? RFValue(15) : RFValue(50),
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.openDrawer();
+          }}>
+          <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            flex: 1,
+            fontFamily: Fonts.family.bold,
+            color: Colors.white,
+            textAlign: 'center',
+          }}>
+          Sales Analyst Report
+        </Text>
+
+        <View>
+          <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
+        </View>
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: RFValue(10),
+          justifyContent: 'space-between',
+        }}>
+        <TouchableOpacity
+          onPress={() => setOpenFrom(true)}
+          style={{
+            flex: 0.45,
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: Colors.primary,
+            borderRadius: RFValue(10),
+            paddingHorizontal: RFValue(10),
+            marginTop: RFValue(10),
+          }}>
+          <TextInput
+            autoCapitalize={'none'}
+            style={{
+              flex: 1,
+              height: RFValue(50),
+              color: Colors.primary,
+              fontSize: RFValue(16),
+              fontFamily: Fonts.family.bold,
+            }}
+            onPress={() => setOpenFrom(true)}
+            placeholder="Date From"
+            value={dateValFrom}
+            onChangeText={setDateValFrom}
+            returnKeyType="done"
+            placeholderTextColor={Colors.grey}
+            editable={false}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setOpenTo(true)}
+          style={{
+            flex: 0.45,
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: Colors.primary,
+            borderRadius: RFValue(10),
+            paddingHorizontal: RFValue(10),
+            marginTop: RFValue(10),
+          }}>
+          <TextInput
+            autoCapitalize={'none'}
+            style={{
+              flex: 1,
+              height: RFValue(50),
+              color: Colors.primary,
+              fontSize: RFValue(16),
+              fontFamily: Fonts.family.bold,
+            }}
+            onPress={() => setOpenTo(true)}
+            placeholder="Date To"
+            value={dateValTo}
+            onChangeText={setDateValTo}
+            returnKeyType="done"
+            placeholderTextColor={Colors.grey}
+            editable={false}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <Pressable
+        onPress={() => setStocksModal(true)}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: Colors.primary,
+          borderRadius: RFValue(10),
+          paddingHorizontal: RFValue(10),
+          marginHorizontal: RFValue(10),
+          marginTop: RFValue(10),
+        }}>
+        <TextInput
+          autoCapitalize={'none'}
+          style={{
+            flex: 1,
+            height: RFValue(50),
+            color: Colors.primary,
+            fontSize: RFValue(16),
+            fontFamily: Fonts.family.bold,
+          }}
+          onPress={() => setStocksModal(true)}
+          editable={false}
+          placeholder="Select a stock group"
+          value={stockGroup}
+          returnKeyType="next"
+          placeholderTextColor={Colors.grey}
+        />
+      </Pressable>
+
+      <Pressable
+        onPress={() => setWarehouseModal(true)}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: Colors.primary,
+          borderRadius: RFValue(10),
+          paddingHorizontal: RFValue(10),
+          marginHorizontal: RFValue(10),
+          marginTop: RFValue(10),
+        }}>
+        <TextInput
+          autoCapitalize={'none'}
+          style={{
+            flex: 1,
+            height: RFValue(50),
+            color: Colors.primary,
+            fontSize: RFValue(16),
+            fontFamily: Fonts.family.bold,
+          }}
+          onPress={() => setWarehouseModal(true)}
+          editable={false}
+          placeholder="Select a warehouse"
+          value={warehouse}
+          returnKeyType="next"
+          placeholderTextColor={Colors.grey}
+        />
+      </Pressable>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginHorizontal: RFValue(10),
+          marginTop: RFValue(10),
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setStockGroup('');
+            setWarehouse('');
+            setDateValFrom('');
+            setDateValTo('');
+          }}
+          style={{
+            flex: 0.3,
+            padding: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 4,
+            backgroundColor: Colors.grey,
+          }}>
+          <Text
+            style={{
+              fontFamily: Fonts.family.bold,
+              color: Colors.white,
+              textAlign: 'center',
+            }}>
+            Clear
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={filter}
+          style={{
+            padding: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 4,
+            flex: 0.65,
+            backgroundColor: Colors.primary,
+          }}>
+          <Text
+            style={{
+              fontFamily: Fonts.family.bold,
+              color: Colors.white,
+              textAlign: 'center',
+            }}>
+            Filter
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <TableComponent
+        headers={[
+          'StockID',
+          'StockName',
+          'Qty',
+          'Curr',
+          'Amount',
+          'Amount_tax',
+        ]}
+        data={data}
+      />
+
+      <DatePicker
+        modal
+        mode={'date'}
+        open={openFrom}
+        date={dateFrom}
+        onConfirm={date => {
+          setOpenFrom(false);
+          setDateFrom(date);
+          setDateValFrom(moment(date.toISOString()).format('yyyy-MM-DD'));
+        }}
+        onCancel={() => {
+          setOpenFrom(false);
+        }}
+      />
+
+      <DatePicker
+        modal
+        mode={'date'}
+        open={openTo}
+        date={dateTo}
+        onConfirm={date => {
+          setOpenTo(false);
+          setDateTo(date);
+          setDateValTo(moment(date.toISOString()).format('yyyy-MM-DD'));
+        }}
+        onCancel={() => {
+          setOpenTo(false);
+        }}
+      />
+
+      <Toast
+        ref={toastRef}
+        position="bottom"
+        positionValue={200}
+        fadeInDuration={750}
+        fadeOutDuration={1000}
+        opacity={0.8}
+      />
+
+      <Modal
+        statusBarTranslucent={true}
+        isVisible={stocksModal}
+        onBackButtonPress={() => setStocksModal(false)}
+        onBackdropPress={() => setStocksModal(false)}
+        onRequestClose={() => setStocksModal(false)}>
+        <View
+          style={{
+            padding: RFValue(15),
+            backgroundColor: Colors.white,
+            borderRadius: RFValue(10),
+            marginVertical: RFValue(40),
+          }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text
+              style={{
+                fontFamily: Fonts.family.bold,
+                fontSize: RFValue(20),
+                flex: 1,
+              }}>
+              Select Stock Group
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setStocksModal(false);
+              }}>
+              <Image
+                source={Images.close}
+                style={{
+                  height: RFValue(12),
+                  width: RFValue(12),
+                  resizeMode: 'contain',
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <SearchableDropDown
+            onItemSelect={item => {
+              setStockGroup(item);
+              setStocksModal(false);
+            }}
+            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            textInputStyle={{
+              padding: 12,
+              borderWidth: 1,
+              borderRadius: RFValue(10),
+              fontFamily: Fonts.family.bold,
+              borderColor: '#ccc',
+              backgroundColor: Colors.white,
+            }}
+            itemStyle={{
+              padding: 10,
+              backgroundColor: '#FAF9F8',
+              borderBottomColor: Colors.light_grey,
+              borderBottomWidth: 1,
+            }}
+            itemTextStyle={{
+              color: Colors.black,
+              fontFamily: Fonts.family.bold,
+            }}
+            itemsContainerStyle={{
+              height: '60%',
+              // flex: 0.6,
+            }}
+            items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
+            placeholder={'Select a stock...'}
+            resetValue={false}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+      </Modal>
+
+      <Modal
+        statusBarTranslucent={true}
+        isVisible={warehouseModal}
+        onBackButtonPress={() => setWarehouseModal(false)}
+        onBackdropPress={() => setWarehouseModal(false)}
+        onRequestClose={() => setWarehouseModal(false)}>
+        <View
+          style={{
+            padding: RFValue(15),
+            backgroundColor: Colors.white,
+            borderRadius: RFValue(10),
+            marginVertical: RFValue(40),
+          }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text
+              style={{
+                fontFamily: Fonts.family.bold,
+                fontSize: RFValue(20),
+                flex: 1,
+              }}>
+              Select Warehouse
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setWarehouseModal(false);
+              }}>
+              <Image
+                source={Images.close}
+                style={{
+                  height: RFValue(12),
+                  width: RFValue(12),
+                  resizeMode: 'contain',
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <SearchableDropDown
+            onItemSelect={item => {
+              setWarehouse(item);
+              setWarehouseModal(false);
+            }}
+            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            textInputStyle={{
+              padding: 12,
+              borderWidth: 1,
+              borderRadius: RFValue(10),
+              fontFamily: Fonts.family.bold,
+              borderColor: '#ccc',
+              backgroundColor: Colors.white,
+            }}
+            itemStyle={{
+              padding: 10,
+              backgroundColor: '#FAF9F8',
+              borderBottomColor: Colors.light_grey,
+              borderBottomWidth: 1,
+            }}
+            itemTextStyle={{
+              color: Colors.black,
+              fontFamily: Fonts.family.bold,
+            }}
+            itemsContainerStyle={{
+              height: '60%',
+              // flex: 0.6,
+            }}
+            items={
+              warehouses.length ? warehouses.map(item => item.cwhsdesc) : []
+            }
+            placeholder={'Select a warehouse...'}
+            resetValue={false}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+      </Modal>
+
+      {loading && <Loader />}
+    </View>
+  );
+};
+
+export default SalesAnalystReport;
