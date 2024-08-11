@@ -20,8 +20,10 @@ import {
   CashDrawerReport,
   BarcodeScanner,
 } from '../screens';
+import {useSelector} from 'react-redux';
 
 export default function StackNavigation() {
+  const {isSwitchDataBaseAccessible} = useSelector(state => state.Auth);
   const Stack = createStackNavigator();
 
   const Drawers = () => {
@@ -40,29 +42,31 @@ export default function StackNavigation() {
           component={PriceSearchScreen}
           options={{
             headerShown: false,
-            drawerLabel: 'Search Price',
+            drawerLabel: 'Scan Barcode',
             drawerIcon: ({color, size}) => {
               return <FontAwesome name="dollar" color={color} size={20} />;
             },
           }}
         />
-        <Drawer.Screen
-          name="switch_database"
-          component={SwitchDatabase}
-          options={{
-            headerShown: false,
-            drawerLabel: 'Switch Database',
-            drawerIcon: ({color, size}) => {
-              return <FontAwesome5 name="database" color={color} size={20} />;
-            },
-          }}
-        />
+        {isSwitchDataBaseAccessible && (
+          <Drawer.Screen
+            name="switch_database"
+            component={SwitchDatabase}
+            options={{
+              headerShown: false,
+              drawerLabel: 'Switch Database',
+              drawerIcon: ({color, size}) => {
+                return <FontAwesome5 name="database" color={color} size={20} />;
+              },
+            }}
+          />
+        )}
         <Drawer.Screen
           name="price_report"
           component={PriceReport}
           options={{
             headerShown: false,
-            drawerLabel: 'Price Report',
+            drawerLabel: 'Price List',
             drawerIcon: ({color, size}) => {
               return <FontAwesome name="list-alt" color={color} size={20} />;
             },
@@ -151,9 +155,7 @@ export default function StackNavigation() {
   };
 
   return (
-    <Stack.Navigator
-      initialRouteName={'splash'}
-      detachInactiveScreens={false}>
+    <Stack.Navigator initialRouteName={'splash'} detachInactiveScreens={false}>
       <Stack.Screen
         name="splash"
         component={Splash}

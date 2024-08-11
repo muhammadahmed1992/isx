@@ -6,20 +6,29 @@ import {
   StatusBar,
   ScrollView,
   BackHandler,
+  Image,
   TextInput,
   Pressable,
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-easy-toast';
 import {RFValue} from 'react-native-responsive-fontsize';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import ApiService from '../services/ApiService';
-import Endpoints from '../utils/Endpoints';
-import {login, setIpAddress} from '../redux/reducers/authSlice';
+import {Endpoints, Images} from '../utils';
+import {
+  login,
+  setIpAddress,
+  setSwitchDatabase,
+} from '../redux/reducers/authSlice';
+
 import {Fonts, Colors, Commons} from '../utils';
+import Modal from 'react-native-modal';
+import SearchableDropDown from '../components/searchableDropdown';
+import {setDataBase} from '../redux/reducers/connectionStringSlice';
 
 const Auth = props => {
   const dispatch = useDispatch();
@@ -29,15 +38,21 @@ const Auth = props => {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
 
+  const {ipAddress} = useSelector(state => state.Auth);
   const [hidePassword, setHidePassword] = useState(true);
-  const [ipAddress, setIPAddress] = useState('');
+  const [ipAddressNew, setIPAddress] = useState(ipAddress ? ipAddress : '');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const {database} = useSelector(state => state.ConnectionString);
+  const [databaseNew, setDatabase] = useState(database ? database : '');
+  const [modal, setModal] = useState(false);
+  const [databases, setDatabases] = useState([]);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
+    fetchAllDatabases();
 
     return () =>
       BackHandler.removeEventListener('hardwareBackPress', backAction);
@@ -45,7 +60,7 @@ const Auth = props => {
 
   useEffect(() => {
     if (loading) {
-      login();
+      performLogin();
     }
   }, [loading]);
 
@@ -58,14 +73,29 @@ const Auth = props => {
     toastRef.current.show(msg, 2000);
   };
 
+  const fetchAllDatabases = async () => {
+    await ApiService.get(Endpoints.fetchDatabases)
+      .then(res => {
+        let dataToPopulate = [];
+        const data = res.data.data;
+        for (const obj of data) {
+          dataToPopulate.push(obj.SCHEMA_NAME);
+        }
+        setDatabases(dataToPopulate);
+      })
+      .catch(err => {
+        console.log('Fetch All Databases: ', err);
+      });
+  };
+
   const validate = () => {
     const ipPattern =
       /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if (!ipAddress.length || !ipPattern.test(ipAddress)) {
+    if (!ipAddressNew.length || !ipPattern.test(ipAddressNew)) {
       showToast('Please enter a valid IP Address');
       return;
     }
-    dispatch(setIpAddress(ipAddress));
+    dispatch(setIpAddress(ipAddressNew));
     if (username.length < 3) {
       showToast('Please enter a valid username');
       return;
@@ -74,10 +104,15 @@ const Auth = props => {
       showToast('Password should not be empty');
       return;
     }
+    if (!databaseNew.length) {
+      showToast('Please select a valid database');
+      return;
+    }
+    dispatch(setDataBase(databaseNew));
     setLoading(true);
   };
 
-  const login = async () => {
+  const performLogin = async () => {
     let body = {
       username,
       password,
@@ -86,7 +121,8 @@ const Auth = props => {
     await ApiService.post(Endpoints.login, body)
       .then(res => {
         if (res.data.success) {
-          dispatch(login({}));
+          dispatch(login());
+          dispatch(setSwitchDatabase(res.data.data.IsSwitchDatabase));
           Commons.reset(props.navigation, 'dashboard');
         }
         setLoading(false);
@@ -138,7 +174,7 @@ const Auth = props => {
               autoCapitalize={'none'}
               style={styles.input}
               placeholder="192.168.111.232"
-              value={ipAddress}
+              value={ipAddressNew}
               onChangeText={setIPAddress}
               returnKeyType="next"
               maxLength={15}
@@ -192,6 +228,35 @@ const Auth = props => {
             </Pressable>
           </View>
 
+          <Pressable
+            onPress={() => setModal(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: Colors.primary,
+              borderRadius: RFValue(10),
+              paddingHorizontal: RFValue(10),
+              marginTop: RFValue(10),
+            }}>
+            <TextInput
+              autoCapitalize={'none'}
+              style={{
+                flex: 1,
+                height: RFValue(50),
+                color: Colors.primary,
+                fontSize: RFValue(16),
+                fontFamily: Fonts.family.bold,
+              }}
+              onPress={() => setModal(true)}
+              editable={false}
+              placeholder="Select a database"
+              value={databaseNew}
+              returnKeyType="next"
+              placeholderTextColor={Colors.grey}
+            />
+          </Pressable>
+
           <TouchableOpacity
             onPress={validate}
             disabled={loading}
@@ -210,6 +275,79 @@ const Auth = props => {
         fadeOutDuration={1000}
         opacity={0.8}
       />
+
+      <Modal
+        statusBarTranslucent={true}
+        isVisible={modal}
+        onBackButtonPress={() => setModal(false)}
+        onBackdropPress={() => setModal(false)}
+        onRequestClose={() => setModal(false)}>
+        <View
+          style={{
+            padding: RFValue(15),
+            backgroundColor: Colors.white,
+            borderRadius: RFValue(10),
+            marginVertical: RFValue(40),
+          }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text
+              style={{
+                fontFamily: Fonts.family.bold,
+                fontSize: RFValue(20),
+                flex: 1,
+              }}>
+              Select Database
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setModal(false);
+              }}>
+              <Image
+                source={Images.close}
+                style={{
+                  height: RFValue(20),
+                  width: RFValue(20),
+                  resizeMode: 'contain',
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <SearchableDropDown
+            onItemSelect={item => {
+              setDatabase(item);
+              setModal(false);
+            }}
+            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            textInputStyle={{
+              padding: 12,
+              borderWidth: 1,
+              borderRadius: RFValue(10),
+              fontFamily: Fonts.family.bold,
+              borderColor: '#ccc',
+              backgroundColor: Colors.white,
+            }}
+            itemStyle={{
+              padding: 10,
+              backgroundColor: '#FAF9F8',
+              borderBottomColor: Colors.light_grey,
+              borderBottomWidth: 1,
+            }}
+            itemTextStyle={{
+              color: Colors.black,
+              fontFamily: Fonts.family.bold,
+            }}
+            itemsContainerStyle={{
+              height: '60%',
+              // flex: 0.6,
+            }}
+            items={databases}
+            placeholder={'Select a database...'}
+            resetValue={false}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+      </Modal>
     </View>
   );
 };

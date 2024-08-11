@@ -14,12 +14,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
-import {init, clear} from '../redux/reducers/connectionStringSlice';
+import {
+  init,
+  clear,
+  setDataBase,
+} from '../redux/reducers/connectionStringSlice';
 import Toast from 'react-native-easy-toast';
-import RNPickerSelect from 'react-native-picker-select';
 import ApiService from '../services/ApiService';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
+import Loader from '../components/loader';
 
 const SwitchDatabase = props => {
   const dispatch = useDispatch();
@@ -27,32 +31,25 @@ const SwitchDatabase = props => {
   const {host, username, password, port, database} = useSelector(
     state => state.ConnectionString,
   );
-  const [hostNew, setHost] = useState(host ? host : '');
   const [databaseNew, setDatabase] = useState(database ? database : '');
-  const [user, setUser] = useState(username ? username : '');
-  const [portNew, setPort] = useState(port ? port : '');
-  const [passwordNew, setPassword] = useState(password ? password : '');
-  const [hidePassword, setHidePassword] = useState(true);
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchAllDatabases();
   }, []);
 
   useEffect(() => {
-    setHost(host ? host : '');
     setDatabase(database ? database : '');
-    setUser(username ? username : '');
-    setPort(port ? port : '');
-    setPassword(password ? password : '');
-  }, [host, username, password, port, database]);
+  }, [database]);
 
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
 
   const fetchAllDatabases = async () => {
+    setLoading(true);
     await ApiService.get(Endpoints.fetchDatabases)
       .then(res => {
         let dataToPopulate = [];
@@ -61,43 +58,27 @@ const SwitchDatabase = props => {
           dataToPopulate.push(obj.SCHEMA_NAME);
         }
         setDatabases(dataToPopulate);
+        setLoading(false);
       })
       .catch(err => {
         console.log('Fetch All Databases: ', err);
+        setLoading(false);
       });
   };
 
   const validate = () => {
-    if (!hostNew.trim().length) {
-      showToast('Please enter a valid host');
-      return;
-    }
-    if (!user.trim().length) {
-      showToast('Please enter a valid username');
-      return;
-    }
     if (!databaseNew.trim().length) {
-      showToast('Please enter a valid database');
+      showToast('Please select a valid database');
       return;
     }
-    if (!portNew.trim().length) {
-      showToast('Please enter a valid port');
-      return;
-    }
-    if (!passwordNew.trim().length) {
-      showToast('Please enter a valid password');
-      return;
-    }
-
-    dispatch(
-      init({
-        host: hostNew,
-        username: user,
-        password: passwordNew,
-        port: portNew,
-        database: databaseNew,
-      }),
-    );
+    dispatch(setDataBase(databaseNew));
+    // init({
+    //   host: host,
+    //   username: username,
+    //   password: password,
+    //   port: port,
+    //   database: databaseNew,
+    // }),
     showToast('Database connected');
   };
 
@@ -136,64 +117,6 @@ const SwitchDatabase = props => {
         </View>
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderWidth: 1,
-          borderColor: Colors.primary,
-          borderRadius: RFValue(10),
-          paddingHorizontal: RFValue(10),
-          marginHorizontal: RFValue(10),
-          marginTop: RFValue(10),
-        }}>
-        <TextInput
-          autoCapitalize={'none'}
-          style={{
-            flex: 1,
-            height: RFValue(50),
-            color: Colors.primary,
-            fontSize: RFValue(16),
-            fontFamily: Fonts.family.bold,
-          }}
-          placeholder="Host"
-          value={hostNew}
-          keyboardType={'default'}
-          onChangeText={setHost}
-          returnKeyType="next"
-          placeholderTextColor={Colors.grey}
-        />
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderWidth: 1,
-          borderColor: Colors.primary,
-          borderRadius: RFValue(10),
-          paddingHorizontal: RFValue(10),
-          marginHorizontal: RFValue(10),
-          marginTop: RFValue(10),
-        }}>
-        <TextInput
-          autoCapitalize={'none'}
-          style={{
-            flex: 1,
-            height: RFValue(50),
-            color: Colors.primary,
-            fontSize: RFValue(16),
-            fontFamily: Fonts.family.bold,
-          }}
-          placeholder="Username"
-          value={user}
-          keyboardType={'default'}
-          onChangeText={setUser}
-          returnKeyType="next"
-          placeholderTextColor={Colors.grey}
-        />
-      </View>
-
       <Pressable
         onPress={() => setModal(true)}
         style={{
@@ -223,74 +146,6 @@ const SwitchDatabase = props => {
           placeholderTextColor={Colors.grey}
         />
       </Pressable>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderWidth: 1,
-          borderColor: Colors.primary,
-          borderRadius: RFValue(10),
-          paddingHorizontal: RFValue(10),
-          marginHorizontal: RFValue(10),
-          marginTop: RFValue(10),
-        }}>
-        <TextInput
-          autoCapitalize={'none'}
-          style={{
-            flex: 1,
-            height: RFValue(50),
-            color: Colors.primary,
-            fontSize: RFValue(16),
-            fontFamily: Fonts.family.bold,
-          }}
-          placeholder="Port"
-          value={portNew}
-          keyboardType={'numeric'}
-          onChangeText={setPort}
-          maxLength={5}
-          returnKeyType="next"
-          placeholderTextColor={Colors.grey}
-        />
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderWidth: 1,
-          borderColor: Colors.primary,
-          borderRadius: RFValue(10),
-          paddingHorizontal: RFValue(10),
-          marginHorizontal: RFValue(10),
-          marginTop: RFValue(10),
-        }}>
-        <TextInput
-          autoCapitalize={'none'}
-          style={{
-            flex: 1,
-            height: RFValue(50),
-            color: Colors.primary,
-            fontSize: RFValue(16),
-            fontFamily: Fonts.family.bold,
-          }}
-          placeholder="Password"
-          value={passwordNew}
-          onChangeText={setPassword}
-          returnKeyType="done"
-          keyboardType={'default'}
-          secureTextEntry={hidePassword}
-          maxLength={15}
-          placeholderTextColor={Colors.grey}
-        />
-        <Pressable onPress={() => setHidePassword(!hidePassword)}>
-          <Icon
-            name={hidePassword ? 'eye' : 'eye-off'}
-            size={24}
-            color={Colors.primary}
-          />
-        </Pressable>
-      </View>
 
       <View
         style={{
@@ -381,8 +236,8 @@ const SwitchDatabase = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />
@@ -424,6 +279,8 @@ const SwitchDatabase = props => {
           />
         </View>
       </Modal>
+
+      {loading && <Loader />}
     </View>
   );
 };

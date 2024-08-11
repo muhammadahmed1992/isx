@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -19,8 +19,10 @@ import Loader from '../components/loader';
 import Toast from 'react-native-easy-toast';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
+import {useFocusEffect} from '@react-navigation/native';
 
 const StockReport = props => {
+  let total = useRef({});
   const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [stockGroup, setStockGroup] = useState('');
@@ -35,6 +37,16 @@ const StockReport = props => {
     fetchAllStocks();
     fetchAllWarehouses();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setStockGroup('');
+        setWarehouse('');
+        setData([]);
+      };
+    }, []),
+  );
 
   const fetchAllStocks = async () => {
     await ApiService.get(Endpoints.fetchStocks)
@@ -82,14 +94,16 @@ const StockReport = props => {
       await ApiService.get(`${Endpoints.stockReport}${query}`)
         .then(res => {
           let data = res.data.data;
-          let newData = [];
-          for (const obj of data) {
-            let x = {...obj};
-            x.Qty = Commons.formatBalance(obj.Qty);
-            x.Price = Commons.formatBalance(obj.Price);
-            x.Balance = Commons.formatBalance(obj.Balance);
-            newData.push(x);
-          }
+          let lastColumnValue;
+          let newData = data.map((obj, index) => {
+            let entries = Object.entries(obj);
+            if (index === data.length - 1) {
+              lastColumnValue = obj['TotalBalance'];
+            }
+            entries.pop();
+            return Object.fromEntries(entries);
+          });
+          total.current = {Balance: lastColumnValue};
           setData(newData);
           setLoading(false);
         })
@@ -269,6 +283,7 @@ const StockReport = props => {
           'Balance',
         ]}
         data={data}
+        totals={total.current}
       />
 
       <Toast
@@ -309,8 +324,8 @@ const StockReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />
@@ -382,8 +397,8 @@ const StockReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />

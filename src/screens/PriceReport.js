@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -19,6 +19,7 @@ import ApiService from '../services/ApiService';
 import Toast from 'react-native-easy-toast';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
+import {useFocusEffect} from '@react-navigation/native';
 
 const PriceReport = props => {
   const toastRef = useRef(null);
@@ -31,6 +32,15 @@ const PriceReport = props => {
   useEffect(() => {
     fetchAllStocks();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setStockGroup('');
+        setData([]);
+      };
+    }, []),
+  );
 
   const fetchAllStocks = async () => {
     await ApiService.get(Endpoints.fetchStocks)
@@ -57,13 +67,7 @@ const PriceReport = props => {
       await ApiService.get(`${Endpoints.priceReport}${query}`)
         .then(res => {
           let data = res.data.data;
-          let newData = [];
-          for (const obj of data) {
-            let x = {...obj};
-            x.Price = Commons.formatBalance(obj.Price);
-            newData.push(x);
-          }
-          setData(newData);
+          setData(data);
           setLoading(false);
         })
         .catch(err => {
@@ -112,7 +116,7 @@ const PriceReport = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Price Report
+          Price List
         </Text>
 
         <View>
@@ -204,6 +208,7 @@ const PriceReport = props => {
       <TableComponent
         headers={['StockID', 'StockName', 'Price', 'Unit']}
         data={data}
+        isPrice
       />
 
       <Toast
@@ -244,8 +249,8 @@ const PriceReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />

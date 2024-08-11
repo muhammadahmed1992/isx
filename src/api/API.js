@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {store} from '../redux/store/index';
+import {Endpoints} from '../utils';
 
 export const api = (method, endpoint, body) => {
   const state = store.getState();
@@ -13,16 +14,16 @@ export const api = (method, endpoint, body) => {
       reject('IP Address is not configured');
     } else {
       const url = `http://${ipAddress}:3000/${endpoint}`;
+      const connectionString = `mysql://${username}:${password}@${host}:${port}/${database}`;
+      console.log(`${method} -- ${url} -- ${connectionString} -- ${body}`);
 
       axios({
         method: method,
         url: url,
         data: body,
-        timeout: 8000,
+        timeout: endpoint === Endpoints.login ? 5000 : 60000,
         headers: {
-          'connection-string': encodeURIComponent(
-            `mysql://${username}:${password}@${host}:${port}/${database}`,
-          ),
+          'connection-string': encodeURIComponent(connectionString),
         },
       })
         .then(res => {
@@ -44,6 +45,7 @@ export const api = (method, endpoint, body) => {
                 : err.message,
           };
           reject(errorObject);
+          // console.log('Error: ', errorObject);
         });
     }
   });

@@ -2,40 +2,29 @@ import {createSlice} from '@reduxjs/toolkit';
 
 let initialState = {
   isLoggedIn: false,
-  user: null,
-  token: null,
   ipAddress: null,
+  isSwitchDataBaseAccessible: false,
 };
 
 export const authSlice = createSlice({
   name: 'Auth',
   initialState,
   reducers: {
-    register: (state, payload) => {
+    login: state => {
       state.isLoggedIn = true;
-      state.user = payload.payload;
-    },
-    login: (state, payload) => {
-      state.isLoggedIn = true;
-      state.user = payload.payload.user;
-    },
-    token: (state, payload) => {
-      state.token = payload.payload;
     },
     setIpAddress: (state, payload) => {
       state.ipAddress = payload.payload;
     },
+    setSwitchDatabase: (state, payload) => {
+      state.isSwitchDataBaseAccessible = payload.payload;
+    },
     logout: state => {
       state.isLoggedIn = false;
-      state.user = null;
-      state.token = null;
-      state.ipAddress = null;
-    },
-    setUserData: (state, payload) => {
-      state.user = payload.payload;
+      state.isSwitchDataBaseAccessible = false;
     },
   },
 });
-export const {register, login, logout, token, setIpAddress, setUserData} =
+export const {login, logout, setIpAddress, setSwitchDatabase} =
   authSlice.actions;
 export default authSlice.reducer;

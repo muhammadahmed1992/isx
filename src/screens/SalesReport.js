@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -17,13 +17,14 @@ import TableComponent from '../components/TableComponent';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import ApiService from '../services/ApiService';
-import {useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import Loader from '../components/loader';
 import Toast from 'react-native-easy-toast';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
 
 const SalesReport = props => {
+  let total = useRef({});
   const toastRef = useRef(null);
   const route = useRoute();
   const currentRouteName = route.name;
@@ -34,14 +35,39 @@ const SalesReport = props => {
   const [openTo, setOpenTo] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
-  const [dateValFrom, setDateValFrom] = useState();
-  const [dateValTo, setDateValTo] = useState();
+  const [dateValFrom, setDateValFrom] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
+  const [dateValTo, setDateValTo] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
   const [modal, setModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
+  const currentLabel =
+    currentRouteName === 'sales_report_2'
+      ? 'Sales Report (No Disc)'
+      : 'Sales Report';
 
   useEffect(() => {
     fetchAllWarehouses();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setDateFrom(new Date());
+        setDateValFrom(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setDateTo(new Date());
+        setDateValTo(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setWarehouse('');
+        setData([]);
+      };
+    }, []),
+  );
+
+  useEffect(() => {
+    setData([]);
+  }, [currentRouteName]);
 
   const fetchAllWarehouses = async () => {
     await ApiService.get(Endpoints.fetchWarehouses)
@@ -59,10 +85,14 @@ const SalesReport = props => {
 
     let query = '';
     if (dateValFrom && dateValFrom.length) {
-      query += `?startDate=${encodeURIComponent(dateValFrom)}`;
+      query += `?startDate=${encodeURIComponent(
+        moment(dateFrom.toISOString()).format('yyyy-MM-DD'),
+      )}`;
 
       if (dateValTo && dateValTo.length) {
-        query += `&endDate=${encodeURIComponent(dateValTo)}`;
+        query += `&endDate=${encodeURIComponent(
+          moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+        )}`;
       }
       if (warehouse && warehouse.length) {
         query += `&warehouse=${encodeURIComponent(
@@ -70,7 +100,9 @@ const SalesReport = props => {
         )}`;
       }
     } else if (dateValTo && dateValTo.length) {
-      query += `?endDate=${encodeURIComponent(dateValTo)}`;
+      query += `?endDate=${encodeURIComponent(
+        moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+      )}`;
 
       if (warehouse && warehouse.length) {
         query += `&warehouse=${encodeURIComponent(
@@ -91,14 +123,36 @@ const SalesReport = props => {
       )
         .then(res => {
           let data = res.data.data;
-          let newData = [];
-          for (const obj of data) {
-            let x = {...obj};
-            x.Date = moment(obj.Date).format('DD-MM-yyyy');
-            x.Amount = Commons.formatBalance(obj.Amount);
-            newData.push(x);
-          }
-          setData(newData);
+
+          const groupedData = data.reduce((acc, item) => {
+            acc[item.Curr] = acc[item.Curr] || [];
+            acc[item.Curr].push(item);
+            return acc;
+          }, {});
+
+          const result = [];
+          const appendedIndexes = [];
+          Object.keys(groupedData).forEach(currency => {
+            const items = groupedData[currency];
+            items.forEach((item, index) => {
+              const {SubTotal, ...newItem} = item;
+              result.push(newItem);
+              if (index === items.length - 1) {
+                const newRow = {
+                  Invoice: '',
+                  Date: '',
+                  Customer: '',
+                  Curr: currency,
+                  Amount: SubTotal,
+                };
+                result.push(newRow);
+                appendedIndexes.push(result.length - 1);
+              }
+            });
+          });
+
+          total.current = {indexes: appendedIndexes};
+          setData(result);
           setLoading(false);
         })
         .catch(err => {
@@ -147,7 +201,7 @@ const SalesReport = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Sales Report
+          {currentLabel}
         </Text>
 
         <View>
@@ -165,7 +219,7 @@ const SalesReport = props => {
         <TouchableOpacity
           onPress={() => setOpenFrom(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -196,7 +250,7 @@ const SalesReport = props => {
         <TouchableOpacity
           onPress={() => setOpenTo(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -311,6 +365,7 @@ const SalesReport = props => {
       <TableComponent
         headers={['Invoice', 'Date', 'Customer', 'Curr', 'Amount']}
         data={data}
+        totals={total.current}
       />
 
       <DatePicker
@@ -321,7 +376,7 @@ const SalesReport = props => {
         onConfirm={date => {
           setOpenFrom(false);
           setDateFrom(date);
-          setDateValFrom(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValFrom(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenFrom(false);
@@ -336,7 +391,7 @@ const SalesReport = props => {
         onConfirm={date => {
           setOpenTo(false);
           setDateTo(date);
-          setDateValTo(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValTo(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenTo(false);
@@ -381,8 +436,8 @@ const SalesReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />

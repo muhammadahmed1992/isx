@@ -1,11 +1,12 @@
+import {HOST_IP, USER, PASSWORD, PORT, DATABASE} from '@env';
 import {createSlice} from '@reduxjs/toolkit';
 
 let initialState = {
-  host: 'localhost',
-  username: 'root',
-  password: 'crmsrv@12A',
-  port: '3306',
-  database: 'eisdata',
+  host: HOST_IP,
+  username: USER,
+  password: PASSWORD,
+  port: PORT,
+  database: DATABASE,
 };
 
 export const connectionStringSlice = createSlice({
@@ -19,14 +20,17 @@ export const connectionStringSlice = createSlice({
       state.port = payload.payload.port;
       state.database = payload.payload.database;
     },
+    setDataBase: (state, payload) => {
+      state.database = payload.payload;
+    },
     clear: state => {
-      state.host = null;
-      state.username = null;
-      state.password = null;
-      state.port = null;
-      state.database = null;
+      state.host = HOST_IP;
+      state.username = USER;
+      state.password = PASSWORD;
+      state.port = PORT;
+      state.database = DATABASE;
     },
   },
 });
-export const {init, clear} = connectionStringSlice.actions;
+export const {init, clear, setDataBase} = connectionStringSlice.actions;
 export default connectionStringSlice.reducer;

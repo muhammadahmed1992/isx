@@ -7,7 +7,7 @@ import {
   TextInput,
   Platform,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -17,8 +17,10 @@ import moment from 'moment';
 import ApiService from '../services/ApiService';
 import Loader from '../components/loader';
 import Toast from 'react-native-easy-toast';
+import {useFocusEffect} from '@react-navigation/native';
 
 const CashDrawerReport = props => {
+  let total = useRef({});
   const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -26,45 +28,77 @@ const CashDrawerReport = props => {
   const [openTo, setOpenTo] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
-  const [dateValFrom, setDateValFrom] = useState();
-  const [dateValTo, setDateValTo] = useState();
+  const [dateValFrom, setDateValFrom] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
+  const [dateValTo, setDateValTo] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setDateFrom(new Date());
+        setDateValFrom(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setDateTo(new Date());
+        setDateValTo(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setData([]);
+      };
+    }, []),
+  );
 
   const filter = async () => {
     setLoading(true);
 
     let query = '';
     if (dateValFrom && dateValFrom.length) {
-      query += `?startDate=${encodeURIComponent(dateValFrom)}`;
+      query += `?startDate=${encodeURIComponent(
+        moment(dateFrom.toISOString()).format('yyyy-MM-DD'),
+      )}`;
 
       if (dateValTo && dateValTo.length) {
-        query += `&endDate=${encodeURIComponent(dateValTo)}`;
+        query += `&endDate=${encodeURIComponent(
+          moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+        )}`;
       }
     } else if (dateValTo && dateValTo.length) {
-      query += `?endDate=${encodeURIComponent(dateValTo)}`;
+      query += `?endDate=${encodeURIComponent(
+        moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+      )}`;
     }
 
     try {
       await ApiService.get(`${Endpoints.cashDrawerReport}${query}`)
         .then(res => {
           let data = res.data.data;
-          let newData = [];
-          for (const obj of data) {
-            let x = {...obj};
-            x.Date = moment(obj.Date).format('DD-MM-yyyy');
-            x.Opening = Commons.formatBalance(obj.Opening);
-            x.DP = Commons.formatBalance(obj.DP);
-            x.Voucher = Commons.formatBalance(obj.Voucher);
-            x.Cash = Commons.formatBalance(obj.Cash);
-            x.Payroll = Commons.formatBalance(obj.Payroll);
-            x.CreditCard = Commons.formatBalance(obj.CreditCard);
-            x.DebitCard = Commons.formatBalance(obj.DebitCard);
-            x.Online = Commons.formatBalance(obj.Online);
-            x.Withdrawn = Commons.formatBalance(obj.Withdrawn);
-            x.Cancel = Commons.formatBalance(obj.Cancel);
-            x.Balance = Commons.formatBalance(obj.Balance);
-            newData.push(x);
-          }
-          setData(newData);
+          const {
+            RunningOpening,
+            RunningDP,
+            RunningVoucher,
+            RunningCash,
+            RunningPayroll,
+            RunningCreditCard,
+            RunningDebitCard,
+            RunningOnline,
+            RunningWithdrawn,
+            RunningCancel,
+            RunningBalance,
+          } = data[data.length - 1];
+          total.current = {
+            Opening: RunningOpening,
+            DP: RunningDP,
+            Voucher: RunningVoucher,
+            Cash: RunningCash,
+            Payroll: RunningPayroll,
+            CreditCard: RunningCreditCard,
+            DebitCard: RunningDebitCard,
+            Online: RunningOnline,
+            Withdrawn: RunningWithdrawn,
+            Cancel: RunningCancel,
+            Balance: RunningBalance,
+          };
+          data = data.map(removeRunningKeys);
+          setData(data);
           setLoading(false);
         })
         .catch(err => {
@@ -85,6 +119,15 @@ const CashDrawerReport = props => {
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
+
+  function removeRunningKeys(obj) {
+    return Object.keys(obj)
+      .filter(key => !key.startsWith('Running'))
+      .reduce((acc, key) => {
+        acc[key] = obj[key];
+        return acc;
+      }, {});
+  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -131,7 +174,7 @@ const CashDrawerReport = props => {
         <TouchableOpacity
           onPress={() => setOpenFrom(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -162,7 +205,7 @@ const CashDrawerReport = props => {
         <TouchableOpacity
           onPress={() => setOpenTo(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -259,6 +302,7 @@ const CashDrawerReport = props => {
           'Balance',
         ]}
         data={data}
+        totals={total.current}
       />
 
       <DatePicker
@@ -269,7 +313,7 @@ const CashDrawerReport = props => {
         onConfirm={date => {
           setOpenFrom(false);
           setDateFrom(date);
-          setDateValFrom(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValFrom(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenFrom(false);
@@ -284,7 +328,7 @@ const CashDrawerReport = props => {
         onConfirm={date => {
           setOpenTo(false);
           setDateTo(date);
-          setDateValTo(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValTo(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenTo(false);

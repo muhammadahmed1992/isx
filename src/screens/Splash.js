@@ -35,7 +35,7 @@ const Splash = props => {
           fontSize: RFValue(40),
           color: Colors.white,
         }}>
-        DATA{'\n'}VISUALIZER
+        INTEGRATED{'\n'}SYSTEM
       </Text>
     </View>
   );

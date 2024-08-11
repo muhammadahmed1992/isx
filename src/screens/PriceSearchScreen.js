@@ -5,6 +5,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Platform,
+  ScrollView,
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,28 +21,36 @@ const PriceSearchScreen = props => {
   const [stockID, setStockID] = useState('');
   const [stockName, setStockName] = useState('');
   const [location, setLocation] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [balance, setBalance] = useState('');
+  const [data, setData] = useState([]);
 
   const handleBarcodeRead = async data => {
-    if (!data) return;
+    if (!data) {
+      setData([]);
+      return;
+    }
     setLoading(true);
     try {
-      await ApiService.get(Endpoints.scanBarcode + data)
+      await ApiService.get(Endpoints.scanBarcode + encodeURIComponent(data))
         .then(res => {
-          setStockID(res.data.data.StockID);
-          setStockName(res.data.data.StockName);
-          setLocation(res.data.data.StockID);
-          setPrice(res.data.data.Price);
-          setBalance(res.data.data.Balance);
+          setData(res.data.data);
           setLoading(false);
         })
         .catch(err => {
+          if (typeof err === 'object' && err.code === 404) {
+            showToast(err.message);
+          }
+          setData([]);
           setLoading(false);
         });
     } catch (error) {
-      console.error(error);
+      if (typeof err === 'object' && err.code === 404) {
+        showToast(err.message);
+      }
       setLoading(false);
+      setData([]);
     }
   };
 
@@ -76,7 +85,7 @@ const PriceSearchScreen = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Search Price
+          Scan Barcode
         </Text>
 
         <View>
@@ -116,129 +125,173 @@ const PriceSearchScreen = props => {
         </Text>
       </TouchableOpacity>
 
-      {stockID !== '' && (
-        <View style={{marginHorizontal: RFValue(15)}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: RFValue(10),
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.regular,
-                color: Colors.black,
-                fontSize: RFValue(14),
-              }}>
-              Stock ID:{' '}
-            </Text>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                color: Colors.black,
-                fontSize: RFValue(16),
-              }}>
-              {stockID}
-            </Text>
-          </View>
+      <ScrollView style={{marginTop: RFValue(10)}}>
+        {data.length > 0 &&
+          data.map((item, index) => {
+            return (
+              <View
+                style={{
+                  marginHorizontal: RFValue(15),
+                  marginBottom: RFValue(10),
+                  borderRadius: RFValue(15),
+                  padding: RFValue(15),
+                  borderWidth: 0.8,
+                }}>
+                <Text
+                  style={{
+                    fontFamily: Fonts.family.bold,
+                    color: Colors.black,
+                    fontSize: RFValue(16),
+                  }}>
+                  Item: {index + 1}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Stock ID:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.StockID}
+                  </Text>
+                </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: RFValue(10),
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.regular,
-                color: Colors.black,
-                fontSize: RFValue(14),
-              }}>
-              Stock Name:{' '}
-            </Text>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                color: Colors.black,
-                fontSize: RFValue(16),
-              }}>
-              {stockName}
-            </Text>
-          </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Stock Name:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.StockName}
+                  </Text>
+                </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: RFValue(10),
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.regular,
-                color: Colors.black,
-                fontSize: RFValue(14),
-              }}>
-              Location:{' '}
-            </Text>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                color: Colors.black,
-                fontSize: RFValue(16),
-              }}>
-              {location}
-            </Text>
-          </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Location:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.Location}
+                  </Text>
+                </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: RFValue(10),
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.regular,
-                color: Colors.black,
-                fontSize: RFValue(14),
-              }}>
-              Price:{' '}
-            </Text>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                color: Colors.black,
-                fontSize: RFValue(16),
-              }}>
-              {price}
-            </Text>
-          </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Qty:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.Qty}
+                  </Text>
+                </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: RFValue(10),
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.regular,
-                color: Colors.black,
-                fontSize: RFValue(14),
-              }}>
-              Balance:{' '}
-            </Text>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                color: Colors.black,
-                fontSize: RFValue(16),
-              }}>
-              {balance}
-            </Text>
-          </View>
-        </View>
-      )}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Price:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.Price}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: RFValue(10),
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.regular,
+                      color: Colors.black,
+                      fontSize: RFValue(14),
+                    }}>
+                    Balance:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.family.bold,
+                      color: Colors.black,
+                      fontSize: RFValue(16),
+                    }}>
+                    {item.Balance}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+      </ScrollView>
 
       <Toast
         ref={toastRef}

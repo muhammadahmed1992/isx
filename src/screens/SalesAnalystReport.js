@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
@@ -19,12 +19,13 @@ import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import ApiService from '../services/ApiService';
 import Loader from '../components/loader';
-import {useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
 
 const SalesAnalystReport = props => {
+  let total = useRef({});
   const toastRef = useRef(null);
   const route = useRoute();
   const currentRouteName = route.name;
@@ -36,17 +37,43 @@ const SalesAnalystReport = props => {
   const [openTo, setOpenTo] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
-  const [dateValFrom, setDateValFrom] = useState();
-  const [dateValTo, setDateValTo] = useState();
+  const [dateValFrom, setDateValFrom] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
+  const [dateValTo, setDateValTo] = useState(
+    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+  );
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
+  const currentLabel =
+    currentRouteName === 'sales_analyst_report_2'
+      ? 'Sales Analyst Report (No Disc)'
+      : 'Sales Analyst Report';
 
   useEffect(() => {
     fetchAllStocks();
     fetchAllWarehouses();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setDateFrom(new Date());
+        setDateValFrom(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setDateTo(new Date());
+        setDateValTo(moment(new Date().toISOString()).format('DD-MM-yyyy'));
+        setStockGroup('');
+        setWarehouse('');
+        setData([]);
+      };
+    }, []),
+  );
+
+  useEffect(() => {
+    setData([]);
+  }, [currentRouteName]);
 
   const fetchAllStocks = async () => {
     await ApiService.get(Endpoints.fetchStocks)
@@ -75,10 +102,14 @@ const SalesAnalystReport = props => {
 
     let query = '';
     if (dateValFrom && dateValFrom.length) {
-      query += `?startDate=${encodeURIComponent(dateValFrom)}`;
+      query += `?startDate=${encodeURIComponent(
+        moment(dateFrom.toISOString()).format('yyyy-MM-DD'),
+      )}`;
 
       if (dateValTo && dateValTo.length) {
-        query += `&endDate=${encodeURIComponent(dateValTo)}`;
+        query += `&endDate=${encodeURIComponent(
+          moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+        )}`;
       }
 
       if (stockGroup && stockGroup.length) {
@@ -93,7 +124,9 @@ const SalesAnalystReport = props => {
         )}`;
       }
     } else if (dateValTo && dateValTo.length) {
-      query += `?endDate=${encodeURIComponent(dateValTo)}`;
+      query += `?endDate=${encodeURIComponent(
+        moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+      )}`;
 
       if (stockGroup && stockGroup.length) {
         query += `&stockGroup=${encodeURIComponent(
@@ -130,15 +163,38 @@ const SalesAnalystReport = props => {
       )
         .then(res => {
           let data = res.data.data;
-          let newData = [];
-          for (const obj of data) {
-            let x = {...obj};
-            x.Qty = Commons.formatBalance(obj.Qty);
-            x.Amount = Commons.formatBalance(obj.Amount);
-            x.Amount_Tax = Commons.formatBalance(obj.Amount_Tax);
-            newData.push(x);
-          }
-          setData(newData);
+
+          const groupedData = data.reduce((acc, item) => {
+            acc[item.Curr] = acc[item.Curr] || [];
+            acc[item.Curr].push(item);
+            return acc;
+          }, {});
+
+          const result = [];
+          const appendedIndexes = [];
+          Object.keys(groupedData).forEach(currency => {
+            const items = groupedData[currency];
+            items.forEach((item, index) => {
+              const {SubTotal, AmountTaxTotal, ...newItem} = item;
+              result.push(newItem);
+              if (index === items.length - 1) {
+                const newRow = {
+                  StockID: '',
+                  StockName: '',
+                  Qty: '',
+                  Curr: currency,
+                  Amount: SubTotal,
+                  'Amount Tax': AmountTaxTotal ? AmountTaxTotal : '',
+                };
+                result.push(newRow);
+                appendedIndexes.push(result.length - 1);
+              }
+            });
+          });
+
+          total.current = {indexes: appendedIndexes};
+          setData(result);
+
           setLoading(false);
         })
         .catch(err => {
@@ -187,7 +243,7 @@ const SalesAnalystReport = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Sales Analyst Report
+          {currentLabel}
         </Text>
 
         <View>
@@ -205,7 +261,7 @@ const SalesAnalystReport = props => {
         <TouchableOpacity
           onPress={() => setOpenFrom(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -236,7 +292,7 @@ const SalesAnalystReport = props => {
         <TouchableOpacity
           onPress={() => setOpenTo(true)}
           style={{
-            flex: 0.45,
+            flex: 0.48,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -386,9 +442,10 @@ const SalesAnalystReport = props => {
           'Qty',
           'Curr',
           'Amount',
-          'Amount_tax',
+          'Amount Tax',
         ]}
         data={data}
+        totals={total.current}
       />
 
       <DatePicker
@@ -399,7 +456,7 @@ const SalesAnalystReport = props => {
         onConfirm={date => {
           setOpenFrom(false);
           setDateFrom(date);
-          setDateValFrom(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValFrom(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenFrom(false);
@@ -414,7 +471,7 @@ const SalesAnalystReport = props => {
         onConfirm={date => {
           setOpenTo(false);
           setDateTo(date);
-          setDateValTo(moment(date.toISOString()).format('yyyy-MM-DD'));
+          setDateValTo(moment(date.toISOString()).format('DD-MM-yyyy'));
         }}
         onCancel={() => {
           setOpenTo(false);
@@ -459,8 +516,8 @@ const SalesAnalystReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />
@@ -532,8 +589,8 @@ const SalesAnalystReport = props => {
               <Image
                 source={Images.close}
                 style={{
-                  height: RFValue(12),
-                  width: RFValue(12),
+                  height: RFValue(20),
+                  width: RFValue(20),
                   resizeMode: 'contain',
                 }}
               />

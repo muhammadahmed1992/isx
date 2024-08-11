@@ -123,7 +123,7 @@ const checkPermissions = async () => {
 const formatBalance = balance => {
   const num = Number(balance);
   if (isNaN(num)) {
-    return 'Invalid balance';
+    return '';
   }
   
   return num.toLocaleString('en-US', {
