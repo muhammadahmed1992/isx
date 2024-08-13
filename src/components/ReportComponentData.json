@@ -1,0 +1,53 @@
+{
+    "price_report": {
+        "label": "Price List",
+        "date-range-setter": false,
+        "stock-input-field": true,
+        "warehouse-input-field": false,
+        "endPoint": "reports/price-list"
+    },
+    "stock_report": {
+        "label": "Stock Report",
+        "date-range-setter": false,
+        "stock-input-field": true,
+        "warehouse-input-field": true,
+        "endPoints": "reports/stock-balance"
+        
+    },
+    "sales_report": {
+        "label": "Sales Report",
+        "date-range-setter": true,
+        "stock-input-field": false,
+        "warehouse-input-field": true,
+        "endPoints": "reports/sales"
+    },
+    "sales_report_2": {
+        "label": "Sales Report (No Disc)",
+        "date-range-setter": true,
+        "stock-input-field": false,
+        "warehouse-input-field": true,
+        "endPoints": "reports/sales-2"
+    },
+    "sales_analyst_report": {
+        "label": "Sales Analyst Report",
+        "date-range-setter": true,
+        "stock-input-field": true,
+        "warehouse-input-field": true,
+        "endPoints": "reports/sales-analyst"
+    },
+    "sales_analyst_report_2": {
+        "label": "Sales Analyst Report (No Disc)",
+        "date-range-setter": true,
+        "stock-input-field": true,
+        "warehouse-input-field": true,
+        "endPoints": "reports/sales-analyst-2"
+    },
+    "cash_drawer_report": {
+        "label": "Cash Drawer Report",
+        "date-range-setter": true,
+        "stock-input-field": false,
+        "warehouse-input-field": false,
+        "endPoints": "reports/cash-drawer"
+    }
+  }
+  
