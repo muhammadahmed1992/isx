@@ -8,26 +8,36 @@ import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import {Splash, Auth} from '../screens';
-import {
-  SwitchDatabase,
-  PriceSearchScreen,
-  PriceReport,
-  StockReport,
-  SalesReport,
-  SalesAnalystReport,
-  CashDrawerReport,
-  BarcodeScanner,
-} from '../screens';
-import {useSelector} from 'react-redux';
+
+import { useSelector } from 'react-redux';
+
+// import {
+//   SwitchDatabase,
+//   PriceSearchScreen,
+//   PriceReport,
+//   StockReport,
+//   SalesReport,
+//   SalesAnalystReport,
+//   CashDrawerReport,
+//   BarcodeScanner,
+
+// } from '../screens';
+
 
 export default function StackNavigation() {
-  const {isSwitchDataBaseAccessible} = useSelector(state => state.Auth);
+
   const Stack = createStackNavigator();
+ 
 
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
+  
+    const routePermissions = useSelector((state) => state.Routes);
+
+    // Filter the screens based on the condition in routePermissions
+    const filteredScreens = Object.values(routePermissions).filter(screen => screen.condition); 
+
     return (
       <Drawer.Navigator
         detachInactiveScreens={false}
@@ -37,7 +47,24 @@ export default function StackNavigation() {
           drawerLabelStyle: {marginLeft: -25, fontFamily: Fonts.family.bold},
         }}
         initialRouteName="search">
+      {filteredScreens.map((screen, index) => (
         <Drawer.Screen
+          key={index}
+          name={screen.name}
+          options={{
+            headerShown: false,
+            drawerLabel: screen.label,
+            drawerIcon: ({ color, size }) => screen.icon(color, size),
+            lazy: true,
+          }}
+          component={(props) => (
+            <screen.component
+              {...screen.props}
+            />
+          )}
+        />
+      ))}
+        {/* <Drawer.Screen
           name="search"
           component={PriceSearchScreen}
           options={{
@@ -149,7 +176,7 @@ export default function StackNavigation() {
               );
             },
           }}
-        />
+        /> */}
       </Drawer.Navigator>
     );
   };

@@ -14,7 +14,7 @@ import {useFocusEffect, useRoute} from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
 import ModalComponent from './Model';
 import Header from './Header';
-import routeOptions from './ReportComponentData.json'
+import routeConfig from './routeConfig';
 
 
 const ReportComponent = () => {
@@ -22,7 +22,7 @@ const ReportComponent = () => {
   const toastRef = useRef(null);
   const route = useRoute();
   const currentRouteName = route.name;
-  const config = routeOptions[currentRouteName] || {};
+  const config = routeConfig[currentRouteName] || {};
   const { label, dateRangeSetter, stockInputField, warehouseInputField, endPoints } = config;
   const [stockGroup, setStockGroup] = useState('');
   const [warehouse, setWarehouse] = useState('');

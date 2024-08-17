@@ -1,26 +1,33 @@
-import {persistReducer, persistStore} from 'redux-persist';
-import {configureStore} from '@reduxjs/toolkit';
-import {combineReducers} from 'redux';
+import { persistReducer, persistStore } from 'redux-persist';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getDefaultMiddleware} from '@reduxjs/toolkit';
 import Auth from '../reducers/authSlice';
 import ConnectionString from '../reducers/connectionStringSlice';
+import Menu from '../reducers/reportSlice'; // Import the Menu slice
+
+// Define persist configuration
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
 };
+
+// Combine all reducers into one root reducer
 const reducerToPersist = combineReducers({
   Auth,
   ConnectionString,
 });
+
+// Persist the combined reducer
 const persistedReducer = persistReducer(persistConfig, reducerToPersist);
-// const customizedMiddleware = getDefaultMiddleware({
-//   serializableCheck: false,
-// });
+
+// Configure the store with the persisted reducer
 const store = configureStore({
   reducer: persistedReducer,
-  // middleware: customizedMiddleware,
+  // No custom middleware needed
 });
 
+// Set up the persistor
 const persistor = persistStore(store);
-export {store, persistor};
+
+export { store, persistor };
