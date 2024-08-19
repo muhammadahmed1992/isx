@@ -1,29 +1,26 @@
-import {
-  View,
-  StatusBar,
-} from 'react-native';
+import {View, StatusBar} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Colors, Fonts, Endpoints} from '../utils';
+import {Colors, Fonts} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 import TableComponent from './TableComponent';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
-import ApiService from '../services/ApiService';
 import Loader from './loader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
 import ModalComponent from './Model';
 import Header from './Header';
-import routeConfig from './routeConfig';
+import ReportService from '../services/ReportService';
 
-
-const ReportComponent = () => {
-  let total = useRef({});
+const ReportComponent = ({
+  currentRouteName,
+  label,
+  dateRangeSetter,
+  stockInputField,
+  warehouseInputField,
+  endPoints,
+}) => {
   const toastRef = useRef(null);
-  const route = useRoute();
-  const currentRouteName = route.name;
-  const config = routeConfig[currentRouteName] || {};
-  const { label, dateRangeSetter, stockInputField, warehouseInputField, endPoints } = config;
   const [stockGroup, setStockGroup] = useState('');
   const [warehouse, setWarehouse] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,12 +29,8 @@ const ReportComponent = () => {
   const [openTo, setOpenTo] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
-  const [dateValFrom, setDateValFrom] = useState(
-    moment(new Date().toISOString()).format('DD-MM-yyyy'),
-  );
-  const [dateValTo, setDateValTo] = useState(
-    moment(new Date().toISOString()).format('DD-MM-yyyy'),
-  );
+  const [dateValFrom, setDateValFrom] = useState(moment().format('DD-MM-yyyy'));
+  const [dateValTo, setDateValTo] = useState(moment().format('DD-MM-yyyy'));
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
@@ -45,129 +38,63 @@ const ReportComponent = () => {
   const currentLabel = label;
 
   useEffect(() => {
-    fetchAllStocks();
-    fetchAllWarehouses();
+    fetchAllData();
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       return () => {
-        setDateFrom(new Date());
-        setDateValFrom(moment(new Date().toISOString()).format('DD-MM-yyyy'));
-        setDateTo(new Date());
-        setDateValTo(moment(new Date().toISOString()).format('DD-MM-yyyy'));
-        setStockGroup('');
-        setWarehouse('');
-        setData([]);
+        resetFilters();
       };
-    }, []),
+    }, [])
   );
 
   useEffect(() => {
     setData([]);
   }, [currentRouteName]);
 
-  const fetchAllStocks = async () => {
-    await ApiService.get(Endpoints.fetchStocks)
-      .then(res => {
-        const data = res.data.data;
-        setStocks(data);
-      })
-      .catch(err => {
-        console.log('Fetch All Stock Groups: ', err);
-      });
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      const [stocksResult, warehousesResult] = await Promise.all([
+        ReportService.fetchAllStocks(),
+        ReportService.fetchAllWarehouses(),
+      ]);
+      setStocks(stocksResult);
+      setWarehouses(warehousesResult);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
   };
 
-  const fetchAllWarehouses = async () => {
-    await ApiService.get(Endpoints.fetchWarehouses)
-      .then(res => {
-        const data = res.data.data;
-        setWarehouses(data);
-      })
-      .catch(err => {
-        console.log('Fetch All Warehouses: ', err);
-      });
+  const resetFilters = () => {
+    setDateFrom(new Date());
+    setDateValFrom(moment().format('DD-MM-yyyy'));
+    setDateTo(new Date());
+    setDateValTo(moment().format('DD-MM-yyyy'));
+    setStockGroup('');
+    setWarehouse('');
+    setData([]);
   };
 
   const filter = async () => {
     setLoading(true);
-
-    let query = '';
-    if (dateValFrom && dateValFrom.length) {
-      query += `?startDate=${encodeURIComponent(
-        moment(dateFrom.toISOString()).format('yyyy-MM-DD'),
-      )}`;
-    }
-    if (dateValTo && dateValTo.length) {
-      query += `&endDate=${encodeURIComponent(
-        moment(dateTo.toISOString()).format('yyyy-MM-DD'),
-      )}`;
-    }
-
-    if (stockGroup && stockGroup.length) {
-      query += `&stockGroup=${encodeURIComponent(
-        stocks.find(s => s.cgrpdesc === stockGroup).cgrppk,
-      )}`;
-    }
-
-    if (warehouse && warehouse.length) {
-      query += `&warehouse=${encodeURIComponent(
-        warehouses.find(s => s.cwhsdesc === warehouse).cwhspk,
-      )}`;
-    }
-
     try {
-      await ApiService.get(
-        `${endPoints}${query}`,
-      )
-        .then(res => {
-          let data = res.data.data;
-
-          const groupedData = data.reduce((acc, item) => {
-            acc[item.Curr] = acc[item.Curr] || [];
-            acc[item.Curr].push(item);
-            return acc;
-          }, {});
-
-          const result = [];
-          const appendedIndexes = [];
-          Object.keys(groupedData).forEach(currency => {
-            const items = groupedData[currency];
-            items.forEach((item, index) => {
-              const {SubTotal, AmountTaxTotal, ...newItem} = item;
-              result.push(newItem);
-              if (index === items.length - 1) {
-                const newRow = {
-                  StockID: '',
-                  StockName: '',
-                  Qty: '',
-                  Curr: currency,
-                  Amount: SubTotal,
-                  'Amount Tax': AmountTaxTotal ? AmountTaxTotal : '',
-                };
-                result.push(newRow);
-                appendedIndexes.push(result.length - 1);
-              }
-            });
-          });
-
-          total.current = {indexes: appendedIndexes};
-          setData(result);
-
-          setLoading(false);
-        })
-        .catch(err => {
-          setLoading(false);
-          if (err.code && err.code == 404) {
-            setData([]);
-          } else {
-            showToast(typeof err === 'string' ? err : err.message);
-          }
-        });
-    } catch (error) {
-      console.error(error);
-      showToast(typeof error === 'string' ? error : error.message);
+      const result = await ReportService.filterData({
+        reportType: currentRouteName,
+        endPoints,
+        dateValFrom,
+        dateValTo,
+        stockGroup,
+        warehouse,
+      });
+      setData(result);
       setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      showToast(typeof error === 'string' ? error : error.message);
     }
   };
 
@@ -178,19 +105,16 @@ const ReportComponent = () => {
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-
-      <Header label={currentLabel}/>
-
+      <Header label={currentLabel} />
       <DateRangeSetter
         dateValFrom={dateValFrom}
         dateValTo={dateValTo}
         onDateFromPress={() => setOpenFrom(true)}
-        onDateToPress={() => setOpenFrom(true)}
+        onDateToPress={() => setOpenTo(true)}
         setDateValFrom={setDateValFrom}
         setDateValTo={setDateValTo}
         enabled={dateRangeSetter}
       />
-
       <InputField
         enabled={stockInputField}
         onPress={() => setStocksModal(true)}
@@ -199,11 +123,10 @@ const ReportComponent = () => {
       />
       <InputField
         enabled={warehouseInputField}
-        onPress={() => setModal(true)}
+        onPress={() => setWarehouseModal(true)}
         placeholder={'Select a warehouse'}
         value={warehouse}
       />
-
       <View
         style={{
           flexDirection: 'row',
@@ -213,11 +136,7 @@ const ReportComponent = () => {
           marginTop: RFValue(10),
         }}>
         <Button
-          onPress={() => {
-            setDateValFrom('');
-            setDateValTo('');
-            setWarehouse('');
-          }}
+          onPress={resetFilters}
           title={'Clear'}
           buttonStyle={{
             flex: 0.3,
@@ -252,18 +171,7 @@ const ReportComponent = () => {
         />
       </View>
 
-      <TableComponent
-        headers={[
-          'StockID',
-          'StockName',
-          'Qty',
-          'Curr',
-          'Amount',
-          'Amount Tax',
-        ]}
-        data={data}
-        totals={total.current}
-      />
+      <TableComponent data={data} />
 
       <DatePicker
         modal
@@ -273,11 +181,9 @@ const ReportComponent = () => {
         onConfirm={date => {
           setOpenFrom(false);
           setDateFrom(date);
-          setDateValFrom(moment(date.toISOString()).format('DD-MM-yyyy'));
+          setDateValFrom(moment(date).format('DD-MM-yyyy'));
         }}
-        onCancel={() => {
-          setOpenFrom(false);
-        }}
+        onCancel={() => setOpenFrom(false)}
       />
 
       <DatePicker
@@ -288,11 +194,9 @@ const ReportComponent = () => {
         onConfirm={date => {
           setOpenTo(false);
           setDateTo(date);
-          setDateValTo(moment(date.toISOString()).format('DD-MM-yyyy'));
+          setDateValTo(moment(date).format('DD-MM-yyyy'));
         }}
-        onCancel={() => {
-          setOpenTo(false);
-        }}
+        onCancel={() => setOpenTo(false)}
       />
 
       <Toast
@@ -307,7 +211,7 @@ const ReportComponent = () => {
       <ModalComponent
         isVisible={stocksModal}
         onClose={() => setStocksModal(false)}
-        items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
+        items={stocks.map(item => item.value)}
         onItemSelect={item => {
           setStockGroup(item);
           setStocksModal(false);
@@ -319,7 +223,7 @@ const ReportComponent = () => {
       <ModalComponent
         isVisible={warehouseModal}
         onClose={() => setWarehouseModal(false)}
-        items={warehouses.length ? warehouses.map(item => item.cwhsdesc) : []}
+        items={warehouses.map(item => item.value)}
         onItemSelect={item => {
           setWarehouse(item);
           setWarehouseModal(false);

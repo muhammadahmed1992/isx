@@ -10,6 +10,7 @@ import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Endpoints } from '../utils';
 
 import {useSelector} from 'react-redux';
 
@@ -40,7 +41,7 @@ const routeConfig = {
         dateRangeSetter: false,
         stockInputField: true,
         warehouseInputField: false,
-        endPoint: "reports/price-list",
+        endPoint: Endpoints.priceReport,
       }
     },
     stock_report: {
@@ -53,7 +54,7 @@ const routeConfig = {
         dateRangeSetter: false,
         stockInputField: true,
         warehouseInputField: true,
-        endPoint: "reports/stock-balance",
+        endPoint: Endpoints.stockReport,
       }
     },
     sales_report: {
@@ -66,7 +67,7 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: false,
         warehouseInputField: true,
-        endPoint: "reports/sales",
+        endPoint: Endpoints.salesReport,
       }
     },
     sales_report_2: {
@@ -79,7 +80,7 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: false,
         warehouseInputField: true,
-        endPoint: "reports/sales-2",
+        endPoint: Endpoints.sales2Report,
       }
     },
     sales_analyst_report: {
@@ -92,7 +93,7 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: true,
         warehouseInputField: true,
-        endPoint: "reports/sales-analyst"
+        endPoint: Endpoints.salesAnalystReport
       }
     },
     sales_analyst_report_2: {
@@ -105,7 +106,7 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: true,
         warehouseInputField: true,
-        endPoint: "reports/sales-analyst-2"
+        endPoint: Endpoints.salesAnalyst2Report
       }
     },
     cash_drawer_report: {
@@ -118,7 +119,7 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: false,
         warehouseInputField: false,
-        endPoint: "reports/cash-drawer"
+        endPoint: Endpoints.cashDrawerReport
       }
     },
     cash_drawer_detail_report: {
@@ -131,9 +132,61 @@ const routeConfig = {
         dateRangeSetter: true,
         stockInputField: false,
         warehouseInputField: false,
-        endPoint: "reports/cash-drawer-detail"
+        endPoint: Endpoints.cashDrawerDetailReport
       }
-    }
+    },
+    purchase_report: {
+      name: "purchase_report",
+      label: "Purchase Report",
+      component: ReportGenerator,
+      condition: false,
+      icon: (color, size) => <FontAwesome5 name="clipboard-list" color={color} size={20} />,
+      props: {
+        dateRangeSetter: true,
+        stockInputField: false,
+        warehouseInputField: true,
+        endPoint: Endpoints.purchaseReport,
+      }
+    },
+    purchase_report_no_disc: {
+      name: "purchase_report_no_disc",
+      label: "Purchase Report (No Disc)",
+      condition: false,
+      icon: (color, size) => <FontAwesome5 name="clipboard-list" color={color} size={20} />,
+      component: ReportGenerator,
+      props: {
+        dateRangeSetter: true,
+        stockInputField: false,
+        warehouseInputField: true,
+        endPoint: Endpoints.purchaseNoDiscReport,
+      }
+    },
+    purchase_analyst_report: {
+      name: "purchase_analyst_report",
+      label: "Purchase Analyst Report",
+      component: ReportGenerator,
+      condition: false,
+      icon: (color, size) => <Ionicons name="analytics" color={color} size={20} />,
+      props: {
+        dateRangeSetter: true,
+        stockInputField: true,
+        warehouseInputField: true,
+        endPoint: Endpoints.purchaseAnalystReport
+      }
+    },
+    purchase_analyst_report_no_disc: {
+      name: "purchase_analyst_report_no_disc",
+      label: "Purchase Analyst Report (No Disc)",
+      component: ReportGenerator,
+      condition: false,
+      icon: (color, size) => <Ionicons name="analytics" color={color} size={20} />,
+      props: {
+        dateRangeSetter: true,
+        stockInputField: true,
+        warehouseInputField: true,
+        endPoint: Endpoints.purchaseAnalystNoDiscReport
+      }
+    },
   };
   
   export default routeConfig;

@@ -92,80 +92,26 @@ export default class SearchableDropDown extends Component {
   };
 
   renderItems = (item, index) => {
-    if (
-      this.props.multi &&
-      this.props.selectedItems &&
-      this.props.selectedItems.length > 0
-    ) {
-      return this.props.selectedItems.find(sitem => sitem.id === item.id) ? (
-        <TouchableOpacity
-          style={{...this.props.itemStyle, flex: 1, flexDirection: 'row'}}>
-          <View
-            style={{flex: 0.9, flexDirection: 'row', alignItems: 'flex-start'}}>
-            <Text>{item}</Text>
-          </View>
-          <View
-            style={{flex: 0.1, flexDirection: 'row', alignItems: 'flex-end'}}>
-            <TouchableOpacity
-              onPress={() =>
-                setTimeout(() => {
-                  this.props.onRemoveItem(item, index);
-                }, 0)
-              }
-              style={{
-                backgroundColor: '#f16d6b',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 25,
-                height: 25,
-                borderRadius: 100,
-                marginLeft: 10,
-              }}>
-              <Text>X</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({item: item});
-            setTimeout(() => {
-              this.props.onItemSelect(item);
-            }, 0);
-          }}
-          style={{...this.props.itemStyle, flex: 1, flexDirection: 'row'}}>
-          <View
-            style={{flex: 1, flexDirection: 'row', alignItems: 'flex-start'}}>
-            <Text>{item}</Text>
-          </View>
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <TouchableOpacity
-          style={{...this.props.itemStyle}}
-          onPress={() => {
-            this.setState({item: item});
-            Keyboard.dismiss();
-            setTimeout(() => {
-              this.props.onItemSelect(item);
-              if (this.props.resetValue) {
-                this.setState({item: defaultItemValue});
-                this.input.focus();
-              }
-            }, 0);
-          }}>
-          {this.props.selectedItems &&
-          this.props.selectedItems.length > 0 &&
-          this.props.selectedItems.find(x => x.id === item.id) ? (
-            <Text style={{...this.props.itemTextStyle}}>{item}</Text>
-          ) : (
-            <Text style={{...this.props.itemTextStyle}}>{item}</Text>
-          )}
-        </TouchableOpacity>
-      );
-    }
+    const itemKey = item.key; 
+    return (
+      <TouchableOpacity
+        style={{...this.props.itemStyle}}
+        onPress={() => {
+          this.setState({item: itemKey}); 
+          Keyboard.dismiss();
+          setTimeout(() => {
+            this.props.onItemSelect(itemKey); 
+            if (this.props.resetValue) {
+              this.setState({item: defaultItemValue});
+              this.input.focus();
+            }
+          }, 0);
+        }}>
+        <Text style={{...this.props.itemTextStyle}}>{item.value}</Text>
+      </TouchableOpacity>
+    );
   };
+  
 
   renderListType = () => {
     return this.renderFlatList();
