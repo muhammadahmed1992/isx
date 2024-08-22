@@ -13,6 +13,7 @@ export default {
     });
   },
   get: (endpoint, id = '') => {
+    console.log("ENDPOINT",endpoint);
     return new Promise((resolve, reject) => {
       api('get', endpoint + id, null)
         .then(res => {

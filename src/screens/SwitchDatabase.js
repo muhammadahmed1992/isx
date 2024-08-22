@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   View,
   Text,
@@ -14,11 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  init,
-  clear,
-  setDataBase,
-} from '../redux/reducers/connectionStringSlice';
+import {clear, setDataBase} from '../redux/reducers/connectionStringSlice';
 import Toast from 'react-native-easy-toast';
 import ApiService from '../services/ApiService';
 import SearchableDropDown from '../components/searchableDropdown';
@@ -38,7 +35,7 @@ const SwitchDatabase = props => {
 
   useEffect(() => {
     fetchAllDatabases();
-  }, []);
+  },[]);
 
   useEffect(() => {
     setDatabase(database ? database : '');
@@ -58,6 +55,7 @@ const SwitchDatabase = props => {
           dataToPopulate.push(obj.SCHEMA_NAME);
         }
         setDatabases(dataToPopulate);
+        console.log("databases",dataToPopulate);
         setLoading(false);
       })
       .catch(err => {
@@ -72,13 +70,6 @@ const SwitchDatabase = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-    // init({
-    //   host: host,
-    //   username: username,
-    //   password: password,
-    //   port: port,
-    //   database: databaseNew,
-    // }),
     showToast('Database connected');
   };
 

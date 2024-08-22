@@ -1,30 +1,30 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {RFValue} from 'react-native-responsive-fontsize';
 
 const cellWidth = 120;
 const rightAlignedColumns = [
-  'Opening',
-  'DP',
-  'Voucher',
-  'Cash',
-  'Payroll',
-  'CreditCard',
-  'DebitCard',
-  'Online',
-  'Withdrawn',
-  'Cancel',
-  'Balance',
-  'Amount',
-  'Amount_Tax',
-  'Price',
-  'Qty',
+  'opening_header',
+  'dp_header',
+  'voucher_header',
+  'cash_header',
+  'payroll_header',
+  'credit_card_header',
+  'debit_card_header',
+  'online_header',
+  'withdrawn_header',
+  'cancel_header',
+  'balance_header',
+  'amount_header',
+  'amount_tax_header',
+  'price_header',
+  'qty_header',
 ];
 
-const TableComponent = ({ data }) => {
+const TableComponent = ({data}) => {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
-  const isTotalsRow = (item) => {
+  const isTotalsRow = item => {
     return Object.values(item).some(value => value.toLowerCase() === 'total');
   };
 
@@ -40,10 +40,11 @@ const TableComponent = ({ data }) => {
             style={[
               styles.cell,
               keyIndex < keys.length - 1 && styles.cellBorder,
-              rightAlignedColumns.includes(key) ? styles.cellNumber : styles.cellText,
-              isBold && styles.boldText
-            ]}
-          >
+              rightAlignedColumns.includes(key)
+                ? styles.cellNumber
+                : styles.cellText,
+              isBold && styles.boldText,
+            ]}>
             {item[key] ? item[key].toString().trim() : ''}
           </Text>
         ))}
@@ -56,8 +57,7 @@ const TableComponent = ({ data }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0 }}
-      >
+        style={{flexGrow: 0}}>
         <View>
           <View style={[styles.row, styles.header]}>
             {headers.map((header, index) => (
@@ -67,15 +67,20 @@ const TableComponent = ({ data }) => {
                   styles.cell,
                   index < headers.length - 1 && styles.cellBorder,
                   styles.headerText,
-                  rightAlignedColumns.includes(header) ? styles.cellNumber : styles.cellText,
-                ]}
-              >
+                  rightAlignedColumns.includes(header)
+                    ? styles.cellNumber
+                    : styles.cellText,
+                ]}>
                 {header}
               </Text>
             ))}
           </View>
-          <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
-            {data.length ? data.map(renderRow) : <Text style={styles.noDataText}>No Data Found</Text>}
+          <View style={{borderWidth: 1, borderColor: '#ccc'}}>
+            {data.length ? (
+              data.map(renderRow)
+            ) : (
+              <Text style={styles.noDataText}>No Data Found</Text>
+            )}
           </View>
         </View>
       </ScrollView>

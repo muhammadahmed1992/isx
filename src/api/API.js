@@ -8,6 +8,7 @@ export const api = (method, endpoint, body) => {
   const {host, username, password, port, database} = state.ConnectionString;
 
   return new Promise((resolve, reject) => {
+    console.log("connection",state.ConnectionString);
     if (!host || !username || !password || !port || !database) {
       reject('Kindly connect the database first');
     } else if (!ipAddress) {

@@ -11,6 +11,9 @@ import Toast from 'react-native-easy-toast';
 import ModalComponent from './Model';
 import Header from './Header';
 import ReportService from '../services/ReportService';
+import Button from './Button';
+import InputField from './InputField';
+import DateRangeSetter from './DateRangeSetter';
 
 const ReportComponent = ({
   currentRouteName,
@@ -37,6 +40,7 @@ const ReportComponent = ({
   const [warehouses, setWarehouses] = useState([]);
   const currentLabel = label;
 
+  console.log("label",currentLabel);
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -46,7 +50,7 @@ const ReportComponent = ({
       return () => {
         resetFilters();
       };
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -54,14 +58,32 @@ const ReportComponent = ({
   }, [currentRouteName]);
 
   const fetchAllData = async () => {
+    const requests = [];
+    const stateSetters = [];
+    if (stockGroup) {
+      requests.push(ReportService.fetchAllStocks);
+      stateSetters.push(setStocks);
+    }
+    if (warehouse) {
+      requests.push(ReportService.fetchAllWarehouses);
+      stateSetters.push(setWarehouses);
+    }
     try {
       setLoading(true);
-      const [stocksResult, warehousesResult] = await Promise.all([
-        ReportService.fetchAllStocks(),
-        ReportService.fetchAllWarehouses(),
-      ]);
-      setStocks(stocksResult);
-      setWarehouses(warehousesResult);
+      // const [stocksResult, warehousesResult] = await Promise.all([
+      //   ReportService.fetchAllStocks(),
+      //   ReportService.fetchAllWarehouses(),
+      // ]);
+      const results = await Promise.all(requests.map(request => request()));
+      // for (let i = 0; i < requests.length; i++) {
+      //     setState[i](requests[i]());
+      // }
+      // setStocks(stocksResult);
+      // setWarehouses(warehousesResult);
+      results.forEach((result, i) => {
+        stateSetters[i](result);
+      });
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -105,7 +127,7 @@ const ReportComponent = ({
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-      <Header label={currentLabel} />
+      {/* <Header label={currentLabel} /> */}
       <DateRangeSetter
         dateValFrom={dateValFrom}
         dateValTo={dateValTo}

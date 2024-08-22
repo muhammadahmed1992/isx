@@ -1,6 +1,6 @@
 import React from 'react';
 import {useWindowDimensions, View} from 'react-native';
-import {ReactNativeScannerView} from '@pushpendersingh/react-native-scanner';
+import {RNCamera} from 'react-native-camera';
 import {Commons} from '../utils';
 
 const BarcodeScanner = ({navigation, route}) => {
@@ -19,9 +19,9 @@ const BarcodeScanner = ({navigation, route}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ReactNativeScannerView
+      <RNCamera
         style={{height, width}}
-        onQrScanned={handleBarcodeRead}
+        onGoogleVisionBarcodesDetected={handleBarcodeRead}
       />
     </View>
   );

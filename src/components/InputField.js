@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pressable, TextInput, StyleSheet } from 'react-native';
-import { Fonts, Colors } from '../utils';
+import {Pressable, TextInput, StyleSheet} from 'react-native';
+import {Fonts, Colors} from '../utils';
+import {RFValue} from 'react-native-responsive-fontsize';
 
 const InputField = ({
   enabled,
@@ -14,10 +15,10 @@ const InputField = ({
     <Pressable
       disable={!enabled}
       onPress={onPress}
-      style={(containerStyle)? containerStyle: styles.container}>
+      style={containerStyle ? containerStyle : styles.container}>
       <TextInput
         autoCapitalize={'none'}
-        style={(inputStyle)? inputStyle: styles.input}
+        style={inputStyle ? inputStyle : styles.input}
         onPress={onPress}
         editable={false}
         placeholder={placeholder}

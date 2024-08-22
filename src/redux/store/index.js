@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { persistReducer, persistStore } from 'redux-persist';
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from '../reducers/authSlice';
 import ConnectionString from '../reducers/connectionStringSlice';
-import Menu from '../reducers/reportSlice'; // Import the Menu slice
+import Menu from '../reducers/menuSlice'; // Import the Menu slice
 
 // Define persist configuration
 const persistConfig = {
@@ -16,6 +17,7 @@ const persistConfig = {
 const reducerToPersist = combineReducers({
   Auth,
   ConnectionString,
+  Menu,
 });
 
 // Persist the combined reducer
@@ -30,4 +32,4 @@ const store = configureStore({
 // Set up the persistor
 const persistor = persistStore(store);
 
-export { store, persistor };
+export { store, persistor};

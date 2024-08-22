@@ -26,6 +26,7 @@ const PriceSearchScreen = props => {
   const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
 
+  console.log({props});
   const handleBarcodeRead = async data => {
     if (!data) {
       setData([]);

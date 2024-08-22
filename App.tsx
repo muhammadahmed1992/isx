@@ -3,7 +3,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import StackNavigation from './src/navigation/StackNavigation';
 import {Provider} from 'react-redux';
-import {persistor, store} from './src/redux/store';
+import {store, persistor} from './src/redux/store';
 import {PersistGate} from 'redux-persist/integration/react';
 import {ActivityIndicator, View} from 'react-native';
 import {Colors} from './src/utils';

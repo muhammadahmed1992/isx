@@ -1,7 +1,7 @@
-import { RFValue } from "react-native-responsive-fontsize";
-import { Commons, Colors, Fonts } from "../utils";
-import { Platform, View, TouchableOpacity, Text } from "react-native";
-import { Icon } from "react-native-vector-icons/Icon";
+import {RFValue} from 'react-native-responsive-fontsize';
+import {Commons, Colors, Fonts} from '../utils';
+import {Platform, View, TouchableOpacity, Text} from 'react-native';
+import {Icon} from 'react-native-vector-icons/Ionicons';
 
 const Header = ({label}) => {
   return (
@@ -16,7 +16,7 @@ const Header = ({label}) => {
       }}>
       <TouchableOpacity
         onPress={() => {
-          props.navigation.openDrawer();
+          // props.navigation.openDrawer();
         }}>
         <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
       </TouchableOpacity>
@@ -36,6 +36,6 @@ const Header = ({label}) => {
       </View>
     </View>
   );
-}
+};
 
 export default Header;

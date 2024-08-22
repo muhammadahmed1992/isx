@@ -19,16 +19,13 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import ApiService from '../services/ApiService';
 import {Endpoints, Images} from '../utils';
-import {
-  login,
-  setIpAddress,
-  setSwitchDatabase,
-} from '../redux/reducers/authSlice';
+import {login, setIpAddress} from '../redux/reducers/authSlice';
 
 import {Fonts, Colors, Commons} from '../utils';
 import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
+import {setRoutePermissions} from '../redux/reducers/menuSlice';
 
 const Auth = props => {
   const dispatch = useDispatch();
@@ -121,8 +118,9 @@ const Auth = props => {
     await ApiService.post(Endpoints.login, body)
       .then(res => {
         if (res.data.success) {
+          console.log("login data",res.data.data);
           dispatch(login());
-          dispatch(setSwitchDatabase(res.data.data.IsSwitchDatabase));
+          dispatch(setRoutePermissions(res.data.data));
           Commons.reset(props.navigation, 'dashboard');
         }
         setLoading(false);

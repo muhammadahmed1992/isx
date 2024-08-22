@@ -8,9 +8,10 @@ import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BarcodeScanner from '../screens/BarcodeScanner';
 import {Splash, Auth} from '../screens';
 
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 // import {
 //   SwitchDatabase,
@@ -24,19 +25,20 @@ import { useSelector } from 'react-redux';
 
 // } from '../screens';
 
-
 export default function StackNavigation() {
-
   const Stack = createStackNavigator();
- 
+  const locale = {
+    stock_report: 'Stock Report',
+  };
 
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
-  
-    const routePermissions = useSelector((state) => state.Routes);
+    const routePermissions = useSelector(state => state.Menu);
 
     // Filter the screens based on the condition in routePermissions
-    const filteredScreens = Object.values(routePermissions).filter(screen => screen.condition); 
+    const filteredScreens = Object.values(routePermissions).filter(
+      screen => screen.condition,
+    );
 
     return (
       <Drawer.Navigator
@@ -47,23 +49,20 @@ export default function StackNavigation() {
           drawerLabelStyle: {marginLeft: -25, fontFamily: Fonts.family.bold},
         }}
         initialRouteName="search">
-      {filteredScreens.map((screen, index) => (
-        <Drawer.Screen
-          key={index}
-          name={screen.name}
-          options={{
-            headerShown: false,
-            drawerLabel: screen.label,
-            drawerIcon: ({ color, size }) => screen.icon(color, size),
-            lazy: true,
-          }}
-          component={(props) => (
-            <screen.component
-              {...screen.props}
-            />
-          )}
-        />
-      ))}
+        {filteredScreens.map((screen, index) => (
+          <Drawer.Screen
+            key={index}
+            name={screen.name}
+            options={{
+              headerShown: false,
+              drawerLabel: 'Report',
+              drawerIcon: ({color, size}) => screen.icon(color, size),
+              lazy: true,
+            }}
+            component={screen.component}
+            initialParams={{...screen.props}}
+          />
+        ))}
         {/* <Drawer.Screen
           name="search"
           component={PriceSearchScreen}

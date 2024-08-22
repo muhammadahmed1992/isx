@@ -11,19 +11,14 @@ import {
 } from '../utils/reports';
 
 class ReportService {
-  static buildQuery({
-    dateValFrom,
-    dateValTo,
-    stockGroup,
-    warehouse,
-  }) {
+  static buildQuery({dateValFrom, dateValTo, stockGroup, warehouse}) {
     let query = '';
 
     if (dateValFrom) {
       query += `?startDate=${encodeURIComponent(
         moment(dateValFrom.toISOString()).format('yyyy-MM-DD'),
       )}`;
-    } 
+    }
     if (dateValTo) {
       query += `&endDate=${encodeURIComponent(
         moment(dateValTo.toISOString()).format('yyyy-MM-DD'),
@@ -70,7 +65,6 @@ class ReportService {
       console.log('Fetch All Warehouses: ', err);
       throw new Error(err);
     }
-    
   }
 
   static async filterData({
@@ -81,7 +75,6 @@ class ReportService {
     stockGroup,
     warehouse,
   }) {
-
     const query = this.buildQuery({
       dateValFrom,
       dateValTo,
@@ -93,9 +86,10 @@ class ReportService {
       const data = await this.fetchData(endPoints, query);
       if (isPriceReport(reportType)) return data.data;
       if (isStockReport(reportType)) return processStockReportData(data);
-      if (isCashDrawerReport(reportType)) return processCashDrawerReportData(data);
+      if (isCashDrawerReport(reportType))
+        return processCashDrawerReportData(data);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
-        return processSalesReportData(data);
+        return processSalesOrPurchaseReportData(data);
     } catch (error) {
       console.error(error);
       throw new Error(error);
@@ -104,31 +98,32 @@ class ReportService {
 }
 
 function processCashDrawerReportData(response) {
+  const runningKey = 'running_';
   const mappedData = [];
-  const data = response.data
+  const data = response.data;
   const lastEntry = data[data.length - 1];
   const totalRow = {};
 
   data.forEach(item => {
-      const mappedItem = {};
+    const mappedItem = {};
 
-      Object.keys(item).forEach(key => {
-          if (!key.startsWith('Running')) {
-              mappedItem[key] = item[key];
-          }
-      });
+    Object.keys(item).forEach(key => {
+      if (!key.startsWith(runningKey)) {
+        mappedItem[key] = item[key];
+      }
+    });
 
-      mappedData.push(mappedItem);
+    mappedData.push(mappedItem);
   });
 
   const firstKey = Object.keys(data[0])[0];
-  totalRow[firstKey] = "Total";
+  totalRow[firstKey] = 'Total';
 
   Object.keys(lastEntry).forEach(key => {
-      if (key.startsWith('Running')) {
-          const baseKey = key.replace('Running', '');
-          totalRow[baseKey] = lastEntry[key];
-      }
+    if (key.startsWith(runningKey)) {
+      const baseKey = key.replace(runningKey, '');
+      totalRow[baseKey] = lastEntry[key];
+    }
   });
 
   mappedData.push(totalRow);
@@ -148,7 +143,7 @@ function processStockReportData(response) {
     const itemData = {};
 
     Object.keys(item).forEach(key => {
-      if (key !== 'TotalBalance') {
+      if (key !== 'total_balance_header') {
         itemData[key] = item[key];
       }
     });
@@ -160,10 +155,10 @@ function processStockReportData(response) {
       Object.keys(item).forEach((key, index) => {
         if (index === 0) {
           totalData[key] = 'Total';
-        } else if (key === 'Balance') {
-          totalData[key] = item.TotalBalance;
+        } else if (key === 'balance_header') {
+          totalData[key] = item.total_balance_header;
         } else {
-          if (key !== 'TotalBalance') totalData[key] = '';
+          if (key !== 'total_balance_header') totalData[key] = '';
         }
       });
 
@@ -174,7 +169,7 @@ function processStockReportData(response) {
   return result;
 }
 
-function processSalesReportData(response) {
+function processSalesOrPurchaseReportData(response) {
   const data = response.data;
   const result = [];
 
@@ -184,29 +179,33 @@ function processSalesReportData(response) {
 
   const keys = Object.keys(data[0]);
   data.forEach((item, index) => {
-    const currency = item.Curr;
+    const currency = item.currency_header;
 
     const itemData = {};
     keys.forEach(key => {
-      if (key !== 'SubTotal' && key !== 'AmountTaxTotal') {
+      if (key !== 'subtotal_header' && key !== 'amount_tax_total_header') {
         itemData[key] = item[key];
       }
     });
     result.push(itemData);
-    if (index + 1 === data.length || data[index + 1].Curr !== currency) {
+    if (index + 1 === data.length || data[index + 1].Currency !== currency) {
       const totalAmount = {};
       keys.forEach((key, index) => {
         if (index === 0) {
           totalAmount[key] = 'Total';
         }
-        if (key === 'Curr') {
+        if (key === 'currency_header') {
           totalAmount[key] = currency;
-        } else if (key === 'Amount') {
-          totalAmount[key] = item['SubTotal'];
-        } else if (key === 'Amount Tax') {
-          totalAmount[key] = item['AmountTaxTotal'];
+        } else if (key === 'amount_header') {
+          totalAmount[key] = item['subtotal_header'];
+        } else if (key === 'amount_tax_header') {
+          totalAmount[key] = item['amount_tax_total_header'];
         } else {
-          if (index !== 0 && key !== 'SubTotal' && key !== 'AmountTaxTotal') {
+          if (
+            index !== 0 &&
+            key !== 'subtotal_header' &&
+            key !== 'amount_tax_total_header'
+          ) {
             totalAmount[key] = '';
           }
         }
