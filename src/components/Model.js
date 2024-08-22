@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import Modal from 'react-native-modal';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {Colors, Fonts, Images} from '../utils';
-import SearchableDropDown from '../components/searchableDropdown';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import Modal from 'react-native-modal'; 
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Colors, Fonts, Images } from '../utils';
+import SearchableDropDown from '../components/searchableDropdown'; 
 const ModalComponent = ({
   isVisible,
   onClose,
@@ -23,21 +23,22 @@ const ModalComponent = ({
       isVisible={isVisible}
       onBackButtonPress={onClose}
       onBackdropPress={onClose}
-      onRequestClose={onClose}>
+      onRequestClose={onClose}
+    >
       <View style={[styles.modalContainer, containerStyle]}>
         <View style={styles.header}>
           <Text style={styles.title}>{modalTitle}</Text>
           <TouchableOpacity onPress={onClose}>
             <Image
-              source={Images.close} 
+              source={Images.close} // Make sure the path is correct
               style={styles.closeIcon}
             />
           </TouchableOpacity>
         </View>
 
         <SearchableDropDown
-          onItemSelect={key => {
-            onItemSelect(key); 
+          onItemSelect={item => {
+            onItemSelect(item);
             onClose();
           }}
           containerStyle={styles.searchableContainer}

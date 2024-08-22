@@ -16,6 +16,7 @@ import InputField from './InputField';
 import DateRangeSetter from './DateRangeSetter';
 
 const ReportComponent = ({
+  navigation,
   currentRouteName,
   label,
   dateRangeSetter,
@@ -111,6 +112,8 @@ const ReportComponent = ({
         dateValTo,
         stockGroup,
         warehouse,
+        stocks,
+        warehouses
       });
       setData(result);
       setLoading(false);
@@ -127,7 +130,7 @@ const ReportComponent = ({
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-      {/* <Header label={currentLabel} /> */}
+      <Header label={currentLabel} navigation={navigation} /> 
       <DateRangeSetter
         dateValFrom={dateValFrom}
         dateValTo={dateValTo}

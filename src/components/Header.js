@@ -3,7 +3,7 @@ import {Commons, Colors, Fonts} from '../utils';
 import {Platform, View, TouchableOpacity, Text} from 'react-native';
 import {Icon} from 'react-native-vector-icons/Ionicons';
 
-const Header = ({label}) => {
+const Header = ({label, navigation}) => {
   return (
     <View
       style={{
@@ -16,7 +16,7 @@ const Header = ({label}) => {
       }}>
       <TouchableOpacity
         onPress={() => {
-          // props.navigation.openDrawer();
+          navigation.openDrawer();
         }}>
         <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
       </TouchableOpacity>

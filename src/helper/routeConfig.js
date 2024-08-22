@@ -1,4 +1,3 @@
-// routeConfig.js
 import {SwitchDatabase, PriceSearchScreen, ReportGenerator} from '../screens';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -36,6 +35,7 @@ const routeConfig = {
     ),
     component: ReportGenerator,
     props: {
+      label: 'Price List', 
       dateRangeSetter: false,
       stockInputField: true,
       warehouseInputField: false,
@@ -51,6 +51,7 @@ const routeConfig = {
       <FoundationIcon name="graph-trend" color={color} size={20} />
     ),
     props: {
+      label: 'Stock Report', 
       dateRangeSetter: false,
       stockInputField: true,
       warehouseInputField: true,
@@ -66,6 +67,7 @@ const routeConfig = {
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
+      label: 'Sales Report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -81,6 +83,7 @@ const routeConfig = {
     ),
     component: ReportGenerator,
     props: {
+      label: 'Sales Report (No Disc)',
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -96,6 +99,7 @@ const routeConfig = {
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
+      label: 'Sales Analyst Report', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -111,6 +115,7 @@ const routeConfig = {
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
+      label: 'Sales Analyst Report (No Disc)', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -126,6 +131,7 @@ const routeConfig = {
       <MaterialCommunityIcon name="cash-multiple" color={color} size={20} />
     ),
     props: {
+      label: 'Cash Drawer Report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: false,
@@ -141,6 +147,7 @@ const routeConfig = {
       <MaterialCommunityIcon name="cash-multiple" color={color} size={20} />
     ),
     props: {
+      label: 'Cash Drawer Report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: false,
@@ -156,6 +163,7 @@ const routeConfig = {
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
+      label: 'Purchase Report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -171,6 +179,7 @@ const routeConfig = {
     ),
     component: ReportGenerator,
     props: {
+      label: 'Purchase Report (No Disc)', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -186,6 +195,7 @@ const routeConfig = {
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
+      label: 'Purchase Analyst Report', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -201,6 +211,7 @@ const routeConfig = {
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
+      label: 'Purchase Analyst Report (No Disc)', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,

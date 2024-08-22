@@ -1,12 +1,21 @@
-import {useRoute} from '@react-navigation/native';
+import React from 'react';
 import ReportComponent from '../components/ReportComponent';
-import {View} from 'react-native';
 
-const ReportGenerator = props => {
-  const route = useRoute();
-  console.log(route.params);
+const ReportGenerator = ({navigation, route}) => {
+  const {label, dateRangeSetter, stockInputField, warehouseInputField, endPoint} = route.params;
   const currentRouteName = route.name;
-  return <ReportComponent {...props} currentRouteName={currentRouteName} />;
+
+  return (
+    <ReportComponent
+      navigation={navigation}
+      currentRouteName={currentRouteName}
+      label={label}
+      dateRangeSetter={dateRangeSetter}
+      stockInputField={stockInputField}
+      warehouseInputField={warehouseInputField}
+      endPoint={endPoint}
+    />
+  );
 };
 
 export default ReportGenerator;

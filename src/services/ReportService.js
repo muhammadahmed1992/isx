@@ -11,7 +11,7 @@ import {
 } from '../utils/reports';
 
 class ReportService {
-  static buildQuery({dateValFrom, dateValTo, stockGroup, warehouse}) {
+  static buildQuery({dateValFrom, dateValTo, stockGroup, warehouse, stocks, warehouses}) {
     let query = '';
 
     if (dateValFrom) {
@@ -25,10 +25,10 @@ class ReportService {
       )}`;
     }
     if (stockGroup) {
-      query += `&stockGroup=${encodeURIComponent(stockGroup)}`;
+      query += `&stockGroup=${encodeURIComponent(stocks.find(s => s.value === stockGroup).key)}`;
     }
     if (warehouse) {
-      query += `&warehouse=${encodeURIComponent(warehouse)}`;
+      query += `&warehouse=${encodeURIComponent(warehouses.find(w => w.value === warehouse).key)}`;
     }
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
@@ -74,12 +74,16 @@ class ReportService {
     dateValTo,
     stockGroup,
     warehouse,
+    stocks,
+    warehouses
   }) {
     const query = this.buildQuery({
       dateValFrom,
       dateValTo,
       stockGroup,
       warehouse,
+      stocks,
+      warehouses
     });
 
     try {

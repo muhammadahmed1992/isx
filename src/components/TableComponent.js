@@ -1,6 +1,7 @@
 import React from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
+import {Fonts, Colors} from '../utils';
 
 const cellWidth = 120;
 const rightAlignedColumns = [
@@ -102,9 +103,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   cell: {
-    width: cellWidth,
+    width: cellWidth, // Set fixed width for cells
     textAlign: 'center',
-    fontFamily: 'Regular',
+    fontFamily: Fonts.family.regular,
     flexWrap: 'wrap',
     paddingHorizontal: RFValue(6),
     paddingVertical: RFValue(6),
@@ -125,17 +126,14 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   headerText: {
-    fontFamily: 'Bold',
-    color: '#000',
+    fontFamily: Fonts.family.bold,
+    color: Colors.black,
     textAlign: 'center',
-  },
-  boldText: {
-    fontFamily: 'Bold',
   },
   noDataText: {
     width: '100%',
     flexGrow: 1,
-    fontFamily: 'Bold',
+    fontFamily: Fonts.family.bold,
     alignSelf: 'center',
     textAlign: 'center',
     marginVertical: RFValue(20),

@@ -55,7 +55,7 @@ export default function StackNavigation() {
             name={screen.name}
             options={{
               headerShown: false,
-              drawerLabel: 'Report',
+              drawerLabel: screen.label,
               drawerIcon: ({color, size}) => screen.icon(color, size),
               lazy: true,
             }}
