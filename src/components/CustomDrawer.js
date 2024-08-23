@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector, useDispatch} from 'react-redux';
 import {logout} from '../redux/reducers/authSlice';
 import {clear} from '../redux/reducers/connectionStringSlice';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const CustomDrawer = props => {
   const dispatch = useDispatch();
@@ -46,32 +47,34 @@ const CustomDrawer = props => {
             {database ? `${database}` : ''}
           </Text>
         </View>
-        <DrawerItemList {...props} />
-        <View
-          style={{
-            marginTop: 'auto',
-            padding: RFValue(15),
-            marginBottom: RFValue(15),
-          }}>
-          <TouchableOpacity
-            style={{flexDirection: 'row'}}
-            onPress={() => {
-              dispatch(logout());
-              dispatch(clear());
-              Commons.reset(props.navigation, 'auth');
+        <ScrollView>
+          <DrawerItemList {...props} />
+          <View
+            style={{
+              marginTop: 'auto',
+              padding: RFValue(15),
+              marginBottom: RFValue(15),
             }}>
-            <Icon name="logout" size={20} color={'red'} />
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                fontSize: RFValue(14),
-                color: 'red',
-                marginLeft: '5%',
+            <TouchableOpacity
+              style={{flexDirection: 'row'}}
+              onPress={() => {
+                dispatch(logout());
+                dispatch(clear());
+                Commons.reset(props.navigation, 'auth');
               }}>
-              Logout
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Icon name="logout" size={20} color={'red'} />
+              <Text
+                style={{
+                  fontFamily: Fonts.family.bold,
+                  fontSize: RFValue(14),
+                  color: 'red',
+                  marginLeft: '5%',
+                }}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </DrawerContentScrollView>
     </View>
   );

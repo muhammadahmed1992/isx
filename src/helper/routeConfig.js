@@ -1,4 +1,5 @@
-import {SwitchDatabase, PriceSearchScreen, ReportGenerator} from '../screens';
+import {SwitchDatabase, PriceSearchScreen} from '../screens';
+import ReportGenerator from '../screens/ReportGenerator';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FoundationIcon from 'react-native-vector-icons/Foundation';

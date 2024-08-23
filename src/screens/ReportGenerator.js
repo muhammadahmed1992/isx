@@ -2,7 +2,13 @@ import React from 'react';
 import ReportComponent from '../components/ReportComponent';
 
 const ReportGenerator = ({navigation, route}) => {
-  const {label, dateRangeSetter, stockInputField, warehouseInputField, endPoint} = route.params;
+  const {
+    label,
+    dateRangeSetter,
+    stockInputField,
+    warehouseInputField,
+    endPoint,
+  } = route.params;
   const currentRouteName = route.name;
 
   return (
@@ -13,7 +19,7 @@ const ReportGenerator = ({navigation, route}) => {
       dateRangeSetter={dateRangeSetter}
       stockInputField={stockInputField}
       warehouseInputField={warehouseInputField}
-      endPoint={endPoint}
+      endPoints={endPoint}
     />
   );
 };

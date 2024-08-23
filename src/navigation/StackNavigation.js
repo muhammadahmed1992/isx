@@ -10,6 +10,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import {Splash, Auth} from '../screens';
+import PriceSearchScreen from '../screens';
 
 import {useSelector} from 'react-redux';
 
@@ -40,6 +41,8 @@ export default function StackNavigation() {
       screen => screen.condition,
     );
 
+    console.log("screens",filteredScreens);
+
     return (
       <Drawer.Navigator
         detachInactiveScreens={false}
@@ -48,7 +51,18 @@ export default function StackNavigation() {
           headerShown: false,
           drawerLabelStyle: {marginLeft: -25, fontFamily: Fonts.family.bold},
         }}
-        initialRouteName="search">
+        initialRouteName="">
+        {/* <Drawer.Screen
+          name="search"
+          component={PriceSearchScreen}
+          options={{
+            headerShown: false,
+            drawerLabel: 'Scan Barcode',
+            drawerIcon: ({color, size}) => {
+              return <FontAwesome name="dollar" color={color} size={20} />;
+            },
+          }} */}
+        {/* /> */}
         {filteredScreens.map((screen, index) => (
           <Drawer.Screen
             key={index}

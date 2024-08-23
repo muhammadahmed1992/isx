@@ -1,9 +1,9 @@
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Commons, Colors, Fonts} from '../utils';
 import {Platform, View, TouchableOpacity, Text} from 'react-native';
-import {Icon} from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const Header = ({label, navigation}) => {
+function Header({label, navigation}) {
   return (
     <View
       style={{
@@ -36,6 +36,6 @@ const Header = ({label, navigation}) => {
       </View>
     </View>
   );
-};
+}
 
 export default Header;

@@ -8,4 +8,3 @@ export {default as SalesReport} from './SalesReport';
 export {default as SalesAnalystReport} from './SalesAnalystReport';
 export {default as CashDrawerReport} from './CashDrawerReport';
 export {default as BarcodeScanner} from './BarcodeScanner';
-export {default as ReportGenerator} from './ReportGenerator';

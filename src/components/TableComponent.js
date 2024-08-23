@@ -32,6 +32,7 @@ const TableComponent = ({data}) => {
   const renderRow = (item, index) => {
     const keys = Object.keys(item);
     const isBold = isTotalsRow(item);
+    console.log(isBold);
 
     return (
       <View key={index} style={styles.row}>
@@ -40,7 +41,7 @@ const TableComponent = ({data}) => {
             key={key}
             style={[
               styles.cell,
-              keyIndex < keys.length - 1 && styles.cellBorder,
+              keyIndex < keys.length && styles.cellBorder,
               rightAlignedColumns.includes(key)
                 ? styles.cellNumber
                 : styles.cellText,
@@ -118,6 +119,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  boldText: {
+    fontFamily: Fonts.family.bold,
+    color: Colors.black,
   },
   cellText: {
     textAlign: 'left',
