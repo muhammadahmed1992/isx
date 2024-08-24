@@ -5,7 +5,8 @@ import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from '../reducers/authSlice';
 import ConnectionString from '../reducers/connectionStringSlice';
-import Menu from '../reducers/menuSlice'; // Import the Menu slice
+import Menu from '../reducers/menuSlice'; 
+import Locale from '../reducers/localeSlice';
 
 // Define persist configuration
 const persistConfig = {
@@ -18,6 +19,7 @@ const reducerToPersist = combineReducers({
   Auth,
   ConnectionString,
   Menu,
+  Locale,
 });
 
 // Persist the combined reducer

@@ -28,14 +28,10 @@ import {useSelector} from 'react-redux';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
-  const locale = {
-    stock_report: 'Stock Report',
-  };
-
+  
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
     const routePermissions = useSelector(state => state.Menu);
-
     // Filter the screens based on the condition in routePermissions
     const filteredScreens = Object.values(routePermissions).filter(
       screen => screen.condition,

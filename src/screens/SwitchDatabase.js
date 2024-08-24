@@ -21,6 +21,7 @@ import ApiService from '../services/ApiService';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
 import Loader from '../components/loader';
+import Header from '../components/Header';
 
 const SwitchDatabase = props => {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const SwitchDatabase = props => {
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const label = props.route.params.label;
   useEffect(() => {
     fetchAllDatabases();
   },[]);
@@ -107,7 +108,7 @@ const SwitchDatabase = props => {
           <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
         </View>
       </View>
-
+      <Header label={label} navigation={props.navigation} />
       <Pressable
         onPress={() => setModal(true)}
         style={{

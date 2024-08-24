@@ -3,7 +3,7 @@ import {Commons, Colors, Fonts} from '../utils';
 import {Platform, View, TouchableOpacity, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-function Header({label, navigation}) {
+const Header = ({label, navigation}) => {
   return (
     <View
       style={{
@@ -36,6 +36,6 @@ function Header({label, navigation}) {
       </View>
     </View>
   );
-}
+};
 
 export default Header;

@@ -14,6 +14,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import Loader from '../components/loader';
 import ApiService from '../services/ApiService';
 import Toast from 'react-native-easy-toast';
+import Header from '../components/Header';
 
 const PriceSearchScreen = props => {
   const toastRef = useRef(null);
@@ -25,7 +26,7 @@ const PriceSearchScreen = props => {
   const [price, setPrice] = useState('');
   const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
-
+  const label = props.route.params.label;
   console.log({props});
   const handleBarcodeRead = async data => {
     if (!data) {
@@ -63,7 +64,7 @@ const PriceSearchScreen = props => {
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -92,8 +93,8 @@ const PriceSearchScreen = props => {
         <View>
           <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
         </View>
-      </View>
-
+      </View> */}
+      <Header label={label} navigation={props.navigation} />
       <TouchableOpacity
         style={{
           width: '90%',
@@ -122,7 +123,7 @@ const PriceSearchScreen = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Scan Barcode
+          {label}
         </Text>
       </TouchableOpacity>
 

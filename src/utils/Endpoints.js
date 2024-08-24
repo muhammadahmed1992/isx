@@ -1,5 +1,6 @@
 export default {
   login: 'andriod2/auth/validate',
+  localization: 'localization/translations/',
   scanBarcode: 'reports/stock-search-barcode?stockId=',
   priceReport: 'reports/price-list',
   stockReport: 'reports/stock-balance',

@@ -10,33 +10,39 @@ import {Endpoints} from '../utils';
 
 const routeConfig = {
   scan_barCode: {
-    label: 'Scan BarCode',
+    label: 'scan_barcode',
     name: 'search',
     component: PriceSearchScreen,
     condition: true,
     icon: (color, size) => (
       <FontAwesome name="dollar" color={color} size={20} />
     ),
+    props: {
+      label: 'scan_barcode',
+    }
   },
   switch_database: {
-    label: 'Switch Database',
+    label: 'switch_database',
     name: 'switch_database',
     component: SwitchDatabase,
     condition: true,
     icon: (color, size) => (
       <FontAwesome5 name="database" color={color} size={20} />
     ),
+    props: {
+      label: 'switch_database',
+    }
   },
   price_report: {
     name: 'price_report',
-    label: 'Price List',
+    label: 'price_report',
     condition: true,
     icon: (color, size) => (
       <FontAwesome name="list-alt" color={color} size={20} />
     ),
     component: ReportGenerator,
     props: {
-      label: 'Price List', 
+      label: 'price_report', 
       dateRangeSetter: false,
       stockInputField: true,
       warehouseInputField: false,
@@ -45,14 +51,14 @@ const routeConfig = {
   },
   stock_report: {
     name: 'stock_report',
-    label: 'Stock Report',
+    label: 'stock_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <FoundationIcon name="graph-trend" color={color} size={20} />
     ),
     props: {
-      label: 'Stock Report', 
+      label: 'stock_report', 
       dateRangeSetter: false,
       stockInputField: true,
       warehouseInputField: true,
@@ -61,14 +67,14 @@ const routeConfig = {
   },
   sales_report: {
     name: 'sales_report',
-    label: 'Sales Report',
+    label: 'sales_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
-      label: 'Sales Report', 
+      label: 'sales_report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -77,14 +83,14 @@ const routeConfig = {
   },
   sales_report_2: {
     name: 'sales_report_2',
-    label: 'Sales Report (No Disc)',
+    label: 'sales_report_2',
     condition: false,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     component: ReportGenerator,
     props: {
-      label: 'Sales Report (No Disc)',
+      label: 'sales_report_2',
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -93,14 +99,14 @@ const routeConfig = {
   },
   sales_analyst_report: {
     name: 'sales_analyst_report',
-    label: 'Sales Analyst Report',
+    label: 'sales_analyst_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
-      label: 'Sales Analyst Report', 
+      label: 'sales_analyst_report', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -109,14 +115,14 @@ const routeConfig = {
   },
   sales_analyst_report_2: {
     name: 'sales_analyst_report_2',
-    label: 'Sales Analyst Report (No Disc)',
+    label: 'sales_analyst_report_2',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
-      label: 'Sales Analyst Report (No Disc)', 
+      label: 'sales_analyst_report_2', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -125,14 +131,14 @@ const routeConfig = {
   },
   cash_drawer_report: {
     name: 'cash_drawer_report',
-    label: 'Cash Drawer Report',
+    label: 'cash_drawer_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <MaterialCommunityIcon name="cash-multiple" color={color} size={20} />
     ),
     props: {
-      label: 'Cash Drawer Report', 
+      label: 'cash_drawer_report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: false,
@@ -141,14 +147,14 @@ const routeConfig = {
   },
   cash_drawer_detail_report: {
     name: 'cash_drawer_detail_report',
-    label: 'Cash Drawer Report',
+    label: 'cash_drawer_detail_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <MaterialCommunityIcon name="cash-multiple" color={color} size={20} />
     ),
     props: {
-      label: 'Cash Drawer Report', 
+      label: 'cash_drawer_detail_report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: false,
@@ -157,14 +163,14 @@ const routeConfig = {
   },
   purchase_report: {
     name: 'purchase_report',
-    label: 'Purchase Report',
+    label: 'purchase_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
-      label: 'Purchase Report', 
+      label: 'purchase_report', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -173,14 +179,14 @@ const routeConfig = {
   },
   purchase_report_no_disc: {
     name: 'purchase_report_no_disc',
-    label: 'Purchase Report (No Disc)',
+    label: 'purchase_report_no_disc',
     condition: false,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     component: ReportGenerator,
     props: {
-      label: 'Purchase Report (No Disc)', 
+      label: 'purchase_report_no_disc', 
       dateRangeSetter: true,
       stockInputField: false,
       warehouseInputField: true,
@@ -189,14 +195,14 @@ const routeConfig = {
   },
   purchase_analyst_report: {
     name: 'purchase_analyst_report',
-    label: 'Purchase Analyst Report',
+    label: 'purchase_analyst_report',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
-      label: 'Purchase Analyst Report', 
+      label: 'purchase_analyst_report', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
@@ -205,14 +211,14 @@ const routeConfig = {
   },
   purchase_analyst_report_no_disc: {
     name: 'purchase_analyst_report_no_disc',
-    label: 'Purchase Analyst Report (No Disc)',
+    label: 'purchase_analyst_report_no_disc',
     component: ReportGenerator,
     condition: false,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
     props: {
-      label: 'Purchase Analyst Report (No Disc)', 
+      label: 'purchase_analyst_report_no_disc', 
       dateRangeSetter: true,
       stockInputField: true,
       warehouseInputField: true,
