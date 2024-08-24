@@ -22,9 +22,9 @@ const rightAlignedColumns = [
   'qty_header',
 ];
 
-const TableComponent = ({data}) => {
+const TableComponent = ({data, headerKey}) => {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
-
+  const localizeHeader = headers.map(item => headerKey[item]);
   const isTotalsRow = item => {
     return Object.values(item).some(value => value.toLowerCase() === 'total');
   };
@@ -62,7 +62,7 @@ const TableComponent = ({data}) => {
         style={{flexGrow: 0}}>
         <View>
           <View style={[styles.row, styles.header]}>
-            {headers.map((header, index) => (
+            {localizeHeader.map((header, index) => (
               <Text
                 key={index}
                 style={[

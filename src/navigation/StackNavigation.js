@@ -36,6 +36,7 @@ export default function StackNavigation() {
     const filteredScreens = Object.values(routePermissions).filter(
       screen => screen.condition,
     );
+  const menu = useSelector(state => state.Locale.menu);
 
     console.log("screens",filteredScreens);
 
@@ -65,7 +66,7 @@ export default function StackNavigation() {
             name={screen.name}
             options={{
               headerShown: false,
-              drawerLabel: screen.label,
+              drawerLabel: menu[screen.label],
               drawerIcon: ({color, size}) => screen.icon(color, size),
               lazy: true,
             }}

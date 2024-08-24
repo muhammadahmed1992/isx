@@ -26,12 +26,12 @@ class ReportService {
 
     if (dateValFrom) {
       query += `?startDate=${encodeURIComponent(
-        moment(dateFrom.toISOString()).format('yyyy-MM-DD'),
+        moment(dateValFrom, 'DD-MM-YYYY').format('yyyy-MM-DD'),
       )}`;
     }
     if (dateValTo) {
       query += `&endDate=${encodeURIComponent(
-        moment(dateTo.toISOString()).format('yyyy-MM-DD'),
+        moment(dateValTo, 'DD-MM-YYYY').format('yyyy-MM-DD'),
       )}`;
     }
     if (stockGroup) {
@@ -96,8 +96,8 @@ class ReportService {
     dateTo,
     dateFrom,
   }) {
-    console.log('datavalFrom', dateFrom);
-    console.log('datavalTo', dateTo);
+    console.log('datavalFrom', dateValTo);
+    console.log('datavalTo', dateValFrom);
     const query = this.buildQuery(
       (dateValFrom = {dateValFrom}),
       (dateValTo = {dateValTo}),

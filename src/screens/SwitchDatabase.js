@@ -33,7 +33,11 @@ const SwitchDatabase = props => {
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
   const [loading, setLoading] = useState(false);
+   const menu = useSelector(state => state.Locale.menu);
   const label = props.route.params.label;
+  const localizeLabel = menu[label] || label;
+   const databasePrompt = menu['select_database'];
+   const connect = menu['connect'];
   useEffect(() => {
     fetchAllDatabases();
   },[]);
@@ -78,7 +82,7 @@ const SwitchDatabase = props => {
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -107,8 +111,8 @@ const SwitchDatabase = props => {
         <View>
           <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
         </View>
-      </View>
-      <Header label={label} navigation={props.navigation} />
+      </View> */}
+      <Header label={localizeLabel} navigation={props.navigation} />
       <Pressable
         onPress={() => setModal(true)}
         style={{
@@ -185,7 +189,7 @@ const SwitchDatabase = props => {
               color: Colors.white,
               textAlign: 'center',
             }}>
-            Connect
+            {connect}
           </Text>
         </TouchableOpacity>
       </View>
@@ -219,7 +223,7 @@ const SwitchDatabase = props => {
                 fontSize: RFValue(20),
                 flex: 1,
               }}>
-              Select Database
+              {databasePrompt}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -265,7 +269,7 @@ const SwitchDatabase = props => {
               // flex: 0.6,
             }}
             items={databases}
-            placeholder={'Select a database...'}
+            placeholder={databasePrompt}
             resetValue={false}
             underlineColorAndroid="transparent"
           />

@@ -15,6 +15,7 @@ import Loader from '../components/loader';
 import ApiService from '../services/ApiService';
 import Toast from 'react-native-easy-toast';
 import Header from '../components/Header';
+import {useSelector} from 'react-redux';
 
 const PriceSearchScreen = props => {
   const toastRef = useRef(null);
@@ -26,7 +27,11 @@ const PriceSearchScreen = props => {
   const [price, setPrice] = useState('');
   const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
+  const menu = useSelector(state => state.Locale.menu);
+
+  console.log("menu",menu);
   const label = props.route.params.label;
+  const localizeLabel = menu[label] || label;
   console.log({props});
   const handleBarcodeRead = async data => {
     if (!data) {
@@ -94,7 +99,7 @@ const PriceSearchScreen = props => {
           <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
         </View>
       </View> */}
-      <Header label={label} navigation={props.navigation} />
+      <Header label={localizeLabel} navigation={props.navigation} />
       <TouchableOpacity
         style={{
           width: '90%',
@@ -123,7 +128,7 @@ const PriceSearchScreen = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          {label}
+          {localizeLabel}
         </Text>
       </TouchableOpacity>
 

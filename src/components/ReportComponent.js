@@ -25,6 +25,7 @@ import DateRangeSetter from './DateRangeSetter';
 import SearchableDropDown from './searchableDropdown';
 import {Images} from '../utils';
 import Modal from 'react-native-modal';
+import {useDispatch, useSelector} from 'react-redux';
 
 const ReportComponent = ({
   navigation,
@@ -45,18 +46,37 @@ const ReportComponent = ({
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
   const [dateValFrom, setDateValFrom] = useState(
-    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+    moment(new Date()).format('DD-MM-yyyy'),
   );
   const [dateValTo, setDateValTo] = useState(
-    moment(new Date().toISOString()).format('DD-MM-yyyy'),
+    moment(new Date()).format('DD-MM-yyyy'),
   );
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
   const currentLabel = label;
+  const menu = useSelector(state => state.Locale.menu);
+  const localizeLabel = menu[currentLabel] || currentLabel;
+  const stockPlaceholder = menu['select_stock_group'];
+  const wearhousePlaceholder = menu['select_warehouse'];
+  const dateToPlaceholder = menu['date_to'];
+  const dateFromPlaceholder = menu['date_from'];
 
-  console.log('logs', dateRangeSetter, stockInputField, warehouseInputField,endPoints);
+  const headerKeys = {};
+  Object.keys(menu).forEach(key => {
+    if (key.includes('header')) {
+      headerKeys[key] = menu[key];
+    }
+  });
+
+  console.log(
+    'logs',
+    dateRangeSetter,
+    stockInputField,
+    warehouseInputField,
+    endPoints,
+  );
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -132,7 +152,7 @@ const ReportComponent = ({
         dateTo,
         dateFrom,
       });
-      console.log("result",result)
+      console.log('result', result);
       setData(result);
       setLoading(false);
     } catch (error) {
@@ -148,7 +168,7 @@ const ReportComponent = ({
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-      <Header label={currentLabel} navigation={navigation} />
+      <Header label={localizeLabel} navigation={navigation} />
       {dateRangeSetter ? (
         <View
           style={{
@@ -179,7 +199,7 @@ const ReportComponent = ({
                 fontFamily: Fonts.family.bold,
               }}
               onPress={() => setOpenFrom(true)}
-              placeholder="Date From"
+              placeholder={dateFromPlaceholder}
               value={dateValFrom}
               onChangeText={setDateValFrom}
               returnKeyType="done"
@@ -210,7 +230,7 @@ const ReportComponent = ({
                 fontFamily: Fonts.family.bold,
               }}
               onPress={() => setOpenTo(true)}
-              placeholder="Date To"
+              placeholder={dateToPlaceholder}
               value={dateValTo}
               onChangeText={setDateValTo}
               returnKeyType="done"
@@ -227,7 +247,7 @@ const ReportComponent = ({
         <InputField
           enabled={stockInputField}
           onPress={() => setStocksModal(true)}
-          placeholder={'Select a stock group'}
+          placeholder={stockPlaceholder}
           value={stockGroup}
         />
       ) : (
@@ -240,7 +260,7 @@ const ReportComponent = ({
           onPress={() => {
             setWarehouseModal(true);
           }}
-          placeholder={'Select a warehouse'}
+          placeholder={wearhousePlaceholder}
           value={warehouse}
         />
       ) : (
@@ -292,7 +312,7 @@ const ReportComponent = ({
       </View>
 
       <ScrollView>
-        <TableComponent data={data} />
+        <TableComponent data={data} headerKey={headerKeys} />
       </ScrollView>
       <DatePicker
         modal
@@ -349,7 +369,7 @@ const ReportComponent = ({
                 fontSize: RFValue(20),
                 flex: 1,
               }}>
-              Select Stock Group
+              {stockPlaceholder}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -395,7 +415,7 @@ const ReportComponent = ({
               // flex: 0.6,
             }}
             items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
-            placeholder={'Select a stock...'}
+            placeholder={stockPlaceholder + '...'}
             resetValue={false}
             underlineColorAndroid="transparent"
           />
@@ -422,7 +442,7 @@ const ReportComponent = ({
                 fontSize: RFValue(20),
                 flex: 1,
               }}>
-              Select Warehouse
+              {wearhousePlaceholder}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -470,7 +490,7 @@ const ReportComponent = ({
             items={
               warehouses.length ? warehouses.map(item => item.cwhsdesc) : []
             }
-            placeholder={'Select a warehouse...'}
+            placeholder={wearhousePlaceholder + '...'}
             resetValue={false}
             underlineColorAndroid="transparent"
           />
