@@ -5,6 +5,7 @@ import Endpoints from '../../utils/Endpoints'; // Update with the correct import
 const initialState = {
   language: 'en',
   menu: {},
+  headers: {}
 };
 const label = 'stock_report';
 export const localeSlice = createSlice({
@@ -13,6 +14,7 @@ export const localeSlice = createSlice({
   reducers: {
     setLocaleData: (state, action) => {
       state.menu = action.payload.menu;
+      state.headers = action.payload.headers;
     },
     setLanguage: (state, action) => {
       state.language = action.payload;

@@ -62,21 +62,16 @@ const ReportComponent = ({
   const wearhousePlaceholder = menu['select_warehouse'];
   const dateToPlaceholder = menu['date_to'];
   const dateFromPlaceholder = menu['date_from'];
+  const filterPrompt = menu['filter'];
+  const clear = menu['clear'];
 
-  const headerKeys = {};
-  Object.keys(menu).forEach(key => {
-    if (key.includes('header')) {
-      headerKeys[key] = menu[key];
-    }
-  });
+  const headerKeys = useSelector(state => state.Locale.headers);
+  // Object.keys(menu).forEach(key => {
+  //   if (key.includes('header')) {
+  //     headerKeys[key] = menu[key];
+  //   }
+  // });
 
-  console.log(
-    'logs',
-    dateRangeSetter,
-    stockInputField,
-    warehouseInputField,
-    endPoints,
-  );
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -96,29 +91,29 @@ const ReportComponent = ({
   const fetchAllData = async () => {
     const requests = [];
     const stateSetters = [];
-    if (stockGroup) {
+    if (stockInputField) {
       requests.push(ReportService.fetchAllStocks);
       stateSetters.push(setStocks);
     }
-    if (warehouse) {
+    if (warehouseInputField) {
       requests.push(ReportService.fetchAllWarehouses);
       stateSetters.push(setWarehouses);
     }
     try {
       setLoading(true);
-      const [stocksResult, warehousesResult] = await Promise.all([
-        ReportService.fetchAllStocks(),
-        ReportService.fetchAllWarehouses(),
-      ]);
-      // const results = await Promise.all(requests.map(request => request()));
-      // for (let i = 0; i < requests.length; i++) {
-      //     setState[i](requests[i]());
-      // }
-      setStocks(stocksResult);
-      setWarehouses(warehousesResult);
-      // results.forEach((result, i) => {
-      //   stateSetters[i](result);
-      // });
+      // const [stocksResult, warehousesResult] = await Promise.all([
+      //   ReportService.fetchAllStocks(),
+      //   ReportService.fetchAllWarehouses(),
+      // ]);
+      const results = await Promise.all(requests.map(request => request()));
+      for (let i = 0; i < requests.length; i++) {
+          setState[i](requests[i]());
+      }
+      // setStocks(stocksResult);
+      // setWarehouses(warehousesResult);
+      results.forEach((result, i) => {
+        stateSetters[i](result);
+      });
 
       setLoading(false);
     } catch (error) {
@@ -277,7 +272,7 @@ const ReportComponent = ({
         }}>
         <Button
           onPress={resetFilters}
-          title={'Clear'}
+          title={clear}
           buttonStyle={{
             flex: 0.3,
             padding: 15,
@@ -294,7 +289,7 @@ const ReportComponent = ({
         />
         <Button
           onPress={filter}
-          title={'Filter'}
+          title={filterPrompt}
           buttonStyle={{
             padding: 15,
             alignItems: 'center',

@@ -26,7 +26,7 @@ import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
 import {setRoutePermissions} from '../redux/reducers/menuSlice';
-import { setLocaleData } from '../redux/reducers/localeSlice';
+import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
 
 const Auth = props => {
   const dispatch = useDispatch();
@@ -121,6 +121,7 @@ const Auth = props => {
         if (res.data.success) {
           dispatch(login());
           dispatch(setRoutePermissions(res.data.data));
+          dispatch(fetchAndSetLocaleData('en'));
           Commons.reset(props.navigation, 'dashboard');
         }
         setLoading(false);

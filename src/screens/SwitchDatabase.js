@@ -36,8 +36,9 @@ const SwitchDatabase = props => {
    const menu = useSelector(state => state.Locale.menu);
   const label = props.route.params.label;
   const localizeLabel = menu[label] || label;
-   const databasePrompt = menu['select_database'];
-   const connect = menu['connect'];
+  const databasePrompt = menu['select_database'] || 'Select Database';
+  const connect = menu['connect'] || 'Connect';
+  const clear = menu['clear'] || 'Clear';
   useEffect(() => {
     fetchAllDatabases();
   },[]);
@@ -136,7 +137,7 @@ const SwitchDatabase = props => {
           }}
           onPress={() => setModal(true)}
           editable={false}
-          placeholder="Select a database"
+          placeholder={databasePrompt}
           value={databaseNew}
           returnKeyType="next"
           placeholderTextColor={Colors.grey}
@@ -169,7 +170,7 @@ const SwitchDatabase = props => {
               color: Colors.white,
               textAlign: 'center',
             }}>
-            Clear
+            {clear}
           </Text>
         </TouchableOpacity>
 
@@ -269,7 +270,7 @@ const SwitchDatabase = props => {
               // flex: 0.6,
             }}
             items={databases}
-            placeholder={databasePrompt}
+            placeholder={databasePrompt + '...'}
             resetValue={false}
             underlineColorAndroid="transparent"
           />

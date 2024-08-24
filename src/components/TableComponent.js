@@ -69,7 +69,7 @@ const TableComponent = ({data, headerKey}) => {
                   styles.cell,
                   index < headers.length - 1 && styles.cellBorder,
                   styles.headerText,
-                  rightAlignedColumns.includes(header)
+                  rightAlignedColumns.includes(Object.values(headers)[index])
                     ? styles.cellNumber
                     : styles.cellText,
                 ]}>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   cell: {
-    width: cellWidth, // Set fixed width for cells
+    width: cellWidth, 
     textAlign: 'center',
     fontFamily: Fonts.family.regular,
     flexWrap: 'wrap',
