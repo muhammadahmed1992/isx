@@ -79,7 +79,7 @@ const TableComponent = ({data, headers}) => {
             ))}
           </View>
           <View style={{borderWidth: 1, borderColor: '#ccc'}}>
-            {data.length ? (
+            {data ? (
               data.map(renderRow)
             ) : (
               <Text style={styles.noDataText}>No Data Found</Text>

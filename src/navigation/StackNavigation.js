@@ -49,17 +49,17 @@ export default function StackNavigation() {
           drawerLabelStyle: {marginLeft: -25, fontFamily: Fonts.family.bold},
         }}
         initialRouteName="">
-        {/* <Drawer.Screen
+        <Drawer.Screen
           name="search"
           component={PriceSearchScreen}
           options={{
             headerShown: false,
-            drawerLabel: 'Scan Barcode',
+            drawerLabel: menu['scan_barcode'],
             drawerIcon: ({color, size}) => {
               return <FontAwesome name="dollar" color={color} size={20} />;
             },
-          }} */}
-        {/* /> */}
+          }}
+         />
         {filteredScreens.map((screen, index) => (
           <Drawer.Screen
             key={index}

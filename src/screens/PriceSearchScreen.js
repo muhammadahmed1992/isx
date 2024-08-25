@@ -112,14 +112,18 @@ const PriceSearchScreen = props => {
           marginTop: 30,
         }}
         onPress={async () => {
-          const permissionsGranted = await Commons.checkPermissions();
-          if (!permissionsGranted) {
-            showToast('Camera permission is required');
-          } else {
-            Commons.navigate(props.navigation, 'barcode_scanner', {
-              onBarcodeRead: handleBarcodeRead,
-              returnScreen: 'search',
-            });
+          try {
+            const permissionsGranted = await Commons.checkPermissions();
+            if (!permissionsGranted) {
+              showToast('Camera permission is required');
+            } else {
+              Commons.navigate(props.navigation, 'barcode_scanner', {
+                onBarcodeRead: handleBarcodeRead,
+                returnScreen: 'search',
+              });
+            }
+          } catch (error) {
+            console.error(error);
           }
         }}>
         <Text

@@ -39,12 +39,7 @@ const Header = ({label, navigation}) => {
           }}>
           {label}
         </Text>
-
-        <TouchableOpacity onPress={togglePopup}>
-          <Icon name="ellipsis-vertical" size={25} color="#FFF" />
-        </TouchableOpacity>
-
-        {isPopupVisible && <LanguagePopup onClose={togglePopup} />}
+        <LanguagePopup onClose={togglePopup} />
       </View>
     </>
   );

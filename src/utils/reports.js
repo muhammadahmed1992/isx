@@ -1,19 +1,19 @@
 const ReportTypes = {
     CASH_DRAWER: 'cash_drawer_report',
-    CASH_DRAWER_DETAIL: 'cash_drawer_detail_report',
+    CASH_DRAWER_DETAIL: 'cash_drawer_report_detail',
     PRICE: 'price_report',
-    STOCKS: 'stocks_report',
+    STOCKS: 'stock_report',
     SALES_REPORT: 'sales_report',
     SALES_REPORT_2: 'sales_report_2',
     SALES_ANALYST_REPORT: 'sales_analyst_report',
     SALES_ANALYST_REPORT_2: 'sales_analyst_report_2',
-    PURCHASE_REPORT: 'purchase_report',
-    PURCHASE_REPORT_NO_DISC: 'purchase_report_no_disc',
-    PURCHASE_ANALYST_REPORT: 'purchase_analyst_report',
-    PURCHASE_ANALYST_REPORT_NO_DISC: 'purchase_analyst_report_no_disc'
+    PURCHASE_REPORT: 'purchasing_report',
+    PURCHASE_REPORT_NO_DISC: 'purchasing_report_no_disc',
+    PURCHASE_ANALYST_REPORT: 'purchasing_analyst_report',
+    PURCHASE_ANALYST_REPORT_NO_DISC: 'purchasing_analyst_report_no_disc'
 };
 
-export default ReportTypes
+export default ReportTypes;
 
 export function isSalesReport(reportType) {
     return reportType === ReportTypes.SALES_ANALYST_REPORT || 

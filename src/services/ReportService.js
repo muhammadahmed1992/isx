@@ -18,11 +18,9 @@ class ReportService {
     warehouse,
     stocks,
     warehouses,
-    dateTo,
-    dateFrom,
   }) {
     let query = '';
-    //   console.log('query', query);
+    console.log('report', stockGroup, stocks, warehouses);
 
     if (dateValFrom) {
       query += `?startDate=${encodeURIComponent(
@@ -47,6 +45,7 @@ class ReportService {
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
     }
+    console.log('query', query);
     return query;
   }
 
@@ -76,7 +75,7 @@ class ReportService {
     try {
       const res = await ApiService.get(Endpoints.fetchWarehouses);
       const data = res.data.data;
-      console.log("warehouse",data);
+      console.log('warehouse', data);
       return data;
     } catch (err) {
       console.log('Fetch All Warehouses: ', err);
@@ -93,25 +92,28 @@ class ReportService {
     warehouse,
     stocks,
     warehouses,
-    dateTo,
-    dateFrom,
   }) {
-    console.log('datavalFrom', dateValTo);
-    console.log('datavalTo', dateValFrom);
-    const query = this.buildQuery(
-      (dateValFrom = {dateValFrom}),
-      (dateValTo = {dateValTo}),
-      (stockGroup = {stockGroup}),
-      (warehouse = {warehouse}),
-      (stocks = {stocks}),
-      (warehouses = {warehouses}),
-      (dateTo = {dateTo}),
-      (dateFrom = {dateFrom}),
-    );
+    console.log('dateValFrom', dateValFrom);
+    console.log('dateValTo', dateValTo);
+    console.log('stockGroup', stockGroup);
+    console.log('warehouse', warehouse);
+    console.log('stocks', stocks);
+    console.log('warehouses', warehouses);
+
+    const query = this.buildQuery({
+      dateValFrom,
+      dateValTo,
+      stockGroup,
+      warehouse,
+      stocks,
+      warehouses,
+    });
     console.log('query', query);
+
     try {
       const data = await this.fetchData(endPoints, query);
-      console.log('again data', data);
+      console.log('fetched data', data);
+
       if (isPriceReport(reportType)) return data.data;
       if (isStockReport(reportType)) return processStockReportData(data);
       if (isCashDrawerReport(reportType))
