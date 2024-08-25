@@ -6,6 +6,7 @@ export const api = (method, endpoint, body) => {
   const state = store.getState();
   const {ipAddress} = state.Auth;
   const {host, username, password, port, database} = state.ConnectionString;
+  const language = state.Locale.language;
 
   return new Promise((resolve, reject) => {
     console.log("connection",state.ConnectionString);
@@ -25,6 +26,7 @@ export const api = (method, endpoint, body) => {
         timeout: endpoint === Endpoints.login ? 5000 : 60000,
         headers: {
           'connection-string': encodeURIComponent(connectionString),
+          'accept-language': language
         },
       })
         .then(res => {

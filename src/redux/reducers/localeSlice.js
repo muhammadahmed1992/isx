@@ -1,13 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit';
-import ApiService from '../../services/ApiService'; // Update with the correct import
-import Endpoints from '../../utils/Endpoints'; // Update with the correct import
+import ApiService from '../../services/ApiService'; 
+import Endpoints from '../../utils/Endpoints'; 
 
 const initialState = {
   language: 'en',
   menu: {},
   headers: {}
 };
-const label = 'stock_report';
+
 export const localeSlice = createSlice({
   name: 'locale',
   initialState,

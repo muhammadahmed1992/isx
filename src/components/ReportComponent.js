@@ -66,6 +66,7 @@ const ReportComponent = ({
   const clear = menu['clear'];
 
   const headerKeys = useSelector(state => state.Locale.headers);
+  const headers = headerKeys[currentRouteName];
   // Object.keys(menu).forEach(key => {
   //   if (key.includes('header')) {
   //     headerKeys[key] = menu[key];
@@ -307,7 +308,7 @@ const ReportComponent = ({
       </View>
 
       <ScrollView>
-        <TableComponent data={data} headerKey={headerKeys} />
+        <TableComponent data={data} headers={headers} />
       </ScrollView>
       <DatePicker
         modal

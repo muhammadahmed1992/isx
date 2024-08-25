@@ -49,7 +49,8 @@ const CustomDrawer = props => {
         </View>
         <ScrollView>
           <DrawerItemList {...props} />
-          <View
+        </ScrollView>
+        <View
             style={{
               marginTop: 'auto',
               padding: RFValue(15),
@@ -74,7 +75,6 @@ const CustomDrawer = props => {
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
       </DrawerContentScrollView>
     </View>
   );

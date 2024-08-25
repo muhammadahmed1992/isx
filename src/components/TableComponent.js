@@ -4,6 +4,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {Fonts, Colors} from '../utils';
 
 const cellWidth = 120;
+
 const rightAlignedColumns = [
   'opening_header',
   'dp_header',
@@ -22,9 +23,10 @@ const rightAlignedColumns = [
   'qty_header',
 ];
 
-const TableComponent = ({data, headerKey}) => {
-  const headers = data.length > 0 ? Object.keys(data[0]) : [];
-  const localizeHeader = headers.map(item => headerKey[item]);
+const TableComponent = ({data, headers}) => {
+  if (!headers) {
+    return;
+  }
   const isTotalsRow = item => {
     return Object.values(item).some(value => value.toLowerCase() === 'total');
   };
@@ -32,7 +34,6 @@ const TableComponent = ({data, headerKey}) => {
   const renderRow = (item, index) => {
     const keys = Object.keys(item);
     const isBold = isTotalsRow(item);
-    console.log(isBold);
 
     return (
       <View key={index} style={styles.row}>
@@ -62,18 +63,18 @@ const TableComponent = ({data, headerKey}) => {
         style={{flexGrow: 0}}>
         <View>
           <View style={[styles.row, styles.header]}>
-            {localizeHeader.map((header, index) => (
+            {Object.keys(headers).map((key, index) => (
               <Text
                 key={index}
                 style={[
                   styles.cell,
-                  index < headers.length - 1 && styles.cellBorder,
+                  index < Object.keys(headers).length - 1 && styles.cellBorder,
                   styles.headerText,
-                  rightAlignedColumns.includes(Object.values(headers)[index])
+                  rightAlignedColumns.includes(key)
                     ? styles.cellNumber
                     : styles.cellText,
                 ]}>
-                {header}
+                {headers[key]}
               </Text>
             ))}
           </View>
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   cell: {
-    width: cellWidth, 
+    width: cellWidth,
     textAlign: 'center',
     fontFamily: Fonts.family.regular,
     flexWrap: 'wrap',
