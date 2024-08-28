@@ -9,6 +9,18 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import {Endpoints} from '../utils';
 
 const routeConfig = {
+  scan_barCode: {
+    label: 'scan_barcode',
+    name: 'search',
+    component: PriceSearchScreen,
+    condition: true,
+    icon: (color, size) => (
+      <FontAwesome name="dollar" color={color} size={20} />
+    ),
+    props: {
+      label: 'scan_barcode',
+    },
+  },
   switch_database: {
     label: 'switch_database',
     name: 'switch_database',
