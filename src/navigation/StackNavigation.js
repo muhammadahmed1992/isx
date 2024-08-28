@@ -1,18 +1,19 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import {Fonts, Commons} from '../utils';
+import { Fonts, Commons } from '../utils';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BarcodeScanner from '../screens/BarcodeScanner';
-import {Splash, Auth} from '../screens';
-import PriceSearchScreen from '../screens';
+import { Splash, Auth, PriceSearchScreen } from '../screens';
+// import PriceSearchScreen from '../screens';
 
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
+import routeConfig from '../helper/routeConfig';
 
 // import {
 //   SwitchDatabase,
@@ -28,17 +29,16 @@ import {useSelector} from 'react-redux';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
-  
+
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
     const routePermissions = useSelector(state => state.Menu);
     // Filter the screens based on the condition in routePermissions
-    const filteredScreens = Object.values(routePermissions).filter(
+    const filteredScreens = Object.values(routeConfig).filter(
       screen => screen.condition,
     );
-  const menu = useSelector(state => state.Locale.menu);
+    const menu = useSelector(state => state.Locale.menu);
 
-    console.log("screens",filteredScreens);
 
     return (
       <Drawer.Navigator
@@ -46,7 +46,7 @@ export default function StackNavigation() {
         drawerContent={props => <CustomDrawer {...props} />}
         screenOptions={{
           headerShown: false,
-          drawerLabelStyle: {marginLeft: -25, fontFamily: Fonts.family.bold},
+          drawerLabelStyle: { marginLeft: -25, fontFamily: Fonts.family.bold },
         }}
         initialRouteName="search">
         {filteredScreens.map((screen, index) => (
