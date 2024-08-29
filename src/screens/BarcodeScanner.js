@@ -9,19 +9,20 @@ const BarcodeScanner = ({ navigation, route }) => {
   const counterRef = useRef(0)
 
   const handleBarcodeRead = event => {
-    if (counterRef.current == 0) {
-      onBarcodeRead && onBarcodeRead(event?.data)
-      // Call the onBarcodeRead function if it exists
-      Commons.navigate(navigation, route.params.returnScreen);
-      counterRef.current = 1
-    }
+    if (event.barcodes?.length)
+      if (counterRef.current == 0) {
+        onBarcodeRead && onBarcodeRead(event?.barcodes[0].data)
+        // Call the onBarcodeRead function if it exists
+        Commons.navigate(navigation, route.params.returnScreen);
+        counterRef.current = 1
+      }
   }
 
   return (
     <View style={{ flex: 1, width: '100%' }}>
       <RNCamera
         style={{ height, width }}
-        onBarCodeRead={handleBarcodeRead}
+        onGoogleVisionBarcodesDetected={(e) => handleBarcodeRead(e)}
       />
     </View>
   );

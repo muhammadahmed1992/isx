@@ -82,7 +82,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3
         versionName "1.0.2"
-        missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy 'react-native-camera', 'mlkit'
         resConfigs "en"
     }
     signingConfigs {
@@ -111,7 +111,7 @@ android {
             enable true
             reset()
             include 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-            universalApk false  // If true, also generate a universal APK that contains all ABIs
+            universalApk true  // If true, also generate a universal APK that contains all ABIs
         }
     }
 }
