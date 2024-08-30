@@ -33,10 +33,14 @@ export default function StackNavigation() {
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
     const routePermissions = useSelector(state => state.Menu);
+
     // Filter the screens based on the condition in routePermissions
-    const filteredScreens = Object.values(routeConfig).filter(
-      screen => screen.condition,
-    );
+    const filteredScreens = Object.values(routeConfig)
+    const conditionsScreens = Object.values(routePermissions)
+
+    const mapper = filteredScreens.filter((item) => {
+      return conditionsScreens.find((val) => val.id == item.id)?.condition
+    })
     const menu = useSelector(state => state.Locale.menu);
 
 
@@ -49,18 +53,18 @@ export default function StackNavigation() {
           drawerLabelStyle: { marginLeft: -25, fontFamily: Fonts.family.bold },
         }}
         initialRouteName="search">
-        {filteredScreens.map((screen, index) => (
+        {mapper.map((screen, index) => (
           <Drawer.Screen
             key={index}
             name={screen.name}
             options={{
               headerShown: false,
               drawerLabel: menu[screen.label],
-              drawerIcon: ({color, size}) => screen.icon(color, size),
+              drawerIcon: ({ color, size }) => screen.icon(color, size),
               lazy: true,
             }}
             component={screen.component}
-            initialParams={{...screen.props}}
+            initialParams={{ ...screen.props }}
           />
         ))}
       </Drawer.Navigator>

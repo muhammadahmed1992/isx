@@ -1,8 +1,8 @@
-import {createSlice} from '@reduxjs/toolkit';
-import routeConfig from '../../helper/routeConfig';
+import { createSlice } from '@reduxjs/toolkit';
+import { routeConfig1 } from '../../helper/routeConfig';
 
 const initialState = {
-  ...routeConfig,
+  ...routeConfig1,
 };
 
 export const menuSlice = createSlice({
@@ -36,5 +36,5 @@ export const menuSlice = createSlice({
     },
   },
 });
-export const {setRoutePermissions} = menuSlice.actions;
+export const { setRoutePermissions } = menuSlice.actions;
 export default menuSlice.reducer;

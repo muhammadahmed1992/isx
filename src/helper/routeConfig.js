@@ -1,4 +1,4 @@
-import {SwitchDatabase, PriceSearchScreen} from '../screens';
+import { SwitchDatabase, PriceSearchScreen } from '../screens';
 import ReportGenerator from '../screens/ReportGenerator';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -6,10 +6,11 @@ import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Endpoints} from '../utils';
+import { Endpoints } from '../utils';
 
 const routeConfig = {
   scan_barCode: {
+    id: 1,
     label: 'scan_barcode',
     name: 'search',
     component: PriceSearchScreen,
@@ -22,6 +23,7 @@ const routeConfig = {
     },
   },
   switch_database: {
+    id: 2,
     label: 'switch_database',
     name: 'switch_database',
     component: SwitchDatabase,
@@ -34,11 +36,12 @@ const routeConfig = {
     },
   },
   price_report: {
+    id: 3,
     name: 'price_report',
     label: 'price_report',
     condition: true,
     icon: (color, size) => (
-      <FontAwesome name="list-alt" color={color} size={20} />
+      <FontAwesome5 name="database" color={color} size={20} />
     ),
     component: ReportGenerator,
     props: {
@@ -50,6 +53,7 @@ const routeConfig = {
     },
   },
   stock_report: {
+    id: 4,
     name: 'stock_report',
     label: 'stock_report',
     component: ReportGenerator,
@@ -66,6 +70,7 @@ const routeConfig = {
     },
   },
   sales_report: {
+    id: 14,
     name: 'sales_report',
     label: 'sales_report',
     component: ReportGenerator,
@@ -82,6 +87,7 @@ const routeConfig = {
     },
   },
   sales_report_2: {
+    id: 5,
     name: 'sales_report_2',
     label: 'sales_report_2',
     condition: false,
@@ -98,6 +104,7 @@ const routeConfig = {
     },
   },
   sales_analyst_report: {
+    id: 6,
     name: 'sales_analyst_report',
     label: 'sales_analyst_report',
     component: ReportGenerator,
@@ -114,6 +121,7 @@ const routeConfig = {
     },
   },
   sales_analyst_report_2: {
+    id: 7,
     name: 'sales_analyst_report_2',
     label: 'sales_analyst_report_2',
     component: ReportGenerator,
@@ -130,6 +138,7 @@ const routeConfig = {
     },
   },
   cash_drawer_report: {
+    id: 8,
     name: 'cash_drawer_report',
     label: 'cash_drawer_report',
     component: ReportGenerator,
@@ -146,6 +155,7 @@ const routeConfig = {
     },
   },
   cash_drawer_detail_report: {
+    id: 9,
     name: 'cash_drawer_report_detail',
     label: 'cash_drawer_report_detail',
     component: ReportGenerator,
@@ -162,6 +172,7 @@ const routeConfig = {
     },
   },
   purchase_report: {
+    id: 10,
     name: 'purchasing_report',
     label: 'purchasing_report',
     component: ReportGenerator,
@@ -178,6 +189,7 @@ const routeConfig = {
     },
   },
   purchase_report_no_disc: {
+    id: 11,
     name: 'purchasing_report_no_disc',
     label: 'purchasing_report_no_disc',
     condition: false,
@@ -194,6 +206,7 @@ const routeConfig = {
     },
   },
   purchase_analyst_report: {
+    id: 12,
     name: 'purchasing_analyst_report',
     label: 'purchasing_analyst_report',
     component: ReportGenerator,
@@ -210,6 +223,7 @@ const routeConfig = {
     },
   },
   purchase_analyst_report_no_disc: {
+    id: 13,
     name: 'purchasing_analyst_report_no_disc',
     label: 'purchasing_analyst_report_no_disc',
     component: ReportGenerator,
@@ -226,5 +240,64 @@ const routeConfig = {
     },
   },
 };
+const routeConfig1 = {
+  scan_barCode: {
+    id: 1,
+    condition: true,
+  },
+  switch_database: {
+    id: 2,
+    condition: true,
+  },
+  price_report: {
+    id: 3,
+    condition: true,
+  },
+  stock_report: {
+    id: 4,
+    condition: false,
+  },
+  sales_report: {
+    id: 14,
+    condition: false,
+  },
+  sales_report_2: {
+    id: 5,
+    condition: false,
+  },
+  sales_analyst_report: {
+    id: 6,
+    condition: false,
+  },
+  sales_analyst_report_2: {
+    id: 7,
+    condition: false,
+  },
+  cash_drawer_report: {
+    id: 8,
+    condition: false,
+  },
+  cash_drawer_detail_report: {
+    id: 9,
+    condition: false,
+  },
+  purchase_report: {
+    id: 10,
+    condition: false,
+  },
+  purchase_report_no_disc: {
+    id: 11,
+    condition: false,
+  },
+  purchase_analyst_report: {
+    id: 12,
+    condition: false,
+  },
+  purchase_analyst_report_no_disc: {
+    id: 13,
+    condition: false
+  },
+};
 
+export { routeConfig1 }
 export default routeConfig;
