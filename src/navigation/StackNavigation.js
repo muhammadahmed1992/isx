@@ -2,30 +2,13 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import { Fonts, Commons } from '../utils';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FoundationIcon from 'react-native-vector-icons/Foundation';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Fonts } from '../utils';
 import BarcodeScanner from '../screens/BarcodeScanner';
-import { Splash, Auth, PriceSearchScreen } from '../screens';
-// import PriceSearchScreen from '../screens';
+import { Splash, Auth } from '../screens';
+
 
 import { useSelector } from 'react-redux';
 import routeConfig from '../helper/routeConfig';
-
-// import {
-//   SwitchDatabase,
-//   PriceSearchScreen,
-//   PriceReport,
-//   StockReport,
-//   SalesReport,
-//   SalesAnalystReport,
-//   CashDrawerReport,
-//   BarcodeScanner,
-
-// } from '../screens';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
