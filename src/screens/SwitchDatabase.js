@@ -61,7 +61,6 @@ const SwitchDatabase = props => {
           dataToPopulate.push(obj.SCHEMA_NAME);
         }
         setDatabases(dataToPopulate);
-        console.log("databases",dataToPopulate);
         setLoading(false);
       })
       .catch(err => {

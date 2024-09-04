@@ -66,14 +66,14 @@ const ReportComponent = ({
   const clear = menu['clear'];
 
   const headerKeys = useSelector(state => state.Locale.headers);
-  const currentRoute = headerKeys[currentRouteName];
-  const headers = Object.keys(currentRoute).filter(objKey =>
-    !objKey.includes("running")).reduce((newObj, key) => {
-      newObj[key] = currentRoute[key];
-      return newObj;
-    }, {}
-    );
-  console.log("headerKeys", headerKeys)
+  const headers = headerKeys[currentRouteName];
+  // const headers = Object.keys(currentRoute).filter(objKey =>
+  //   !objKey.includes("running")).reduce((newObj, key) => {
+  //     newObj[key] = currentRoute[key];
+  //     return newObj;
+  //   }, {}
+  //   );
+  
   // Object.keys(menu).forEach(key => {
   //   if (key.includes('header')) {
   //     headerKeys[key] = menu[key];
@@ -85,8 +85,6 @@ const ReportComponent = ({
   }, []);
 
   useEffect(() => {
-    console.log('Updated stocks:', stocks);
-    console.log('Updated warehouses:', warehouses);
   }, [stocks, warehouses]);
 
 
@@ -102,7 +100,6 @@ const ReportComponent = ({
     setData([]);
   }, [currentRouteName]);
 
-  console.log("data", data)
 
   const fetchAllData = async () => {
     // const requests = [];
@@ -130,7 +127,6 @@ const ReportComponent = ({
       // results.forEach((result, i) => {
       //   stateSetters[i](result);
       // });
-      console.log("results", stocks, warehouses);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -161,10 +157,10 @@ const ReportComponent = ({
         stocks: stocks,
         warehouses: warehouses,
       });
-      console.log('result', result);
       setData(result);
       setLoading(false);
     } catch (error) {
+      setData([]);
       setLoading(false);
       showToast(typeof error === 'string' ? error : error.message);
     }

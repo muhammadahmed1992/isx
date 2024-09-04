@@ -29,7 +29,6 @@ export const fetchAndSetLocaleData = language => async dispatch => {
     const response = await ApiService.get(
       `${Endpoints.localization}${language}`,
     );
-    console.log("locale response",response.data.data);
     dispatch(setLocaleData(response.data.data));
     dispatch(setLanguage(language));
   } catch (error) {

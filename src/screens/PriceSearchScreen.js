@@ -29,10 +29,8 @@ const PriceSearchScreen = props => {
   const [data, setData] = useState([]);
   const menu = useSelector(state => state.Locale.menu);
 
-  console.log("menu",menu);
   const label = props.route.params.label;
   const localizeLabel = menu[label] || label;
-  console.log({props});
   const handleBarcodeRead = async data => {
     if (!data) {
       setData([]);

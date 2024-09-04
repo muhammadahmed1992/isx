@@ -20,7 +20,6 @@ class ReportService {
     warehouses,
   }) {
     let query = '';
-    console.log('report', stockGroup, stocks, warehouses);
 
     if (dateValFrom) {
       query += `?startDate=${encodeURIComponent(
@@ -45,7 +44,6 @@ class ReportService {
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
     }
-    console.log('query', query);
     return query;
   }
 
@@ -54,7 +52,6 @@ class ReportService {
       const res = await ApiService.get(`${endPoint}${query}`);
       return res.data;
     } catch (error) {
-      console.log("Error", error)
       throw new Error(error?.message);
     }
   }
@@ -65,7 +62,6 @@ class ReportService {
       const data = res.data.data;
       return data;
     } catch (err) {
-      console.log('Fetch All Stock Groups: ', err);
       throw new Error(err);
     }
   }
@@ -74,10 +70,8 @@ class ReportService {
     try {
       const res = await ApiService.get(Endpoints.fetchWarehouses);
       const data = res.data.data;
-      console.log('warehouse', data);
       return data;
     } catch (err) {
-      console.log('Fetch All Warehouses: ', err);
       throw new Error(err);
     }
   }
@@ -92,12 +86,6 @@ class ReportService {
     stocks,
     warehouses,
   }) {
-    console.log('dateValFrom', dateValFrom);
-    console.log('dateValTo', dateValTo);
-    console.log('stockGroup', stockGroup);
-    console.log('warehouse', warehouse);
-    console.log('stocks', stocks);
-    console.log('warehouses', warehouses);
 
     const query = this.buildQuery({
       dateValFrom,
@@ -107,11 +95,9 @@ class ReportService {
       stocks,
       warehouses,
     });
-    console.log('query', query);
 
     try {
       const data = await this.fetchData(endPoints, query);
-      console.log('fetched data', data);
 
       if (isPriceReport(reportType)) return data.data;
       if (isStockReport(reportType)) return processStockReportData(data);
@@ -220,12 +206,11 @@ function processCashDrawerReportData(response) {
   const data = response.data;
   const lastEntry = data[data.length - 1];
   const totalRow = {};
-
   data.forEach(item => {
     const mappedItem = {};
 
     Object.keys(item).forEach(key => {
-      if (!key.startsWith(runningKey)) {
+      if (!key.includes(runningKey)) {
         mappedItem[key] = item[key];
       }
     });
@@ -235,11 +220,13 @@ function processCashDrawerReportData(response) {
 
   const firstKey = Object.keys(data[0])[0];
   totalRow[firstKey] = 'Total';
-
   Object.keys(lastEntry).forEach(key => {
-    if (key.startsWith(runningKey)) {
+    if (key.includes(runningKey)) {
       const baseKey = key.replace(runningKey, '');
       totalRow[baseKey] = lastEntry[key];
+    }
+    if (key.includes('date_header')) {
+      totalRow[key] = "";
     }
   });
 

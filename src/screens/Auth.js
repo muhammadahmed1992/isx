@@ -82,7 +82,6 @@ const Auth = props => {
         setDatabases(dataToPopulate);
       })
       .catch(err => {
-        console.log('Fetch All Databases: ', err);
       });
   };
 
