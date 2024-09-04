@@ -102,31 +102,14 @@ const ReportComponent = ({
 
 
   const fetchAllData = async () => {
-    // const requests = [];
-    // const stateSetters = [];
-    // if (stockInputField) {
-    //   requests.push(ReportService.fetchAllStocks);
-    //   stateSetters.push(setStocks);
-    // }
-    // if (warehouseInputField) {
-    //   requests.push(ReportService.fetchAllWarehouses);
-    //   stateSetters.push(setWarehouses);
-    // }
     try {
       setLoading(true);
       const [stocksResult, warehousesResult] = await Promise.all([
         ReportService.fetchAllStocks(),
         ReportService.fetchAllWarehouses(),
       ]);
-      // const results = await Promise.all(requests.map(request => request()));
-      // for (let i = 0; i < requests.length; i++) {
-      //     setState[i](requests[i]());
-      // }
       setStocks(stocksResult);
       setWarehouses(warehousesResult);
-      // results.forEach((result, i) => {
-      //   stateSetters[i](result);
-      // });
       setLoading(false);
     } catch (error) {
       setLoading(false);
