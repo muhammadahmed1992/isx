@@ -54,9 +54,8 @@ class ReportService {
       const res = await ApiService.get(`${endPoint}${query}`);
       return res.data;
     } catch (error) {
-      console.log('data response', error);
-
-      throw new Error(error);
+      console.log("Error", error)
+      throw new Error(error?.message);
     }
   }
 
@@ -121,7 +120,6 @@ class ReportService {
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
         return processSalesOrPurchaseReportData(data);
     } catch (error) {
-      console.error(error);
       throw new Error(error);
     }
   }

@@ -7,14 +7,14 @@ import {
   Image,
   Text,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Colors, Fonts} from '../utils';
-import {RFValue} from 'react-native-responsive-fontsize';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Colors, Fonts } from '../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
 import TableComponent from './TableComponent';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import Loader from './loader';
-import {useFocusEffect, useRoute} from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
 import ModalComponent from './Model';
 import Header from './Header';
@@ -23,9 +23,9 @@ import Button from './Button';
 import InputField from './InputField';
 import DateRangeSetter from './DateRangeSetter';
 import SearchableDropDown from './searchableDropdown';
-import {Images} from '../utils';
+import { Images } from '../utils';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ReportComponent = ({
   navigation,
@@ -66,7 +66,14 @@ const ReportComponent = ({
   const clear = menu['clear'];
 
   const headerKeys = useSelector(state => state.Locale.headers);
-  const headers = headerKeys[currentRouteName];
+  const currentRoute = headerKeys[currentRouteName];
+  const headers = Object.keys(currentRoute).filter(objKey =>
+    !objKey.includes("running")).reduce((newObj, key) => {
+      newObj[key] = currentRoute[key];
+      return newObj;
+    }, {}
+    );
+  console.log("headerKeys", headerKeys)
   // Object.keys(menu).forEach(key => {
   //   if (key.includes('header')) {
   //     headerKeys[key] = menu[key];
@@ -95,6 +102,8 @@ const ReportComponent = ({
     setData([]);
   }, [currentRouteName]);
 
+  console.log("data", data)
+
   const fetchAllData = async () => {
     // const requests = [];
     // const stateSetters = [];
@@ -121,7 +130,7 @@ const ReportComponent = ({
       // results.forEach((result, i) => {
       //   stateSetters[i](result);
       // });
-      console.log("results",stocks,warehouses);
+      console.log("results", stocks, warehouses);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -166,7 +175,7 @@ const ReportComponent = ({
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
       <Header label={localizeLabel} navigation={navigation} />
       {dateRangeSetter ? (
@@ -362,7 +371,7 @@ const ReportComponent = ({
             borderRadius: RFValue(10),
             marginVertical: RFValue(40),
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={{
                 fontFamily: Fonts.family.bold,
@@ -391,7 +400,7 @@ const ReportComponent = ({
               setStockGroup(item);
               setStocksModal(false);
             }}
-            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
             textInputStyle={{
               padding: 12,
               borderWidth: 1,
@@ -435,7 +444,7 @@ const ReportComponent = ({
             borderRadius: RFValue(10),
             marginVertical: RFValue(40),
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={{
                 fontFamily: Fonts.family.bold,
@@ -464,7 +473,7 @@ const ReportComponent = ({
               setWarehouse(item);
               setWarehouseModal(false);
             }}
-            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
             textInputStyle={{
               padding: 12,
               borderWidth: 1,
