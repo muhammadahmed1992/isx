@@ -3,7 +3,7 @@ import ApiService from '../../services/ApiService';
 import Endpoints from '../../utils/Endpoints'; 
 
 const initialState = {
-  language: 'en',
+  language: 'id',
   menu: {},
   headers: {}
 };
