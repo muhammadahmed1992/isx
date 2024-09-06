@@ -11,7 +11,7 @@ export const menuSlice = createSlice({
   reducers: {
     setRoutePermissions: (state, action) => {
       state.switch_database.condition =
-        action.payload.IsSwitchDatabaseAndPurchaseReportAllowed;
+        action.payload.IsSwitchDatabase;
       state.stock_report.condition = action.payload.IsStockReportAllowed;
       state.sales_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
@@ -26,13 +26,13 @@ export const menuSlice = createSlice({
       state.cash_drawer_detail_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
       (state.purchase_report.condition =
-        action.payload.IsSwitchDatabaseAndPurchaseReportAllowed),
+        action.payload.IsPurchaseReportAllowed),
         (state.purchase_report_no_disc.condition =
-          action.payload.IsSwitchDatabaseAndPurchaseReportAllowed),
+          action.payload.IsPurchaseReportAllowed),
         (state.purchase_analyst_report.condition =
-          action.payload.IsSwitchDatabaseAndPurchaseReportAllowed),
+          action.payload.IsPurchaseReportAllowed),
         (state.purchase_analyst_report_no_disc.condition =
-          action.payload.IsSwitchDatabaseAndPurchaseReportAllowed);
+          action.payload.IsPurchaseReportAllowed);
     },
   },
 });
