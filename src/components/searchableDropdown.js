@@ -231,7 +231,7 @@ export default class SearchableDropDown extends Component {
     });
     return (
       <TextInput
-autoCapitalize={"none"} 
+        autoCapitalize={'none'}
         {...textInputProps}
         onBlur={e => {
           if (this.props.onBlur) {

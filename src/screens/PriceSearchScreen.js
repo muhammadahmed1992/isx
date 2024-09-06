@@ -7,25 +7,26 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Commons, Colors, Fonts, Endpoints} from '../utils';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { Commons, Colors, Fonts, Endpoints } from '../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
 import Loader from '../components/loader';
 import ApiService from '../services/ApiService';
 import Toast from 'react-native-easy-toast';
+import Header from '../components/Header';
+import { useSelector } from 'react-redux';
 
 const PriceSearchScreen = props => {
   const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [stockID, setStockID] = useState('');
-  const [stockName, setStockName] = useState('');
-  const [location, setLocation] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-  const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
+  const menu = useSelector(state => state.Locale.menu);
+  const headerKeys = useSelector(state => state.Locale.headers);
+  const headers = headerKeys["scan_barcode_report"];
 
+  const label = props.route.params.label;
+  const localizeLabel = menu[label] || label;
   const handleBarcodeRead = async data => {
     if (!data) {
       setData([]);
@@ -59,40 +60,9 @@ const PriceSearchScreen = props => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: Colors.primary,
-          paddingHorizontal: RFValue(15),
-          paddingBottom: RFValue(15),
-          paddingTop: Platform.OS === 'android' ? RFValue(15) : RFValue(50),
-        }}>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.openDrawer();
-          }}>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
-        </TouchableOpacity>
-
-        <Text
-          style={{
-            flex: 1,
-            fontFamily: Fonts.family.bold,
-            color: Colors.white,
-            textAlign: 'center',
-          }}>
-          Scan Barcode
-        </Text>
-
-        <View>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
-        </View>
-      </View>
-
+      <Header label={localizeLabel} navigation={props.navigation} />
       <TouchableOpacity
         style={{
           width: '90%',
@@ -105,14 +75,18 @@ const PriceSearchScreen = props => {
           marginTop: 30,
         }}
         onPress={async () => {
-          const permissionsGranted = await Commons.checkPermissions();
-          if (!permissionsGranted) {
-            showToast('Camera permission is required');
-          } else {
-            Commons.navigate(props.navigation, 'barcode_scanner', {
-              onBarcodeRead: handleBarcodeRead,
-              returnScreen: 'search',
-            });
+          try {
+            const permissionsGranted = await Commons.checkPermissions();
+            if (!permissionsGranted) {
+              showToast('Camera permission is required');
+            } else {
+              Commons.navigate(props.navigation, 'barcode_scanner', {
+                onBarcodeRead: handleBarcodeRead,
+                returnScreen: 'search',
+              });
+            }
+          } catch (error) {
+            console.error(error);
           }
         }}>
         <Text
@@ -121,11 +95,11 @@ const PriceSearchScreen = props => {
             color: Colors.white,
             textAlign: 'center',
           }}>
-          Scan Barcode
+          {localizeLabel}
         </Text>
       </TouchableOpacity>
 
-      <ScrollView style={{marginTop: RFValue(10)}}>
+      <ScrollView style={{ marginTop: RFValue(10) }}>
         {data.length > 0 &&
           data.map((item, index) => {
             return (
@@ -143,7 +117,7 @@ const PriceSearchScreen = props => {
                     color: Colors.black,
                     fontSize: RFValue(16),
                   }}>
-                  Item: {index + 1}
+                  {headers?.item_header}: {index + 1}
                 </Text>
                 <View
                   style={{
@@ -157,7 +131,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Stock ID:{' '}
+                    {headers?.stock_id_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -181,7 +155,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Stock Name:{' '}
+                    {headers?.stock_name_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -205,7 +179,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Location:{' '}
+                    {headers?.location_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -229,7 +203,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Qty:{' '}
+                    {headers?.qty_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -253,7 +227,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Price:{' '}
+                    {headers?.price_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -277,7 +251,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Balance:{' '}
+                    {headers?.balance_header}:{' '}
                   </Text>
                   <Text
                     style={{

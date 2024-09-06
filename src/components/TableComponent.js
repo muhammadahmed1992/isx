@@ -1,55 +1,52 @@
 import React from 'react';
-import {ScrollView, StyleSheet, FlatList, Text, View} from 'react-native';
-import {Colors, Fonts, Commons} from '../utils';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
+import {Fonts, Colors} from '../utils';
 
 const cellWidth = 120;
+
 const rightAlignedColumns = [
-  'Opening',
-  'DP',
-  'Voucher',
-  'Cash',
-  'Payroll',
-  'CreditCard',
-  'DebitCard',
-  'Online',
-  'Withdrawn',
-  'Cancel',
-  'Balance',
-  'Amount',
-  'Amount Tax',
-  'Price',
-  'Qty',
+  'opening_header',
+  'dp_header',
+  'voucher_header',
+  'cash_header',
+  'payroll_header',
+  'credit_card_header',
+  'debit_card_header',
+  'online_header',
+  'withdrawn_header',
+  'cancel_header',
+  'balance_header',
+  'amount_header',
+  'amount_tax_header',
+  'price_header',
+  'qty_header',
 ];
 
-const TableComponent = ({headers, data, isPrice, totals}) => {
-  const renderItem = ({item, index}) => {
+const TableComponent = ({data, headers}) => {
+  if (!headers) {
+    return;
+  }
+  const isTotalsRow = item => {
+    return Object.values(item).some(value => value.toLowerCase() === 'total');
+  };
+
+  const renderRow = (item, index) => {
     const keys = Object.keys(item);
-    let isBold = false;
-    if (totals && 'indexes' in totals) {
-      let ind = totals['indexes'].indexOf(
-        totals['indexes'].filter(i => i === index)[0],
-      );
-      if (ind >= 0) {
-        isBold = true;
-        totals['indexes'] = totals.indexes.filter(i => i !== ind);
-      } else {
-        isBold = false;
-      }
-    }
+    const isBold = isTotalsRow(item);
 
     return (
-      <View key={`${index}`} style={styles.row}>
+      <View key={index} style={styles.row}>
         {keys.map((key, keyIndex) => (
           <Text
             key={key}
             style={[
               styles.cell,
-              keyIndex < keys.length - 1 && styles.cellBorder,
+              keyIndex < keys.length && styles.cellBorder,
               rightAlignedColumns.includes(key)
                 ? styles.cellNumber
                 : styles.cellText,
-              {...(isBold && {fontFamily: Fonts.family.bold})},
+              isBold && styles.boldText,
             ]}>
             {item[key] ? item[key].toString().trim() : ''}
           </Text>
@@ -66,56 +63,28 @@ const TableComponent = ({headers, data, isPrice, totals}) => {
         style={{flexGrow: 0}}>
         <View>
           <View style={[styles.row, styles.header]}>
-            {headers.map((item, index) => (
+            {Object.keys(headers).map((key, index) => (
               <Text
                 key={index}
                 style={[
                   styles.cell,
-                  index < headers.length - 1 && styles.cellBorder, // Add border to all but the last header cell
+                  index < Object.keys(headers).length - 1 && styles.cellBorder,
                   styles.headerText,
-                  rightAlignedColumns.includes(item)
+                  rightAlignedColumns.includes(key)
                     ? styles.cellNumber
                     : styles.cellText,
                 ]}>
-                {item}
+                {headers[key]}
               </Text>
             ))}
           </View>
-          <FlatList
-            style={{borderWidth: 1, borderColor: '#ccc'}}
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => `${index}`}
-            ListEmptyComponent={
+          <View style={{borderWidth: 1, borderColor: '#ccc'}}>
+            {data ? (
+              data.map(renderRow)
+            ) : (
               <Text style={styles.noDataText}>No Data Found</Text>
-            }
-          />
-          {!isPrice && data.length && totals && !('indexes' in totals) ? (
-            <View style={[styles.row, styles.footer]}>
-              {headers.map((header, index) => {
-                return (
-                  <Text
-                    key={index}
-                    style={[
-                      styles.cell,
-                      rightAlignedColumns.includes(header)
-                        ? styles.cellNumber
-                        : styles.cellText,
-                      styles.footerText,
-                      {fontFamily: Fonts.family.bold},
-                    ]}>
-                    {index === 0
-                      ? 'Total'
-                      : totals[header]
-                      ? totals[header]
-                      : ''}
-                  </Text>
-                );
-              })}
-            </View>
-          ) : (
-            <View />
-          )}
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -136,7 +105,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   cell: {
-    width: cellWidth, // Set fixed width for cells
+    width: cellWidth,
     textAlign: 'center',
     fontFamily: Fonts.family.regular,
     flexWrap: 'wrap',
@@ -151,6 +120,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  boldText: {
+    fontFamily: Fonts.family.bold,
+    color: Colors.black,
   },
   cellText: {
     textAlign: 'left',

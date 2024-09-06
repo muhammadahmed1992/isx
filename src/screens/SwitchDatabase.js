@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   View,
   Text,
@@ -14,16 +15,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  init,
-  clear,
-  setDataBase,
-} from '../redux/reducers/connectionStringSlice';
+import {clear, setDataBase} from '../redux/reducers/connectionStringSlice';
 import Toast from 'react-native-easy-toast';
 import ApiService from '../services/ApiService';
 import SearchableDropDown from '../components/searchableDropdown';
 import Modal from 'react-native-modal';
 import Loader from '../components/loader';
+import Header from '../components/Header';
 
 const SwitchDatabase = props => {
   const dispatch = useDispatch();
@@ -35,10 +33,15 @@ const SwitchDatabase = props => {
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
   const [loading, setLoading] = useState(false);
-
+   const menu = useSelector(state => state.Locale.menu);
+  const label = props.route.params.label;
+  const localizeLabel = menu[label] || label;
+  const databasePrompt = menu['select_database'] || 'Select Database';
+  const connect = menu['connect'] || 'Connect';
+  const clear = menu['clear'] || 'Clear';
   useEffect(() => {
     fetchAllDatabases();
-  }, []);
+  },[]);
 
   useEffect(() => {
     setDatabase(database ? database : '');
@@ -72,13 +75,6 @@ const SwitchDatabase = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-    // init({
-    //   host: host,
-    //   username: username,
-    //   password: password,
-    //   port: port,
-    //   database: databaseNew,
-    // }),
     showToast('Database connected');
   };
 
@@ -86,7 +82,7 @@ const SwitchDatabase = props => {
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -115,8 +111,8 @@ const SwitchDatabase = props => {
         <View>
           <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
         </View>
-      </View>
-
+      </View> */}
+      <Header label={localizeLabel} navigation={props.navigation} />
       <Pressable
         onPress={() => setModal(true)}
         style={{
@@ -140,7 +136,7 @@ const SwitchDatabase = props => {
           }}
           onPress={() => setModal(true)}
           editable={false}
-          placeholder="Select a database"
+          placeholder={databasePrompt}
           value={databaseNew}
           returnKeyType="next"
           placeholderTextColor={Colors.grey}
@@ -173,7 +169,7 @@ const SwitchDatabase = props => {
               color: Colors.white,
               textAlign: 'center',
             }}>
-            Clear
+            {clear}
           </Text>
         </TouchableOpacity>
 
@@ -193,7 +189,7 @@ const SwitchDatabase = props => {
               color: Colors.white,
               textAlign: 'center',
             }}>
-            Connect
+            {connect}
           </Text>
         </TouchableOpacity>
       </View>
@@ -227,7 +223,7 @@ const SwitchDatabase = props => {
                 fontSize: RFValue(20),
                 flex: 1,
               }}>
-              Select Database
+              {databasePrompt}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -273,7 +269,7 @@ const SwitchDatabase = props => {
               // flex: 0.6,
             }}
             items={databases}
-            placeholder={'Select a database...'}
+            placeholder={databasePrompt + '...'}
             resetValue={false}
             underlineColorAndroid="transparent"
           />

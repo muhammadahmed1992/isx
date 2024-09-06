@@ -5,9 +5,11 @@ buildscript {
         compileSdkVersion = 34
         targetSdkVersion = 34
         ndkVersion = "26.1.10909125"
-        kotlinVersion = "1.9.22"
-        kotlin_version = "1.9.22"
+        kotlinVersion = "1.8.22"
+        kotlin_version = "1.8.22"
+        hermesEnabled = false
     }
+  
     repositories {
         google()
         mavenCentral()
@@ -16,7 +18,9 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath 'com.google.android.gms:strict-version-matcher-plugin:1.2.1'
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+apply plugin: 'com.google.android.gms.strict-version-matcher-plugin'

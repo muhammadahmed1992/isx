@@ -1,27 +1,28 @@
-import React from 'react';
-import {useWindowDimensions, View} from 'react-native';
-import {ReactNativeScannerView} from '@pushpendersingh/react-native-scanner';
-import {Commons} from '../utils';
+import React, { useEffect, useRef } from 'react';
+import { useWindowDimensions, View } from 'react-native';
+import { RNCamera } from 'react-native-camera';
+import { Commons } from '../utils';
 
-const BarcodeScanner = ({navigation, route}) => {
-  let result = 0;
-  const {height, width} = useWindowDimensions();
+const BarcodeScanner = ({ navigation, route }) => {
+  const { height, width } = useWindowDimensions();
+  const onBarcodeRead = route?.params?.onBarcodeRead
+  const counterRef = useRef(0)
 
-  const handleBarcodeRead = value => {
-    if (result > 0) return;
-
-    if (route.params && route.params.onBarcodeRead) {
-      route.params.onBarcodeRead(value.nativeEvent.value);
-    }
-    Commons.navigate(navigation, route.params.returnScreen);
-    result = result + 1;
-  };
+  const handleBarcodeRead = event => {
+    if (event.barcodes?.length)
+      if (counterRef.current == 0) {
+        onBarcodeRead && onBarcodeRead(event?.barcodes[0].data)
+        // Call the onBarcodeRead function if it exists
+        Commons.navigate(navigation, route.params.returnScreen);
+        counterRef.current = 1
+      }
+  }
 
   return (
-    <View style={{flex: 1}}>
-      <ReactNativeScannerView
-        style={{height, width}}
-        onQrScanned={handleBarcodeRead}
+    <View style={{ flex: 1, width: '100%' }}>
+      <RNCamera
+        style={{ height, width }}
+        onGoogleVisionBarcodesDetected={(e) => handleBarcodeRead(e)}
       />
     </View>
   );
