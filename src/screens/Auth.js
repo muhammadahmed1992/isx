@@ -120,7 +120,7 @@ const Auth = props => {
         if (res.data.success) {
           dispatch(login());
           dispatch(setRoutePermissions(res.data.data));
-          dispatch(fetchAndSetLocaleData('en'));
+          dispatch(fetchAndSetLocaleData('id'));
           Commons.reset(props.navigation, 'dashboard');
         }
         setLoading(false);
