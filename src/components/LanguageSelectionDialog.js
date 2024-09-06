@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {fetchAndSetLocaleData} from '../redux/reducers/localeSlice';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
 import Toggle from 'react-native-toggle-element';
-import {Image, Svg} from 'react-native-svg';
+import { Image, Svg } from 'react-native-svg';
 
-const LanguagePopup = ({onClose}) => {
+const LanguagePopup = ({ onClose }) => {
   const dispatch = useDispatch();
-  const [toggleValue, setToggleValue] = useState(false);
+  const language = useSelector(state => state.Locale.language);
+  const [toggleValue, setToggleValue] = useState(language == "id" ? true : false);
 
   const handleLanguageChange = language => {
     dispatch(fetchAndSetLocaleData(language));
@@ -22,14 +23,14 @@ const LanguagePopup = ({onClose}) => {
       handleLanguageChange('en'); // English
     }
   };
-
+  console.log("toggleValue", toggleValue, language)
   return (
     <View>
       <Toggle
         value={toggleValue}
         onPress={newState => handleToggle(newState)}
-        leftComponent={<Text style={{color: 'white'}}>En</Text>}
-        rightComponent={<Text style={{color: 'white'}}>Id</Text>}
+        leftComponent={<Text style={{ color: 'white' }}>En</Text>}
+        rightComponent={<Text style={{ color: 'white' }}>Id</Text>}
         trackBar={{
           activeBackgroundColor: '#E03C31',
           inActiveBackgroundColor: '#0033A0',
@@ -40,7 +41,7 @@ const LanguagePopup = ({onClose}) => {
           height: 40,
           radius: 25,
         }}
-        disabledTitleStyle={{color: 'white'}}
+        disabledTitleStyle={{ color: 'white' }}
         thumbButton={{
           width: 40,
           height: 40,

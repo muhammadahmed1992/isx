@@ -313,6 +313,7 @@ const ReportComponent = ({
           setDateValFrom(moment(date).format('DD-MM-yyyy'));
         }}
         onCancel={() => setOpenFrom(false)}
+        theme="light"
       />
 
       <DatePicker
@@ -326,6 +327,7 @@ const ReportComponent = ({
           setDateValTo(moment(date).format('DD-MM-yyyy'));
         }}
         onCancel={() => setOpenTo(false)}
+        theme="light"
       />
 
       <Toast
