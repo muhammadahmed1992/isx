@@ -20,12 +20,6 @@ import { useSelector } from 'react-redux';
 const PriceSearchScreen = props => {
   const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [stockID, setStockID] = useState('');
-  const [stockName, setStockName] = useState('');
-  const [location, setLocation] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-  const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
   const menu = useSelector(state => state.Locale.menu);
   const headerKeys = useSelector(state => state.Locale.headers);
@@ -68,37 +62,6 @@ const PriceSearchScreen = props => {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: Colors.primary,
-          paddingHorizontal: RFValue(15),
-          paddingBottom: RFValue(15),
-          paddingTop: Platform.OS === 'android' ? RFValue(15) : RFValue(50),
-        }}>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.openDrawer();
-          }}>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
-        </TouchableOpacity>
-
-        <Text
-          style={{
-            flex: 1,
-            fontFamily: Fonts.family.bold,
-            color: Colors.white,
-            textAlign: 'center',
-          }}>
-          Scan Barcode
-        </Text>
-
-        <View>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
-        </View>
-      </View> */}
       <Header label={localizeLabel} navigation={props.navigation} />
       <TouchableOpacity
         style={{
