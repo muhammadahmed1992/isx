@@ -7,15 +7,15 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Commons, Colors, Fonts, Endpoints} from '../utils';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { Commons, Colors, Fonts, Endpoints } from '../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
 import Loader from '../components/loader';
 import ApiService from '../services/ApiService';
 import Toast from 'react-native-easy-toast';
 import Header from '../components/Header';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const PriceSearchScreen = props => {
   const toastRef = useRef(null);
@@ -28,6 +28,8 @@ const PriceSearchScreen = props => {
   const [balance, setBalance] = useState('');
   const [data, setData] = useState([]);
   const menu = useSelector(state => state.Locale.menu);
+  const headerKeys = useSelector(state => state.Locale.headers);
+  const headers = headerKeys["scan_barcode_report"];
 
   const label = props.route.params.label;
   const localizeLabel = menu[label] || label;
@@ -64,7 +66,7 @@ const PriceSearchScreen = props => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* <View
@@ -134,7 +136,7 @@ const PriceSearchScreen = props => {
         </Text>
       </TouchableOpacity>
 
-      <ScrollView style={{marginTop: RFValue(10)}}>
+      <ScrollView style={{ marginTop: RFValue(10) }}>
         {data.length > 0 &&
           data.map((item, index) => {
             return (
@@ -152,7 +154,7 @@ const PriceSearchScreen = props => {
                     color: Colors.black,
                     fontSize: RFValue(16),
                   }}>
-                  Item: {index + 1}
+                  {headers?.item_header}: {index + 1}
                 </Text>
                 <View
                   style={{
@@ -166,7 +168,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Stock ID:{' '}
+                    {headers?.stock_id_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -190,7 +192,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Stock Name:{' '}
+                    {headers?.stock_name_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -214,7 +216,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Location:{' '}
+                    {headers?.location_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -238,7 +240,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Qty:{' '}
+                    {headers?.qty_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -262,7 +264,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Price:{' '}
+                    {headers?.price_header}:{' '}
                   </Text>
                   <Text
                     style={{
@@ -286,7 +288,7 @@ const PriceSearchScreen = props => {
                       color: Colors.black,
                       fontSize: RFValue(14),
                     }}>
-                    Balance:{' '}
+                    {headers?.balance_header}:{' '}
                   </Text>
                   <Text
                     style={{
