@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
 import Toggle from 'react-native-toggle-element';
-import { Image, Svg } from 'react-native-svg';
 
 const LanguagePopup = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -23,7 +22,7 @@ const LanguagePopup = ({ onClose }) => {
       handleLanguageChange('en'); // English
     }
   };
-  console.log("toggleValue", toggleValue, language)
+
   return (
     <View>
       <Toggle
