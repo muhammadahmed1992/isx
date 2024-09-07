@@ -17,7 +17,7 @@ export const api = (method, endpoint, body) => {
     } else {
       const url = `http://${ipAddress}:3000/${endpoint}`;
       const connectionString = `mysql://${username}:${password}@${host}:${port}/${database}`;
-      console.log(`${method} -- ${url} -- ${connectionString} -- ${body}`);
+      console.log(`${method} -- ${url} -- ${connectionString}`);
 
       axios({
         method: method,
@@ -48,7 +48,6 @@ export const api = (method, endpoint, body) => {
                 : err.message,
           };
           reject(errorObject);
-          // console.log('Error: ', errorObject);
         });
     }
   });
