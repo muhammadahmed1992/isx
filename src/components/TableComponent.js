@@ -1,7 +1,8 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {Fonts, Colors} from '../utils';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Fonts, Colors } from '../utils';
+
 
 const cellWidth = 120;
 
@@ -23,12 +24,16 @@ const rightAlignedColumns = [
   'qty_header',
 ];
 
-const TableComponent = ({data, headers}) => {
+const TableComponent = ({
+  data,
+  headers,
+}) => {
   if (!headers) {
-    return;
+    return null;
   }
-  const isTotalsRow = item => {
-    return Object.values(item).some(value => value.toLowerCase() === 'total');
+
+  const isTotalsRow = (item) => {
+    return Object.values(item).some((value) => value.toLowerCase() === 'total');
   };
 
   const renderRow = (item, index) => {
@@ -47,7 +52,8 @@ const TableComponent = ({data, headers}) => {
                 ? styles.cellNumber
                 : styles.cellText,
               isBold && styles.boldText,
-            ]}>
+            ]}
+          >
             {item[key] ? item[key].toString().trim() : ''}
           </Text>
         ))}
@@ -60,7 +66,8 @@ const TableComponent = ({data, headers}) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{flexGrow: 0}}>
+        style={{ flexGrow: 0 }}
+      >
         <View>
           <View style={[styles.row, styles.header]}>
             {Object.keys(headers).map((key, index) => (
@@ -73,12 +80,13 @@ const TableComponent = ({data, headers}) => {
                   rightAlignedColumns.includes(key)
                     ? styles.cellNumber
                     : styles.cellText,
-                ]}>
+                ]}
+              >
                 {headers[key]}
               </Text>
             ))}
           </View>
-          <View style={{borderWidth: 1, borderColor: '#ccc'}}>
+          <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
             {data ? (
               data.map(renderRow)
             ) : (

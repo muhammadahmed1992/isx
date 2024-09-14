@@ -26,6 +26,9 @@ import SearchableDropDown from './searchableDropdown';
 import { Images } from '../utils';
 import Modal from 'react-native-modal';
 import { useDispatch, useSelector } from 'react-redux';
+import SearchInputComponent from './SearchInputComponent';
+import filterConfig from '../helper/filterConfig';
+import PaginationComponent from './Paginator';
 
 const ReportComponent = ({
   navigation,
@@ -51,10 +54,14 @@ const ReportComponent = ({
   const [dateValTo, setDateValTo] = useState(
     moment(new Date()).format('DD-MM-yyyy'),
   );
+  const pageSize = filterConfig['pageSize'];
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [currentPage, setCurrentPage] = useState('');
+  const [totalPages, setTotalPages] = useState(null);
   const currentLabel = label;
   const menu = useSelector(state => state.Locale.menu);
   const localizeLabel = menu[currentLabel] || currentLabel;
@@ -64,7 +71,7 @@ const ReportComponent = ({
   const dateFromPlaceholder = menu['date_from'];
   const filterPrompt = menu['filter'];
   const clear = menu['clear'];
-
+  
   const headerKeys = useSelector(state => state.Locale.headers);
   const headers = headerKeys[currentRouteName];
   // const headers = Object.keys(currentRoute).filter(objKey =>
@@ -79,7 +86,9 @@ const ReportComponent = ({
   //     headerKeys[key] = menu[key];
   //   }
   // });
-
+  useEffect(() => {
+    console.log(searchValue);
+  }, [searchValue])
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -100,6 +109,9 @@ const ReportComponent = ({
     setData([]);
   }, [currentRouteName]);
 
+  useEffect(() => {
+    filter();
+  }, [currentPage])
 
   const fetchAllData = async () => {
     try {
@@ -139,8 +151,13 @@ const ReportComponent = ({
         warehouse: warehouse,
         stocks: stocks,
         warehouses: warehouses,
+        searchValue: searchValue,
+        pageSize: pageSize,
+        currentPage: currentPage,
+        columnsToFilter: ['qty', 'unit', 'balance'],
       });
-      setData(result);
+      setData(result.data); 
+      setTotalPages(result.totalPages);
       setLoading(false);
     } catch (error) {
       setData([]);
@@ -254,7 +271,11 @@ const ReportComponent = ({
       ) : (
         <View />
       )}
-
+      <SearchInputComponent
+        placeholder="Search..."
+        onSearch={filter} 
+        onChangeText={setSearchValue}
+      />
       <View
         style={{
           flexDirection: 'row',
@@ -298,9 +319,12 @@ const ReportComponent = ({
           }}
         />
       </View>
-
+      <PaginationComponent
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
       <ScrollView>
-        <TableComponent data={data} headers={headers} />
+        <TableComponent data={data} headers={headers}/>
       </ScrollView>
       <DatePicker
         modal
