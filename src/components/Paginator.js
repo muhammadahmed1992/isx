@@ -6,7 +6,7 @@ import { Fonts, Colors } from '../utils';
 const Paginator = ({
   currentPage = 1,
   setCurrentPage,
-  totalPages = 10,
+  totalPages = 1,
 }) => {
   return (
     <View style={styles.paginationContainer}>

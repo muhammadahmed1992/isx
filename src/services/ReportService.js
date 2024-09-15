@@ -130,9 +130,10 @@ class ReportService {
         processedData = processCashDrawerReportData(reportData);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
         processedData =  processSalesOrPurchaseReportData(reportData);
+      console.log('metaData', metaData);
       return {
         data: processedData,
-        totalPages: metaData.pages ? metaData.pages : 1
+        totalPages: metaData.paging ? metaData.paging.totalPages : 1
       }
     } catch (error) {
       throw new Error(error);

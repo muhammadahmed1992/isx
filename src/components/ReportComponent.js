@@ -14,21 +14,20 @@ import TableComponent from './TableComponent';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import Loader from './loader';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
-import ModalComponent from './Model';
 import Header from './Header';
 import ReportService from '../services/ReportService';
 import Button from './Button';
 import InputField from './InputField';
-import DateRangeSetter from './DateRangeSetter';
 import SearchableDropDown from './searchableDropdown';
 import { Images } from '../utils';
 import Modal from 'react-native-modal';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import SearchInputComponent from './SearchInputComponent';
 import filterConfig from '../helper/filterConfig';
 import PaginationComponent from './Paginator';
+
 
 const ReportComponent = ({
   navigation,
@@ -74,18 +73,6 @@ const ReportComponent = ({
   
   const headerKeys = useSelector(state => state.Locale.headers);
   const headers = headerKeys[currentRouteName];
-  // const headers = Object.keys(currentRoute).filter(objKey =>
-  //   !objKey.includes("running")).reduce((newObj, key) => {
-  //     newObj[key] = currentRoute[key];
-  //     return newObj;
-  //   }, {}
-  //   );
-
-  // Object.keys(menu).forEach(key => {
-  //   if (key.includes('header')) {
-  //     headerKeys[key] = menu[key];
-  //   }
-  // });
   useEffect(() => {
     console.log(searchValue);
   }, [searchValue])
@@ -154,7 +141,7 @@ const ReportComponent = ({
         searchValue: searchValue,
         pageSize: pageSize,
         currentPage: currentPage,
-        columnsToFilter: ['qty', 'unit', 'balance'],
+        columnsToFilter: filterConfig.columns[currentRouteName].columnsToBeFiltered,
       });
       setData(result.data); 
       setTotalPages(result.totalPages);

@@ -5,7 +5,7 @@ const filterConfig = {
       columnsToBeFiltered: [],
     },
     price_report: {
-      columnsToBeFiltered: [],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     purchasing_report: {
       columnsToBeFiltered: [],
