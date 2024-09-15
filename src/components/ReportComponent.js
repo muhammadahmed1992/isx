@@ -23,7 +23,7 @@ import InputField from './InputField';
 import SearchableDropDown from './searchableDropdown';
 import { Images } from '../utils';
 import Modal from 'react-native-modal';
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import SearchInputComponent from './SearchInputComponent';
 import filterConfig from '../helper/filterConfig';
 import PaginationComponent from './Paginator';
@@ -53,14 +53,15 @@ const ReportComponent = ({
   const [dateValTo, setDateValTo] = useState(
     moment(new Date()).format('DD-MM-yyyy'),
   );
-  const pageSize = filterConfig['pageSize'];
+  const [bool, setBool] = useState(false);
+  const {pageSize} = filterConfig;
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-  const [currentPage, setCurrentPage] = useState('');
-  const [totalPages, setTotalPages] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const currentLabel = label;
   const menu = useSelector(state => state.Locale.menu);
   const localizeLabel = menu[currentLabel] || currentLabel;
@@ -70,7 +71,7 @@ const ReportComponent = ({
   const dateFromPlaceholder = menu['date_from'];
   const filterPrompt = menu['filter'];
   const clear = menu['clear'];
-  
+  const searchPrompt = menu['search'];
   const headerKeys = useSelector(state => state.Locale.headers);
   const headers = headerKeys[currentRouteName];
   useEffect(() => {
@@ -82,7 +83,6 @@ const ReportComponent = ({
 
   useEffect(() => {
   }, [stocks, warehouses]);
-
 
   useFocusEffect(
     useCallback(() => {
@@ -97,7 +97,13 @@ const ReportComponent = ({
   }, [currentRouteName]);
 
   useEffect(() => {
-    filter();
+    if(bool) {
+      console.log({currentPage});
+      filter();
+    }
+    else {
+      setBool(true);
+    }
   }, [currentPage])
 
   const fetchAllData = async () => {
@@ -124,6 +130,9 @@ const ReportComponent = ({
     setStockGroup('');
     setWarehouse('');
     setData([]);
+    setSearchValue('');
+    setCurrentPage(1);
+    setTotalPages(1);
   };
 
   const filter = async () => {
@@ -156,7 +165,10 @@ const ReportComponent = ({
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
-
+  const handleSearch = () => {
+    filter();
+    setCurrentPage(1);
+  }
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
@@ -259,9 +271,10 @@ const ReportComponent = ({
         <View />
       )}
       <SearchInputComponent
-        placeholder="Search..."
-        onSearch={filter} 
+        placeholder={`${searchPrompt} ${headers[filterConfig.columns[currentRouteName].header]}`}
+        onSearch={handleSearch} 
         onChangeText={setSearchValue}
+        value={searchValue}
       />
       <View
         style={{
@@ -308,6 +321,7 @@ const ReportComponent = ({
       </View>
       <PaginationComponent
         currentPage={currentPage}
+        totalPages={totalPages}
         setCurrentPage={setCurrentPage}
       />
       <ScrollView>

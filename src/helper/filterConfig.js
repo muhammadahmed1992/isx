@@ -1,35 +1,45 @@
 const filterConfig = {
-  pageSize: 50,
+  pageSize: 5,
   columns: {
     stock_report: {
-      columnsToBeFiltered: [],
+      header: ['stock_name_header'],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     price_report: {
+      header: ['stock_name_header'],
       columnsToBeFiltered: ['cSTKdesc'],
     },
     purchasing_report: {
-      columnsToBeFiltered: [],
+      header: ['invoice_header'],
+      columnsToBeFiltered: ['cinvrefno'],
     },
     purchasing_report_no_disc: {
-      columnsToBeFiltered: [],
+      header: ['invoice_header'],
+      columnsToBeFiltered: ['cinvrefno'],
     },
     purchasing_analyst_report: {
-      columnsToBeFiltered: [],
+      header: ['stock_name_header'],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     purchasing_analyst_report_no_disc: {
-      columnsToBeFiltered: [],
+      header: ['stock_name_header'],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     sales_report: {
-      columnsToBeFiltered: [],
+      header: ['invoice_header'],
+      columnsToBeFiltered: ['cinvrefno'],
     },
     sales_report_2: {
-      columnsToBeFiltered: [],
+      header: ['invoice_header'],
+      columnsToBeFiltered: ['cinvrefno'],
     },
     sales_analyst_report: {
-      columnsToBeFiltered: [],
+      header: ['stock_name_header'],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     sales_analyst_report_2: {
-      columnsToBeFiltered: [],
+      header: ['stock_name_header'],
+      columnsToBeFiltered: ['cSTKdesc'],
     },
     cash_drawer_report: {
       columnsToBeFiltered: [],

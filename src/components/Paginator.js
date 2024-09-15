@@ -2,12 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Fonts, Colors } from '../utils';
+import { useSelector } from 'react-redux';
 
 const Paginator = ({
   currentPage = 1,
   setCurrentPage,
-  totalPages = 1,
+  totalPages = 1
 }) => {
+  const menu = useSelector(state => state.Locale.menu);
+  const next = menu['next'];
+  const previous = menu['previous'];
+  const page = menu['page'];
+  const of = menu['of'];
   return (
     <View style={styles.paginationContainer}>
       <TouchableOpacity
@@ -21,10 +27,10 @@ const Paginator = ({
         }}
         disabled={currentPage === 1}
       >
-        <Text style={styles.paginationText}>Previous</Text>
+        <Text style={styles.paginationText}>{previous}</Text>
       </TouchableOpacity>
       <Text style={styles.paginationText}>
-        Page {currentPage} of {totalPages}
+        {page} {currentPage} {of} {totalPages}
       </Text>
       <TouchableOpacity
         style={[
@@ -37,7 +43,7 @@ const Paginator = ({
         }}
         disabled={currentPage === totalPages}
       >
-        <Text style={styles.paginationText}>Next</Text>
+        <Text style={styles.paginationText}>{next}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -52,10 +52,10 @@ class ReportService {
       query += `&pageSize=${encodeURIComponent(pageSize)}`
     }
     if(currentPage) {
-      query += `&currentPage=${encodeURIComponent(currentPage)}`
+      query += `&pageNumber=${encodeURIComponent(currentPage)}`
     }
     if(columnsToFilter) {
-      query += `&columnsToFilter=${encodeURIComponent(JSON.stringify(columnsToFilter))}`
+      query += `&columnsToFilter=${encodeURIComponent(columnsToFilter)}`
     }
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
@@ -122,7 +122,7 @@ class ReportService {
 
     try {
       const data = await this.fetchData(endPoints, query);
-      const {data: reportData, metaData} = data;
+      const {data: reportData, meta} = data;
       let processedData;
       if (isPriceReport(reportType)) processedData = reportData;
       if (isStockReport(reportType)) processedData = processStockReportData(reportData);
@@ -130,10 +130,10 @@ class ReportService {
         processedData = processCashDrawerReportData(reportData);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
         processedData =  processSalesOrPurchaseReportData(reportData);
-      console.log('metaData', metaData);
+      console.log('metaData', meta);
       return {
         data: processedData,
-        totalPages: metaData.paging ? metaData.paging.totalPages : 1
+        totalPages: meta.paging ? meta.paging.totalPages : 1
       }
     } catch (error) {
       throw new Error(error);

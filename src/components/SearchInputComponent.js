@@ -4,12 +4,36 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Fonts } from '../utils';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-const SearchInputComponent = ({ placeholder = 'Search...', placeholderColor = Colors.grey, onSearch, onChangeText }) => {
-  const [query, setQuery] = useState('');
+const SearchInputComponent = ({
+  placeholder = 'Search...',
+  placeholderColor = Colors.grey,
+  onSearch,
+  onChangeText,
+  value
+}) => {
+  const [timeoutId, setTimeoutId] = useState(null);
 
-  const handleSearch = () => {
+  const handleChangeText = (text) => {
+    if (onChangeText) {
+      onChangeText(text);
+    }
+    
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    const newTimeoutId = setTimeout(() => {
+      if (onSearch) {
+        onSearch(text.length === 0);
+      }
+    }, 1000); 
+
+    setTimeoutId(newTimeoutId);
+  };
+
+  const handleSearchButtonPress = () => {
     if (onSearch) {
-      onSearch();
+      onSearch(true);
     }
   };
 
@@ -19,16 +43,11 @@ const SearchInputComponent = ({ placeholder = 'Search...', placeholderColor = Co
         style={styles.input}
         placeholder={placeholder}
         placeholderTextColor={placeholderColor}
-        value={query}
-        onChangeText={text => {
-          setQuery(text);
-          if (onChangeText) {
-            onChangeText(text);
-          }
-        }}
-        onSubmitEditing={handleSearch}
+        value={value}
+        onChangeText={handleChangeText}
+        returnKeyType="search"
       />
-      <TouchableOpacity onPress={handleSearch} style={styles.button}>
+      <TouchableOpacity onPress={handleSearchButtonPress} style={styles.button}>
         <Ionicons name="search" size={24} color={Colors.primary} />
       </TouchableOpacity>
     </View>
