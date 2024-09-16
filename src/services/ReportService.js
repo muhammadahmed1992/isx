@@ -21,7 +21,9 @@ class ReportService {
     searchValue,
     pageSize,
     currentPage,
-    columnsToFilter
+    columnsToFilter,
+    sortColumn,
+    sortDirection
   }) {
     let query = '';
 
@@ -56,6 +58,12 @@ class ReportService {
     }
     if(columnsToFilter) {
       query += `&columnsToFilter=${encodeURIComponent(columnsToFilter)}`
+    }
+    if(sortColumn) {
+      query += `&sortColumn=${encodeURIComponent(sortColumn)}`
+    }
+    if(sortDirection) {
+      query += `&sortDirection=${encodeURIComponent(sortDirection)}`
     }
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
@@ -104,7 +112,9 @@ class ReportService {
     searchValue,
     pageSize,
     currentPage,
-    columnsToFilter
+    columnsToFilter,
+    sortColumn,
+    sortDirection
   }) {
 
     const query = this.buildQuery({
@@ -117,7 +127,9 @@ class ReportService {
       searchValue,
       pageSize,
       currentPage,
-      columnsToFilter
+      columnsToFilter,
+      sortColumn,
+      sortDirection
     });
 
     try {

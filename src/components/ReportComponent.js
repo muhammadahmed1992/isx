@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors, Fonts } from '../utils';
+import { isCashDrawerReport } from '../utils/reports';
 import { RFValue } from 'react-native-responsive-fontsize';
 import TableComponent from './TableComponent';
 import DatePicker from 'react-native-date-picker';
@@ -62,6 +63,8 @@ const ReportComponent = ({
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortDirection, setSortDirection] = useState('');
   const currentLabel = label;
   const menu = useSelector(state => state.Locale.menu);
   const localizeLabel = menu[currentLabel] || currentLabel;
@@ -81,9 +84,6 @@ const ReportComponent = ({
     fetchAllData();
   }, []);
 
-  useEffect(() => {
-  }, [stocks, warehouses]);
-
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -93,7 +93,13 @@ const ReportComponent = ({
   );
 
   useEffect(() => {
+    filter();
+    console.log({sortColumn, sortDirection})
+  }, [sortDirection])
+
+  useEffect(() => {
     setData([]);
+    console.log({currentRouteName})
   }, [currentRouteName]);
 
   useEffect(() => {
@@ -108,19 +114,39 @@ const ReportComponent = ({
 
   const fetchAllData = async () => {
     try {
+      const promises = [];
+      
+      if (warehouseInputField) {
+        promises.push(ReportService.fetchAllWarehouses()); // Correct service call
+      }
+      if (stockInputField) {
+        promises.push(ReportService.fetchAllStocks()); // Correct service call
+      }
+      
       setLoading(true);
-      const [stocksResult, warehousesResult] = await Promise.all([
-        ReportService.fetchAllStocks(),
-        ReportService.fetchAllWarehouses(),
-      ]);
-      setStocks(stocksResult);
-      setWarehouses(warehousesResult);
+  
+      // Execute all promises
+      const responses = await Promise.all(promises);
+      
+      // Process results based on the order of promises
+      const stocksResult = stockInputField ? responses.pop() : []; // Last result if stockInputField is set
+      const warehousesResult = warehouseInputField ? responses.pop() : []; // Last result if warehouseInputField is set
+      
+      // Update state
+      if (stockInputField) {
+        setStocks(stocksResult);
+      }
+      if (warehouseInputField) {
+        setWarehouses(warehousesResult);
+      }
+  
       setLoading(false);
     } catch (error) {
       setLoading(false);
       console.error(error);
     }
   };
+  
 
   const resetFilters = () => {
     setDateFrom(new Date());
@@ -151,6 +177,8 @@ const ReportComponent = ({
         pageSize: pageSize,
         currentPage: currentPage,
         columnsToFilter: filterConfig.columns[currentRouteName].columnsToBeFiltered,
+        sortColumn: sortColumn,
+        sortDirection: sortDirection
       });
       setData(result.data); 
       setTotalPages(result.totalPages);
@@ -169,6 +197,11 @@ const ReportComponent = ({
     filter();
     setCurrentPage(1);
   }
+  const handleSort = (column, direction) => {
+    setSortColumn(column);
+    setSortDirection(direction);
+    // Optionally, send the sort configuration to the backend or handle it here
+  };
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
@@ -270,12 +303,14 @@ const ReportComponent = ({
       ) : (
         <View />
       )}
+      {isCashDrawerReport(currentRouteName)? <View/> : 
       <SearchInputComponent
         placeholder={`${searchPrompt} ${headers[filterConfig.columns[currentRouteName].header]}`}
         onSearch={handleSearch} 
         onChangeText={setSearchValue}
         value={searchValue}
-      />
+      /> 
+      }
       <View
         style={{
           flexDirection: 'row',
@@ -325,7 +360,7 @@ const ReportComponent = ({
         setCurrentPage={setCurrentPage}
       />
       <ScrollView>
-        <TableComponent data={data} headers={headers}/>
+        <TableComponent data={data} headers={headers} onSort={handleSort}/>
       </ScrollView>
       <DatePicker
         modal
@@ -363,8 +398,8 @@ const ReportComponent = ({
         fadeOutDuration={1000}
         opacity={0.8}
       />
-
-      <Modal
+      {stockInputField ? 
+      (<Modal
         statusBarTranslucent={true}
         isVisible={stocksModal}
         onBackButtonPress={() => setStocksModal(false)}
@@ -435,8 +470,10 @@ const ReportComponent = ({
             underlineColorAndroid="transparent"
           />
         </View>
-      </Modal>
+      </Modal>) : (<View />) }
 
+      {warehouseInputField ? 
+      (
       <Modal
         statusBarTranslucent={true}
         isVisible={warehouseModal}
@@ -510,7 +547,7 @@ const ReportComponent = ({
             underlineColorAndroid="transparent"
           />
         </View>
-      </Modal>
+      </Modal> ) :(<View />) } 
 
       {loading && <Loader />}
     </View>

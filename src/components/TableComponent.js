@@ -1,8 +1,7 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Fonts, Colors } from '../utils';
-
 
 const cellWidth = 120;
 
@@ -24,13 +23,17 @@ const rightAlignedColumns = [
   'qty_header',
 ];
 
-const TableComponent = ({
-  data,
-  headers,
-}) => {
-  if (!headers) {
-    return null;
-  }
+const TableComponent = ({ data, headers, onSort }) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const handleHeaderClick = useCallback((key) => {
+    setSortConfig(prevConfig => {
+      const newDirection = prevConfig.key === key ? (prevConfig.direction === 'asc' ? 'desc' : 'asc') : 'asc';
+      const newConfig = { key, direction: newDirection };
+      onSort(newConfig.key, newConfig.direction); // Call the callback with the new sort values
+      return newConfig;
+    });
+  }, [onSort]);
 
   const isTotalsRow = (item) => {
     return Object.values(item).some((value) => value.toLowerCase() === 'total');
@@ -48,9 +51,7 @@ const TableComponent = ({
             style={[
               styles.cell,
               keyIndex < keys.length && styles.cellBorder,
-              rightAlignedColumns.includes(key)
-                ? styles.cellNumber
-                : styles.cellText,
+              rightAlignedColumns.includes(key) ? styles.cellNumber : styles.cellText,
               isBold && styles.boldText,
             ]}
           >
@@ -63,35 +64,26 @@ const TableComponent = ({
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0 }}
-      >
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
         <View>
           <View style={[styles.row, styles.header]}>
             {Object.keys(headers).map((key, index) => (
-              <Text
-                key={index}
-                style={[
-                  styles.cell,
-                  index < Object.keys(headers).length - 1 && styles.cellBorder,
-                  styles.headerText,
-                  rightAlignedColumns.includes(key)
-                    ? styles.cellNumber
-                    : styles.cellText,
-                ]}
-              >
-                {headers[key]}
-              </Text>
+              <TouchableOpacity key={index} onPress={() => handleHeaderClick(key)}>
+                <Text
+                  style={[
+                    styles.cell,
+                    index < Object.keys(headers).length - 1 && styles.cellBorder,
+                    styles.headerText,
+                    rightAlignedColumns.includes(key) ? styles.cellNumber : styles.cellText,
+                  ]}
+                >
+                  {headers[key]} {sortConfig.key === key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
           <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
-            {data ? (
-              data.map(renderRow)
-            ) : (
-              <Text style={styles.noDataText}>No Data Found</Text>
-            )}
+            {data ? data.map(renderRow) : <Text style={styles.noDataText}>No Data Found</Text>}
           </View>
         </View>
       </ScrollView>
