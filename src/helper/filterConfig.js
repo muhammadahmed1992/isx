@@ -1,5 +1,5 @@
 const filterConfig = {
-  pageSize: 3,
+  pageSize: 50,
   columns: {
     stock_report: {
       header: ['stock_name_header'],
