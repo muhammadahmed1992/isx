@@ -61,7 +61,13 @@ const TableComponent = ({ data, headers, onSort }) => {
       </View>
     );
   };
-
+  const renderNoDataRow = () => {
+    return (
+      <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
+            <Text style={styles.cellText}>No Data Found</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
@@ -83,7 +89,11 @@ const TableComponent = ({ data, headers, onSort }) => {
             ))}
           </View>
           <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
-            {data ? data.map(renderRow) : <Text style={styles.noDataText}>No Data Found</Text>}
+            {!data || data.length === 0 ? (
+              <Text style={styles.noDataText}>No Data Found</Text>
+            ) : (
+              data.map(renderRow)
+            )}
           </View>
         </View>
       </ScrollView>
@@ -137,11 +147,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   noDataText: {
-    width: '100%',
     flexGrow: 1,
     fontFamily: Fonts.family.bold,
     alignSelf: 'center',
     textAlign: 'center',
-    marginVertical: RFValue(20),
+    marginVertical: RFValue(6),
   },
 });

@@ -142,7 +142,6 @@ class ReportService {
         processedData = processCashDrawerReportData(reportData);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
         processedData =  processSalesOrPurchaseReportData(reportData);
-      console.log('metaData', meta);
       return {
         data: processedData,
         totalPages: meta.paging ? meta.paging.totalPages : 1
@@ -156,7 +155,7 @@ class ReportService {
 function processStockReportData(data) {
   const result = [];
 
-  if (data.length === 0) {
+  if (!data) {
     return result;
   }
 
@@ -193,7 +192,7 @@ function processStockReportData(data) {
 function processSalesOrPurchaseReportData(data) {
   const result = [];
 
-  if (data.length === 0) {
+  if (!data) {
     return result;
   }
 

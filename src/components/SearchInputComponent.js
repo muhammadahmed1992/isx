@@ -24,16 +24,16 @@ const SearchInputComponent = ({
 
     const newTimeoutId = setTimeout(() => {
       if (onSearch) {
-        onSearch(text.length === 0);
+        onSearch();
       }
-    }, 1000); 
+    }, 500); 
 
     setTimeoutId(newTimeoutId);
   };
 
   const handleSearchButtonPress = () => {
     if (onSearch) {
-      onSearch(true);
+      onSearch();
     }
   };
 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: RFValue(50),
     color: Colors.primary,
-    fontSize: RFValue(16),
+    fontSize: RFValue(14),
     fontFamily: Fonts.family.bold,
   },
   button: {

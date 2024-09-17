@@ -77,8 +77,17 @@ const ReportComponent = ({
   const searchPrompt = menu['search'];
   const headerKeys = useSelector(state => state.Locale.headers);
   const headers = headerKeys[currentRouteName];
+  let searchPlaceHolder = [];
+  filterConfig.columns[currentRouteName].header.forEach(header => {
+    searchPlaceHolder.push(headers[header]);
+  });
   useEffect(() => {
-    console.log(searchValue);
+    if(bool) {
+    filter();
+  }
+  else {
+    setBool(true);
+  }
   }, [searchValue])
   useEffect(() => {
     fetchAllData();
@@ -94,17 +103,14 @@ const ReportComponent = ({
 
   useEffect(() => {
     filter();
-    console.log({sortColumn, sortDirection})
   }, [sortDirection])
 
   useEffect(() => {
     setData([]);
-    console.log({currentRouteName})
   }, [currentRouteName]);
 
   useEffect(() => {
     if(bool) {
-      console.log({currentPage});
       filter();
     }
     else {
@@ -194,7 +200,6 @@ const ReportComponent = ({
     toastRef.current.show(msg, 2000);
   };
   const handleSearch = () => {
-    filter();
     setCurrentPage(1);
   }
   const handleSort = (column, direction) => {
@@ -305,7 +310,7 @@ const ReportComponent = ({
       )}
       {isCashDrawerReport(currentRouteName)? <View/> : 
       <SearchInputComponent
-        placeholder={`${searchPrompt} ${headers[filterConfig.columns[currentRouteName].header]}`}
+        placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
         onSearch={handleSearch} 
         onChangeText={setSearchValue}
         value={searchValue}
