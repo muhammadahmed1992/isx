@@ -1,30 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Fonts } from '../utils';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-const SearchInputComponent = ({
-  placeholder = 'Search...',
-  placeholderColor = Colors.grey,
-  onSearch,
-  onChangeText,
-  value
+const SearchInputComponent = ({ 
+  placeholder = 'Search...', 
+  placeholderColor = Colors.grey, 
+  onSearch, 
+  value 
 }) => {
+  const [localValue, setLocalValue] = useState(value);
   const [timeoutId, setTimeoutId] = useState(null);
 
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
+
   const handleChangeText = (text) => {
-    if (onChangeText) {
-      onChangeText(text);
-    }
-    
+    setLocalValue(text);
+
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
 
     const newTimeoutId = setTimeout(() => {
       if (onSearch) {
-        onSearch();
+        onSearch(text); 
       }
     }, 500); 
 
@@ -33,7 +43,7 @@ const SearchInputComponent = ({
 
   const handleSearchButtonPress = () => {
     if (onSearch) {
-      onSearch();
+      onSearch(localValue); 
     }
   };
 
@@ -43,12 +53,12 @@ const SearchInputComponent = ({
         style={styles.input}
         placeholder={placeholder}
         placeholderTextColor={placeholderColor}
-        value={value}
+        value={localValue}
         onChangeText={handleChangeText}
         returnKeyType="search"
       />
       <TouchableOpacity onPress={handleSearchButtonPress} style={styles.button}>
-        <Ionicons name="search" size={24} color={Colors.primary} />
+        <Ionicons name="search" size={20} color={Colors.primary} />
       </TouchableOpacity>
     </View>
   );
@@ -57,7 +67,7 @@ const SearchInputComponent = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: RFValue(10),
@@ -67,7 +77,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: RFValue(50),
+    height: RFValue(40),
     color: Colors.primary,
     fontSize: RFValue(14),
     fontFamily: Fonts.family.bold,

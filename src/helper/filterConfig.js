@@ -14,8 +14,8 @@ const filterConfig = {
       columnsToBeFiltered: ['cinvrefno'],
     },
     purchasing_report_no_disc: {
-      header: ['stock_id_header', 'stock_name_header'],
-      columnsToBeFiltered: ['cSTKdesc', 'cstdcode'],
+      header: ['invoice_header'],
+      columnsToBeFiltered: ['cinvrefno']
     },
     purchasing_analyst_report: {
       header: ['stock_id_header', 'stock_name_header'],
@@ -42,9 +42,11 @@ const filterConfig = {
       columnsToBeFiltered: ['cSTKdesc', 'cstdcode'],
     },
     cash_drawer_report: {
+      header: [],
       columnsToBeFiltered: [],
     },
     cash_drawer_report_detail: {
+      header: [],
       columnsToBeFiltered: [],
     },
   },

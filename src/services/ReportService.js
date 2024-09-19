@@ -134,7 +134,7 @@ class ReportService {
 
     try {
       const data = await this.fetchData(endPoints, query);
-      const {data: reportData, meta} = data;
+      const {data: reportData} = data;
       let processedData;
       if (isPriceReport(reportType)) processedData = reportData;
       if (isStockReport(reportType)) processedData = processStockReportData(reportData);
@@ -144,7 +144,6 @@ class ReportService {
         processedData =  processSalesOrPurchaseReportData(reportData);
       return {
         data: processedData,
-        totalPages: meta.paging ? meta.paging.totalPages : 1
       }
     } catch (error) {
       throw new Error(error);

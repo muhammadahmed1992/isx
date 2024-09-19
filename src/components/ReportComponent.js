@@ -54,15 +54,16 @@ const ReportComponent = ({
   const [dateValTo, setDateValTo] = useState(
     moment(new Date()).format('DD-MM-yyyy'),
   );
-  const [bool, setBool] = useState(false);
   const {pageSize} = filterConfig;
+  const [filtered, setFiltered] = useState(false);
+  // const [shouldSearch, setShouldSearch] = useState(false);
   const [stocksModal, setStocksModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [warehouseModal, setWarehouseModal] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState('');
   const currentLabel = label;
@@ -81,18 +82,8 @@ const ReportComponent = ({
   filterConfig.columns[currentRouteName].header.forEach(header => {
     searchPlaceHolder.push(headers[header]);
   });
-  useEffect(() => {
-    if(bool) {
-    filter();
-  }
-  else {
-    setBool(true);
-  }
-  }, [searchValue])
-  useEffect(() => {
-    fetchAllData();
-  }, []);
 
+ 
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -102,52 +93,50 @@ const ReportComponent = ({
   );
 
   useEffect(() => {
-    filter();
-  }, [sortDirection])
+    fetchAllData();
+  }, []);
+
+
+  useEffect(() => {
+    if(filtered && !(isCashDrawerReport(currentRouteName)) && !(data.length === 0)) {
+        filter();
+      }
+  }, [sortDirection, sortColumn])
 
   useEffect(() => {
     setData([]);
+    setCurrentPage(1);
   }, [currentRouteName]);
 
-  useEffect(() => {
-    if(bool) {
-      filter();
-    }
-    else {
-      setBool(true);
-    }
-  }, [currentPage])
-
   const fetchAllData = async () => {
+    
     try {
       const promises = [];
-      
+
       if (warehouseInputField) {
-        promises.push(ReportService.fetchAllWarehouses()); // Correct service call
-      }
-      if (stockInputField) {
-        promises.push(ReportService.fetchAllStocks()); // Correct service call
-      }
-      
-      setLoading(true);
-  
-      // Execute all promises
-      const responses = await Promise.all(promises);
-      
-      // Process results based on the order of promises
-      const stocksResult = stockInputField ? responses.pop() : []; // Last result if stockInputField is set
-      const warehousesResult = warehouseInputField ? responses.pop() : []; // Last result if warehouseInputField is set
-      
-      // Update state
-      if (stockInputField) {
-        setStocks(stocksResult);
-      }
-      if (warehouseInputField) {
-        setWarehouses(warehousesResult);
-      }
-  
-      setLoading(false);
+          promises.push(ReportService.fetchAllWarehouses());
+        }
+        if (stockInputField) {
+          promises.push(ReportService.fetchAllStocks());
+        }
+        setLoading(true);
+
+        const responses = await Promise.all(promises);
+
+        const stocksResult = stockInputField ? responses.pop() : [];
+        const warehousesResult = warehouseInputField ? responses.pop() : [];
+
+        if (stockInputField) {
+          setStocks(stocksResult);
+        }
+        if (warehouseInputField) {
+          setWarehouses(warehousesResult);
+        }
+
+        setLoading(false);
+
     } catch (error) {
+      console.log('fetch');
       setLoading(false);
       console.error(error);
     }
@@ -164,7 +153,6 @@ const ReportComponent = ({
     setData([]);
     setSearchValue('');
     setCurrentPage(1);
-    setTotalPages(1);
   };
 
   const filter = async () => {
@@ -187,25 +175,29 @@ const ReportComponent = ({
         sortDirection: sortDirection
       });
       setData(result.data); 
-      setTotalPages(result.totalPages);
+      // setTotalPages(result.totalPages); 
       setLoading(false);
     } catch (error) {
       setData([]);
       setLoading(false);
-      showToast(typeof error === 'string' ? error : error.message);
+      //showToast(typeof error === 'string' ? error : error.message);
     }
   };
-
+  useEffect(()=> {
+    if(filtered) {
+      filter();
+    } 
+  },[searchValue])
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
-  const handleSearch = () => {
+  const handleSearch = (text) => {
+    setSearchValue(text);
     setCurrentPage(1);
   }
   const handleSort = (column, direction) => {
     setSortColumn(column);
     setSortDirection(direction);
-    // Optionally, send the sort configuration to the backend or handle it here
   };
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -309,12 +301,12 @@ const ReportComponent = ({
         <View />
       )}
       {isCashDrawerReport(currentRouteName)? <View/> : 
-      <SearchInputComponent
-        placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
-        onSearch={handleSearch} 
-        onChangeText={setSearchValue}
-        value={searchValue}
-      /> 
+      <SearchInputComponent 
+      placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
+      placeholderColor={Colors.grey}
+      onSearch={handleSearch}
+      value={searchValue}
+    />
       }
       <View
         style={{
@@ -342,7 +334,10 @@ const ReportComponent = ({
           }}
         />
         <Button
-          onPress={filter}
+          onPress={() => {
+            filter();
+            setFiltered(true);
+          }}
           title={filterPrompt}
           buttonStyle={{
             padding: 15,
@@ -359,13 +354,13 @@ const ReportComponent = ({
           }}
         />
       </View>
-      <PaginationComponent
+      {/* <PaginationComponent
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
-      />
+      /> */}
       <ScrollView>
-        <TableComponent data={data} headers={headers} onSort={handleSort}/>
+        <TableComponent data={data} headers={headers} onSort={handleSort} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
       </ScrollView>
       <DatePicker
         modal

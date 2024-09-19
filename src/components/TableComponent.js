@@ -4,6 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Fonts, Colors } from '../utils';
 
 const cellWidth = 120;
+const rowsPerPage = 75; // Number of rows per page
 
 const rightAlignedColumns = [
   'opening_header',
@@ -23,7 +24,7 @@ const rightAlignedColumns = [
   'qty_header',
 ];
 
-const TableComponent = ({ data, headers, onSort }) => {
+const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleHeaderClick = useCallback((key) => {
@@ -39,6 +40,7 @@ const TableComponent = ({ data, headers, onSort }) => {
     return Object.values(item).some((value) => value.toLowerCase() === 'total');
   };
 
+  // Function to render rows of the table
   const renderRow = (item, index) => {
     const keys = Object.keys(item);
     const isBold = isTotalsRow(item);
@@ -61,15 +63,51 @@ const TableComponent = ({ data, headers, onSort }) => {
       </View>
     );
   };
-  const renderNoDataRow = () => {
-    return (
-      <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
-            <Text style={styles.cellText}>No Data Found</Text>
-      </View>
-    );
-  }
+
+  // Function to handle pagination
+  const paginate = (array, pageSize, pageNumber) => {
+    return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+  };
+
+  // Get the current page's data
+  const paginatedData = paginate(data, rowsPerPage, currentPage);
+
+  // Pagination controls
+  const nextPage = () => {
+    if (currentPage < Math.ceil(data.length / rowsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const previousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <View style={styles.paginationContainer}>
+        <TouchableOpacity onPress={previousPage} disabled={currentPage === 1}>
+          <Text style={[styles.paginationButton, currentPage === 1 && styles.disabledButton]}>Previous</Text>
+        </TouchableOpacity>
+        <Text style={styles.pageInfo}>
+          Page {currentPage} of {(Math.ceil(data.length / rowsPerPage)) === 0 ? 1 : (Math.ceil(data.length / rowsPerPage))}
+        </Text>
+        <TouchableOpacity
+          onPress={nextPage}
+          disabled={currentPage === Math.ceil(data.length / rowsPerPage)}
+        >
+          <Text
+            style={[
+              styles.paginationButton,
+              currentPage === Math.ceil(data.length / rowsPerPage) && styles.disabledButton,
+            ]}
+          >
+            Next
+          </Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
         <View>
           <View style={[styles.row, styles.header]}>
@@ -89,14 +127,17 @@ const TableComponent = ({ data, headers, onSort }) => {
             ))}
           </View>
           <View style={{ borderWidth: 1, borderColor: '#ccc' }}>
-            {!data || data.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <Text style={styles.noDataText}>No Data Found</Text>
             ) : (
-              data.map(renderRow)
+              paginatedData.map(renderRow)
             )}
           </View>
         </View>
       </ScrollView>
+
+      {/* Pagination Controls */}
+      
     </View>
   );
 };
@@ -152,5 +193,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     marginVertical: RFValue(6),
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: RFValue(10)
+  },
+  paginationButton: {
+    fontFamily: Fonts.family.bold,
+    color: Colors.primary,
+    paddingHorizontal: RFValue(10),
+  },
+  disabledButton: {
+    color: '#ccc',
+  },
+  pageInfo: {
+    fontFamily: Fonts.family.regular,
   },
 });
