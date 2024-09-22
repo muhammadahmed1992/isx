@@ -1,5 +1,5 @@
 import React from 'react';
-import ReportComponent from '../components/ReportComponent';
+import ReportComponent from '../components/reportsComponents/ReportComponent';
 
 const ReportGenerator = ({navigation, route}) => {
   const {

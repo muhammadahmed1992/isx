@@ -1,6 +1,6 @@
 import React from 'react';
 import {Pressable, TextInput, StyleSheet} from 'react-native';
-import {Fonts, Colors} from '../utils';
+import {Fonts, Colors} from '../../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 
 const InputField = ({

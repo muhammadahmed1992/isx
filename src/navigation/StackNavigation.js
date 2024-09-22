@@ -8,22 +8,36 @@ import { Splash, Auth } from '../screens';
 
 
 import { useSelector } from 'react-redux';
-import routeConfig from '../helper/routeConfig';
+import {reportConfig, administrationConfig, transactionModuleConfig} from '../helper/routeConfig';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
 
   const Drawers = () => {
     const Drawer = createDrawerNavigator();
-    const routePermissions = useSelector(state => state.Menu);
+    const reportPermissions = useSelector(state => state.Menu.reports);
+    const administrationPermissions = useSelector(state => state.Menu.administration);
+    const transactionModulePermissions = useSelector(state => state.Menu.transactionModule);
 
-    // Filter the screens based on the condition in routePermissions
-    const filteredScreens = Object.values(routeConfig)
-    const conditionsScreens = Object.values(routePermissions)
+    const filteredReportScreens = Object.values(reportConfig);
+    const reportConditionScreens = Object.values(reportPermissions);
 
-    const mapper = filteredScreens.filter((item) => {
-      return conditionsScreens.find((val) => val.id == item.id)?.condition
+    const filteredAdministrationScreens = Object.values(administrationConfig);
+    const administrationConditionScreens = Object.values(administrationPermissions);
+
+    const filtereredTransactionModuleScreens = Object.values(transactionModuleConfig);
+    const transactionModuleConditionScreens = Object.values(transactionModulePermissions);
+
+    const reportScreens = filteredReportScreens.filter((item) => {
+      return reportConditionScreens.find((val) => val.id == item.id)?.condition
+    });
+    const administrationScreens = filteredAdministrationScreens.filter((item) => {
+      return administrationConditionScreens.find((val) => val.id == item.id)?.condition
+    });
+    const transactionModuleScreens = filtereredTransactionModuleScreens.filter((item) => {
+      return transactionModuleConditionScreens.find((val) => val.id == item.id)?.condition
     })
+
     const menu = useSelector(state => state.Locale.menu);
 
 
@@ -36,7 +50,35 @@ export default function StackNavigation() {
           drawerLabelStyle: { marginLeft: -25, fontFamily: Fonts.family.bold },
         }}
         initialRouteName="search">
-        {mapper.map((screen, index) => (
+        {administrationScreens.map((screen, index) => (
+          <Drawer.Screen
+            key={index}
+            name={screen.name}
+            options={{
+              headerShown: false,
+              drawerLabel: screen.label,
+              drawerIcon: ({ color, size }) => screen.icon(color, size),
+              lazy: true,
+            }}
+            component={screen.component}
+            initialParams={{ ...screen.props }}
+          />
+        ))}
+        {transactionModuleScreens.map((screen, index) => (
+          <Drawer.Screen
+            key={index}
+            name={screen.name}
+            options={{
+              headerShown: false,
+              drawerLabel: screen.label,
+              drawerIcon: ({ color, size }) => screen.icon(color, size),
+              lazy: true,
+            }}
+            component={screen.component}
+            initialParams={{ ...screen.props }}
+          />
+        ))}
+        {reportScreens.map((screen, index) => (
           <Drawer.Screen
             key={index}
             name={screen.name}
