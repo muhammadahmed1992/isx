@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Modal from 'react-native-modal'; 
-import { RFValue } from 'react-native-responsive-fontsize';
-import { Colors, Fonts, Images } from '../utils';
-import SearchableDropDown from '../components/searchableDropdown'; 
+import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import Modal from 'react-native-modal';
+import {RFValue} from 'react-native-responsive-fontsize';
+import {Colors, Fonts, Images} from '../../utils';
+import SearchableDropDown from '../searchableDropdown';
 const ModalComponent = ({
   isVisible,
   onClose,
@@ -23,8 +23,7 @@ const ModalComponent = ({
       isVisible={isVisible}
       onBackButtonPress={onClose}
       onBackdropPress={onClose}
-      onRequestClose={onClose}
-    >
+      onRequestClose={onClose}>
       <View style={[styles.modalContainer, containerStyle]}>
         <View style={styles.header}>
           <Text style={styles.title}>{modalTitle}</Text>
@@ -41,10 +40,10 @@ const ModalComponent = ({
             onItemSelect(item);
             onClose();
           }}
-          containerStyle={styles.searchableContainer}
-          textInputStyle={[styles.textInput, textInputStyle]}
-          itemStyle={[styles.item, itemStyle]}
-          itemTextStyle={[styles.itemText, itemTextStyle]}
+          containerStyle={styles.containerStyle}
+          textInputStyle={styles.textInputStyle}
+          itemStyle={styles.itemStyle}
+          itemTextStyle={styles.itemTextStyle}
           itemsContainerStyle={itemsContainerStyle}
           items={items}
           placeholder={placeholder}
@@ -77,28 +76,29 @@ const styles = StyleSheet.create({
     width: RFValue(20),
     resizeMode: 'contain',
   },
-  searchableContainer: {
-    padding: 5,
-    margin: 0,
-    flexGrow: 0.6,
-  },
-  textInput: {
+  containerStyle: {padding: 5, margin: 0, flexGrow: 0.6},
+  textInputStyle: {
     padding: 12,
     borderWidth: 1,
     borderRadius: RFValue(10),
+    color: Colors.black,
     fontFamily: Fonts.family.bold,
     borderColor: '#ccc',
     backgroundColor: Colors.white,
   },
-  item: {
+  itemStyle: {
     padding: 10,
     backgroundColor: '#FAF9F8',
     borderBottomColor: Colors.light_grey,
     borderBottomWidth: 1,
   },
-  itemText: {
+  itemTextStyle: {
     color: Colors.black,
     fontFamily: Fonts.family.bold,
+  },
+  itemsContainerStyle: {
+    height: '60%',
+    // flex: 0.6,
   },
 });
 

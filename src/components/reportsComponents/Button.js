@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {Fonts, Colors} from '../utils';
+import {Fonts, Colors} from '../../utils';
 
 const Button = ({onPress, title, buttonStyle, textStyle, enabled}) => {
   return (

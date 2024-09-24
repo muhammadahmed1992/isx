@@ -80,10 +80,7 @@ export default class SearchableDropDown extends Component {
     };
     this.setState({listItems: ac, item: item});
     const onTextChange =
-      this.props.onTextChange ||
-      this.props.textInputProps.onTextChange ||
-      this.props.onChangeText ||
-      this.props.textInputProps.onChangeText;
+      this.props.onTextChange;
     if (onTextChange && typeof onTextChange === 'function') {
       setTimeout(() => {
         onTextChange(searchedText);

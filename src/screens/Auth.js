@@ -25,7 +25,7 @@ import {Fonts, Colors, Commons} from '../utils';
 import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
-import {setRoutePermissions} from '../redux/reducers/menuSlice';
+import {setReportPermissions, setAdministrationPermissions} from '../redux/reducers/menuSlice';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
 
 const Auth = props => {
@@ -119,7 +119,8 @@ const Auth = props => {
       .then((res) => {
         if (res.data.success) {
           dispatch(login());
-          dispatch(setRoutePermissions(res.data.data));
+          dispatch(setReportPermissions(res.data.data));
+          dispatch(setAdministrationPermissions(res.data.data));
           dispatch(fetchAndSetLocaleData('id'));
           Commons.reset(props.navigation, 'dashboard');
         }

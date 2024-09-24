@@ -31,12 +31,12 @@ const CustomDrawer = props => {
         }}>
         <View
           style={{
-            height: RFValue(180),
+            height: RFValue(70),
             backgroundColor: Colors.primary,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Avatar size={RFValue(70)} onPress={null} uri={null} />
+          {/* <Avatar size={RFValue(70)} onPress={null} uri={null} /> */}
           <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>
             {ipAddress ? `${ipAddress}` : ''}
           </Text>

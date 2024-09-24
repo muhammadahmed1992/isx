@@ -1,14 +1,114 @@
-import { SwitchDatabase, PriceSearchScreen } from '../screens';
-import ReportGenerator from '../screens/ReportGenerator';
-
+import { SwitchDatabase, PriceSearchScreen, ReportGenerator, RegistrationScreen, TransactionModuleScreen } from '../screens';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import EntypoIcons from 'react-native-vector-icons/Entypo';
 import FoundationIcon from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Endpoints } from '../utils';
 
-const routeConfig = {
+const administrationConfig = {
+  switch_database: {
+    id: 1,
+    label: 'switch_database',
+    name: 'switch_database',
+    component: SwitchDatabase,
+    condition: true,
+    icon: (color, size) => (
+      <FontAwesome5 name="database" color={color} size={20} />
+    ),
+    props: {
+      label: 'switch_database',
+    },
+  },
+  registration: {
+    id: 2,
+    label: 'registration',
+    name: 'registration',
+    component: RegistrationScreen,
+    condition: true,
+    icon: (color, size) => (
+      <EntypoIcons name="add-user" color={color} size={20} />
+    ),
+    props: {
+      label: 'registration',
+    },
+  },
+}
+
+const transactionModuleConfig = {
+  sales: {
+    id: 1,
+    label: 'sales',
+    name: 'sales',
+    component: TransactionModuleScreen,
+    condition: true,
+    icon: (color, size) => (
+      <MaterialIcon name="app-registration" color={color} size={20} />
+    ),
+    props: {
+      label: 'sales',
+      invoice_headers: true,
+      table: true,
+      invoiceDetail: false,
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"]
+    },
+  },
+  sales_order: {
+    id: 2,
+    label: 'sales_order',
+    name: 'sales_order',
+    component: TransactionModuleScreen,
+    condition: true,
+    icon: (color, size) => (
+      <MaterialIcon name="app-registration" color={color} size={20} />
+    ),
+    props: {
+      label: 'sales_order',
+      invoice_headers: true,
+      table: true,
+      invoiceDetail: false,
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"]
+    },
+  },
+  pos: {
+    id: 3,
+    label: 'pos',
+    name: 'pos',
+    component: TransactionModuleScreen,
+    condition: true,
+    icon: (color, size) => (
+      <MaterialIcon name="point-of-sale" color={color} size={20} />
+    ),
+    props: {
+      label: 'pos',
+      invoice_headers: true,
+      table: true,
+      invoiceDetail: true,
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "SPG", "Service Of Charge", "Tax", "Table"] // keys to be mapped for localization
+    },
+  },
+  stock_adjusment: {
+    id: 4,
+    label: 'stock_adjusment',
+    name: 'stock_adjusment',
+    component: TransactionModuleScreen,
+    condition: true,
+    icon: (color, size) => (
+      <MaterialIcon name="change-circle" color={color} size={20} />
+    ),
+    props: {
+      label: 'stock_adjusment',
+      invoice_headers: true,
+      table: true,
+      invoiceDetail: false,
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "SPG", "Service Of Charge", "Tax", "Table"]
+    },
+  },
+};
+
+const reportConfig = {
   scan_barCode: {
     id: 1,
     label: 'scan_barcode',
@@ -20,19 +120,6 @@ const routeConfig = {
     ),
     props: {
       label: 'scan_barcode',
-    },
-  },
-  switch_database: {
-    id: 2,
-    label: 'switch_database',
-    name: 'switch_database',
-    component: SwitchDatabase,
-    condition: true,
-    icon: (color, size) => (
-      <FontAwesome5 name="database" color={color} size={20} />
-    ),
-    props: {
-      label: 'switch_database',
     },
   },
   price_report: {
@@ -240,13 +327,40 @@ const routeConfig = {
     },
   },
 };
-const routeConfig1 = {
-  scan_barCode: {
+
+const transactionModuleConditions = {
+  sales: {
+    id: 1,
+    condition: true
+  },
+  sales_order: {
+    id: 2,
+    condition: true
+  },
+  pos: {
+    id: 3,
+    condition: true
+  },
+  stock_adjusment: {
+    id: 4,
+    condition: true
+  }
+}
+
+const administrationConditionConfig = {
+  switch_database: {
     id: 1,
     condition: true,
   },
-  switch_database: {
+  registration: {
     id: 2,
+    condition: true
+  }
+}
+
+const reportConditionsConfig = {
+  scan_barCode: {
+    id: 1,
     condition: true,
   },
   price_report: {
@@ -299,5 +413,5 @@ const routeConfig1 = {
   },
 };
 
-export { routeConfig1 }
-export default routeConfig;
+export { reportConditionsConfig, administrationConditionConfig, transactionModuleConditions }; // conditions
+export { reportConfig, administrationConfig, transactionModuleConfig}; // mapping-config
