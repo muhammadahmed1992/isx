@@ -15,7 +15,7 @@ const CustomButton = ({ title, onPress, disabled }) => {
   );
 };
 
-function Wizard({ title, children }) {
+function Wizard({ title, children, onFinish }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -42,6 +42,12 @@ function Wizard({ title, children }) {
     }
   };
 
+  const handleFinish = () => {
+    if (onFinish) {
+      onFinish();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.groupStack}>
@@ -49,11 +55,10 @@ function Wizard({ title, children }) {
           {steps.map((step, index) => {
             let circleStyle = index < currentStep 
               ? { backgroundColor: "white", borderColor: 'blue' }
-              : index === currentStep ?
-                { backgroundColor: 'blue', borderColor: 'blue' } 
-                : { backgroundColor: 'white', borderColor: 'grey' }
-                ;
-              
+              : index === currentStep
+              ? { backgroundColor: 'blue', borderColor: 'blue' } 
+              : { backgroundColor: 'white', borderColor: 'grey' };
+
             let iconColor = index < currentStep 
               ? "blue" 
               : index === currentStep 
@@ -81,7 +86,7 @@ function Wizard({ title, children }) {
       </View>
       <View style={styles.stepContainer}>
         <ScrollView showsVerticalScrollIndicator={true}>
-          <View style={{ alignItems: "center", overflow: "scroll",}}>
+          <View style={{ alignItems: "center", overflow: "scroll", }}>
             {steps[currentStep]}
           </View>
         </ScrollView>
@@ -95,7 +100,13 @@ function Wizard({ title, children }) {
         />
         <CustomButton
           title={currentStep === steps.length - 1 ? "Finish" : "Next"}
-          onPress={handleNext}
+          onPress={() => {
+            if (currentStep === steps.length - 1) {
+              handleFinish(); // Call onFinish on the last step
+            } else {
+              handleNext();
+            }
+          }}
         />
       </View>
     </View>

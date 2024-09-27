@@ -8,8 +8,12 @@ const InputComponent = ({
   placeholder = 'Enter value...', 
   placeholderColor = Colors.grey, 
   onTextChange, 
+  onIconPress,
   value, 
+  icon = true,
+  iconComponent,
   debounceEnabled = true, 
+  disabled = false,
 }) => {
   const [localValue, setLocalValue] = useState(value);
   const [timeoutId, setTimeoutId] = useState(null);
@@ -27,10 +31,10 @@ const InputComponent = ({
   }, [timeoutId]);
 
   const handleChangeText = (text) => {
+
     setLocalValue(text);
 
     if (debounceEnabled) {
-      // Debounce logic
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -43,7 +47,6 @@ const InputComponent = ({
 
       setTimeoutId(newTimeoutId);
     } else {
-      // No debounce, call immediately
       if (onTextChange) {
         onTextChange(text);
       }
@@ -51,23 +54,29 @@ const InputComponent = ({
   };
 
   const handleSearchButtonPress = () => {
-    if (onTextChange) {
-      onTextChange(localValue); 
+
+    if (onIconPress) {
+      onIconPress(localValue); 
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, disabled && styles.disabledContainer]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, disabled && styles.disabledInput]}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
+        placeholderTextColor={disabled ? Colors.disabledText : placeholderColor}
         value={localValue}
         onChangeText={handleChangeText}
         returnKeyType="search"
+        editable={!disabled}  
       />
-      <TouchableOpacity onPress={handleSearchButtonPress} style={styles.button}>
-        <Ionicons name="search" size={20} color={Colors.primary} />
+      <TouchableOpacity 
+        onPress={handleSearchButtonPress} 
+        style={styles.button}
+        disabled={disabled}  
+      >
+        {!iconComponent? (icon && <Ionicons name="search" size={20} color={disabled ? Colors.disabledIcon : Colors.primary}/>) : (iconComponent)}
       </TouchableOpacity>
     </View>
   );
@@ -84,6 +93,9 @@ const styles = StyleSheet.create({
     marginHorizontal: RFValue(10),
     marginTop: RFValue(10),
   },
+  disabledContainer: {
+    borderColor: Colors.primary,  
+  },
   input: {
     flex: 1,
     height: RFValue(40),
@@ -91,8 +103,14 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     fontFamily: Fonts.family.bold,
   },
+  disabledInput: {
+    color: Colors.black,  
+  },
   button: {
     padding: 10,
+  },
+  disabledIcon: {
+    color: Colors.primary,  
   },
 });
 

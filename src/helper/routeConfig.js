@@ -52,7 +52,8 @@ const transactionModuleConfig = {
       invoice_headers: true,
       table: true,
       invoiceDetail: false,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"]
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"],
+      endPoints: {sales: Endpoints.salesInvoice, table: Endpoints.salesTable }
     },
   },
   sales_order: {
@@ -103,7 +104,7 @@ const transactionModuleConfig = {
       invoice_headers: true,
       table: true,
       invoiceDetail: false,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "SPG", "Service Of Charge", "Tax", "Table"]
+      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse"]
     },
   },
 };

@@ -118,7 +118,8 @@ const Auth = props => {
     await ApiService.post(Endpoints.login, body)
       .then((res) => {
         if (res.data.success) {
-          dispatch(login());
+          console.log('user:', username);
+          dispatch(login(username));
           dispatch(setReportPermissions(res.data.data));
           dispatch(setAdministrationPermissions(res.data.data));
           dispatch(fetchAndSetLocaleData('id'));
