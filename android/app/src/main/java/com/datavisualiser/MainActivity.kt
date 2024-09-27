@@ -1,4 +1,4 @@
-package com.datavisualiser
+package isx.com
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
