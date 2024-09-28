@@ -70,7 +70,7 @@ export default function StackNavigation() {
             name={screen.name}
             options={{
               headerShown: false,
-              drawerLabel: screen.label,
+              drawerLabel: menu[screen.label],
               drawerIcon: ({ color, size }) => screen.icon(color, size),
               lazy: true,
             }}

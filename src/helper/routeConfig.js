@@ -38,22 +38,21 @@ const administrationConfig = {
 }
 
 const transactionModuleConfig = {
-  sales: {
+  sales_transaction: {
     id: 1,
-    label: 'sales',
-    name: 'sales',
+    label: 'sales_transaction',
+    name: 'sales_transaction',
     component: TransactionModuleScreen,
     condition: true,
     icon: (color, size) => (
       <MaterialIcon name="app-registration" color={color} size={20} />
     ),
     props: {
-      label: 'sales',
+      label: 'sales_transaction',
       invoice_headers: true,
       table: true,
       invoiceDetail: false,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"],
-      endPoints: {sales: Endpoints.salesInvoice, table: Endpoints.salesTable }
+      endPoints: {sales: Endpoints.salesInvoice, table: Endpoints.salesTable, sendSalesInvoice: Endpoints.sendSalesInvoice }
     },
   },
   sales_order: {

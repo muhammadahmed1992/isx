@@ -9,6 +9,8 @@ import { TransactionService } from '../../services/TransactionService';
 import { store } from '../../redux/store';
 import { Endpoints } from '../../utils';
 import ApiService from '../../services/ApiService';
+import { useSelector } from 'react-redux';
+import { State } from 'react-native-gesture-handler';
 
 const mockFormData = {
   sales: {
@@ -60,7 +62,9 @@ const TransactionModuleComponent = ({
   const [selectedSalesman, setSelectedSalesman] = useState({});
   const [postObject, setPostObject] = useState();
   const [onPost, setOnPost] = useState(false);
-
+  const tableHeaders = useSelector(state => state.Locale.headers[currentRouteName].table);
+  const localizedLabel = useSelector(state => state.Locale.menu);
+  const invoiceHeaders = useSelector(state => state.Locale.headers[currentRouteName].invoice);
   const removePkField = (dataArray) => {
     return dataArray.map(({ pk, ...rest }) => rest);
   };
@@ -132,9 +136,10 @@ const TransactionModuleComponent = ({
       const invoiceData = await TransactionService.fetchInvoiceFormData(endPoints.sales, loggedInUser);
       const customerResponse = await TransactionService.fetchCustomers();
       const salesmenResponse = await TransactionService.fetchSalesmen();
+      setTableFormData([]);
       setCustomers(customerResponse.data);
       setSalesmen(salesmenResponse.data);
-      setInvoiceFormData(invoiceData.data[0]);
+      setInvoiceFormData(invoiceData.data);
       setOnPost(false);
     }
     fetchData();
@@ -142,22 +147,28 @@ const TransactionModuleComponent = ({
 
   return (
     <View style={styles.container}>
-      <Header label={label} navigation={navigation} />
+      <Header label={localizedLabel[label]} navigation={navigation} />
       <View style={styles.wizardContainer}>
         <Wizard onFinish={async () => {
-          const res = await TransactionService.postInvoiceFormData(endPoints.sales, postObject); // Post with original data including 'pk'
+          const res = await TransactionService.postInvoiceFormData(endPoints.sendSalesInvoice, postObject); 
           setOnPost(true);
           console.log('res', res);
         }} title={['Invoice Data', 'Fill Table', 'Invoice Detail']}>
           <InputForm
             data={invoiceFormData}
-            invoiceHeaderPrompts={invoiceHeaderPrompts}
+            invoiceHeaderPrompts={invoiceHeaders}
             setInvoiceFormData={setInvoiceFormData}
             customers={responseArrayObjectsToValues(customers)}
             salesmen={responseArrayObjectsToValues(salesmen)}
           />
           {/* Pass data without 'pk' to TableForm */}
-          <TableForm navigation={navigation} data={removePkField(tableForm)} handleBarcodeRead={handleBarcodeRead}/>
+          <TableForm 
+          navigation={navigation} 
+          data={removePkField(tableForm)} 
+          handleBarcodeRead={handleBarcodeRead} 
+          tax={!invoiceFormData ? 0 : parseInt(invoiceFormData.Tax)}
+          headers={tableHeaders}
+          />
         </Wizard>
       </View>
     </View>

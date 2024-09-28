@@ -4,8 +4,7 @@ import ApiService from './ApiService';
 export class TransactionService {
   static async fetchInvoiceFormData(endPoint, loggedInUser) {
     try {
-      const query = `?loggedInUser=${loggedInUser}`;
-      const res = await ApiService.get(endPoint, query);
+      const res = await ApiService.get(endPoint.replace('{user}', loggedInUser));
       return res.data;
     } catch (error) {
       throw new Error(error.message);

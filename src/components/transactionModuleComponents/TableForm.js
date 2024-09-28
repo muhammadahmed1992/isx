@@ -8,12 +8,12 @@ import InputComponent from '../InputComponent';
 import {Endpoints} from '../../utils';
 import ApiService from '../../services/ApiService';
 
-const TableForm = ({ navigation, data, handleBarcodeRead }) => {
+const TableForm = ({ navigation, data, handleBarcodeRead, tax, headers }) => {
   const [tableData, setTableData] = useState(data);
   const [loading, setLoading] = useState(false);
 
-  const calculateAmount = (price, qty) => {
-    return parseInt(price) * parseInt(qty);
+  const calculateAmount = (price, qty, tax = 0) => {
+    return (parseInt(price) * parseInt(qty)) + ((tax / 100) * ((parseInt(price) * parseInt(qty))));
   };
 
   const handleQtyChange = (index, qty) => {
@@ -26,27 +26,31 @@ const TableForm = ({ navigation, data, handleBarcodeRead }) => {
     setTableData(data);
   })
 
+  const formatNumber = (number) => {
+    return parseInt(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   const renderRow = (item, index) => {
     return (
       <View key={index} style={styles.row}>
         {/* ID Column */}
-        <Text style={[styles.cell, styles.cellNumber, {textAlign: 'left'}]}>{index + 1}</Text>
+        <Text style={[styles.cell, styles.cellNumber, styles.cellID]}>{index + 1}</Text>
         {/* Stock ID and Stock Name in the same cell */}
         <Text style={[styles.cell, styles.cellText]}>
           {item.stock_id_header}{'\n'}
           {item.stock_name}
         </Text>
-        <Text style={[styles.cell, styles.cellNumber]}>{item.price}</Text>
+        <Text style={[styles.cell, styles.cellNumber]}>{formatNumber(item.price)}</Text>
 
         <TextInput
-          style={[styles.cell, styles.cellNumber, styles.input]}
+          style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
           keyboardType="numeric"
           value={item.qty}
           onChangeText={(text) => handleQtyChange(index, text)}
         />
 
         <Text style={[styles.cell, styles.cellNumber]}>
-          {calculateAmount(item.price, item.qty)}
+          {formatNumber(calculateAmount(item.price, item.qty))}
         </Text>
       </View>
     );
@@ -65,7 +69,7 @@ const TableForm = ({ navigation, data, handleBarcodeRead }) => {
   };
 
   const totalQuantity = tableData.reduce((total, item) => total + parseInt(item.qty), 0);
-  const totalAmount = tableData.reduce((total, item) => total + calculateAmount(item.price, item.qty), 0);
+  const totalAmount = tableData.reduce((total, item) => total + calculateAmount(item.price, item.qty, item.taxable === 1 ? tax : 0), 0);
 
   return (
     <View style={styles.container}>
@@ -125,18 +129,18 @@ const TableForm = ({ navigation, data, handleBarcodeRead }) => {
           </Text>
         </TouchableOpacity>
         <View style={{ marginBottom: 10, width: "100%" }}>
-          <InputComponent debounceEnabled={false} icon={true} iconComponent={<FontAwesome5Icon name="plus" size={20} color={Colors.primary} />} onIconPress={text=>handleBarcodeRead(text)} />
+          <InputComponent placeholder={'Enter Stock ID'} debounceEnabled={false} icon={true} iconComponent={<FontAwesome5Icon name="plus" size={20} color={Colors.primary} />} onIconPress={text=>handleBarcodeRead(text)} />
         </View>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View>
           {/* Header row */}
           <View style={[styles.row, styles.header]}>
-            <Text style={[styles.cell, styles.headerText]}>ID</Text>
-            <Text style={[styles.cell, styles.headerText]}>Item</Text>
-            <Text style={[styles.cell, styles.headerText, styles.cellNumber]}>Price</Text>
-            <Text style={[styles.cell, styles.headerText, styles.cellNumber]}>Qty</Text>
-            <Text style={[styles.cell, styles.headerText, styles.cellNumber]}>Amount</Text>
+            <Text style={[styles.cell, styles.headerText, styles.cellID]}>{headers['id']}</Text>
+            <Text style={[styles.cell, styles.headerText]}>{headers['item_header']}</Text>
+            <Text style={[styles.cell, styles.headerText, styles.cellText]}>{headers['price_header']}</Text>
+            <Text style={[styles.cell, styles.headerText, styles.cellNumber, styles.cellQty]}>{headers['qty_header']}</Text>
+            <Text style={[styles.cell, styles.headerText, styles.cellNumber]}>{headers['amount_header']}</Text>
           </View>
 
           {/* Render each data row */}
@@ -144,11 +148,11 @@ const TableForm = ({ navigation, data, handleBarcodeRead }) => {
 
           {/* Total row */}
           <View style={[styles.row, styles.totalRow]}>
-            <Text style={[styles.cell, styles.cellText]}>Total</Text>
-            <Text style={styles.cell}> {tableData.length}</Text>
-            <Text style={styles.cell}></Text>
-            <Text style={[styles.cell, styles.cellNumber]}>{totalQuantity}</Text>
-            <Text style={[styles.cell, styles.cellNumber]}>{totalAmount}</Text>
+            <Text style={[styles.cell, styles.cellText, styles.cellID]}>Total</Text>
+            <Text style={[styles.cell, styles.cellNumber]}> {tableData.length}</Text>
+            <Text style={[styles.cell, styles.cellNumber, styles.cellQty]}></Text>
+            <Text style={[styles.cell, styles.cellNumber]}>{formatNumber(totalQuantity)}</Text>
+            <Text style={[styles.cell, styles.cellNumber]}>{formatNumber(totalAmount)}</Text>
           </View>
         </View>
       </ScrollView>
@@ -166,8 +170,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#000',
   },
+  cellQty: {
+    width: 45,
+    textAlign: 'center'
+  },
+  cellID: {
+    width: 45,
+    textAlign: 'left'
+  },
   cell: {
-    width: 100,
+    width: 75,
     paddingHorizontal: RFValue(6),
     paddingVertical: RFValue(6),
   },

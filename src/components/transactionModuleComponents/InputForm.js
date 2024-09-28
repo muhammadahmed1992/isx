@@ -41,21 +41,21 @@ const InputForm = (
 
   return (
     <View style={styles.formContainer}>
-      {invoiceHeaderPrompts?.map((prompt, index) => {
+      {Object.keys(invoiceHeaderPrompts).map((prompt, index) => {
         const fieldKey = !data ? '' : Object.keys(data)[index];
         const fieldValue = formData[fieldKey] || '';
-        const disabledFields = ["Invoice No", "Warehouse", "Date", "Tax"];
+        const disabledFields = ["invoice_no", "warehouse", "date"];
         const isDisabled = disabledFields.includes(prompt); 
 
-        if (prompt === "Warehouse") {
+        if (prompt === "warehouse") {
           const warehouseData = data?.Warehouse || {};
           const warehouseDescription = warehouseData?.description || '';
 
           return (
             <View key={index} style={styles.inputContainer}>
-              <Text>{prompt}</Text>
+              <Text>{invoiceHeaderPrompts[prompt]}</Text>
               <InputComponent
-                placeholder={prompt}
+                placeholder={invoiceHeaderPrompts[prompt]}
                 value={warehouseDescription}
                 onTextChange={text => {
                   
@@ -66,8 +66,8 @@ const InputForm = (
           );
         }
 
-        if (prompt === "Customer" || prompt === "Salesman") {
-          const isCustomerField = prompt === "Customer";
+        if (prompt === "customer" || prompt === "salesman") {
+          const isCustomerField = prompt === "customer";
           const modalVisible = isCustomerField ? customerModal : salesmanModal;
           const setModalVisible = isCustomerField ? setCustomerModal : setSalesmanModal;
           const items = isCustomerField ? customers : salesmen;
@@ -75,11 +75,11 @@ const InputForm = (
 
           return (
             <View key={index} style={styles.inputContainer}>
-              <Text>{prompt}</Text>
+              <Text>{invoiceHeaderPrompts[prompt]}</Text>
               <InputField
                 enabled={true}
                 onPress={() => setModalVisible(true)}
-                placeholder={prompt}
+                placeholder={invoiceHeaderPrompts[prompt]}
                 value={value}
               />
               <ModalComponent
@@ -97,12 +97,12 @@ const InputForm = (
 
         return (
           <View key={index} style={styles.inputContainer}>
-            <Text>{prompt}</Text>
+            <Text>{invoiceHeaderPrompts[prompt]}</Text>
             <InputComponent
-              placeholder={prompt}
+              placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => handleInputChange(fieldKey, text)}
-              value={prompt === 'Tax' ? `${fieldValue}%` : fieldValue}
+              value={prompt === 'tax' ? `${fieldValue}%` : fieldValue}
               icon={false}
               debounceEnabled={false}
               disabled={isDisabled}

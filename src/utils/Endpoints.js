@@ -17,8 +17,9 @@ export default {
   fetchDatabases: 'schemaInfo/database-list',
   fetchStocks: 'schemaInfo/stock-group-list',
   fetchWarehouses: 'schemaInfo/ware-house-list',
-  fetchCustomers: 'schemaInfo/customers',
-  fetchSalesmen: 'schemaInfo/salesmen',
-  salesInvoice: 'transactions/sales',
+  fetchCustomers: 'setup/customers',
+  fetchSalesmen: 'setup/salesmen',
+  salesInvoice: 'transactions/{user}/sales',
+  sendSalesInvoice: 'transactions/sales',
   salesTable: 'transactions/sales-table?stockId=',
 };
