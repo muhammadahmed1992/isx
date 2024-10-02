@@ -12,6 +12,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { sha1 } from 'js-sha1';
+import { Platform } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-easy-toast';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -19,17 +21,19 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import ApiService from '../services/ApiService';
 import {Endpoints, Images} from '../utils';
-import {login, setIpAddress} from '../redux/reducers/authSlice';
-
+import {login, setIpAddress, setIsRegistered} from '../redux/reducers/authSlice';
 import {Fonts, Colors, Commons} from '../utils';
 import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
 import {setReportPermissions, setAdministrationPermissions} from '../redux/reducers/menuSlice';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
+import { Alert } from 'react-native';
+import { PermissionsAndroid } from 'react-native';
 
 const Auth = props => {
   const dispatch = useDispatch();
+  const registrationKey = useSelector(state => state.Registraion.registrationKey);
   const toastRef = useRef(null);
   const ipAddressRef = useRef(null);
   const emailRef = useRef(null);
@@ -109,28 +113,101 @@ const Auth = props => {
     setLoading(true);
   };
 
-  const performLogin = async () => {
-    let body = {
-      username,
-      password,
-    };
+  const requestPhoneStatePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+          {
+            title: 'Permission to access IMEI',
+            message: 'This app needs access to your phone\'s IMEI to verify your registration.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS does not require this permission
+  };
 
-    await ApiService.post(Endpoints.login, body)
-      .then((res) => {
-        if (res.data.success) {
-          console.log('user:', username);
-          dispatch(login(username));
-          dispatch(setReportPermissions(res.data.data));
-          dispatch(setAdministrationPermissions(res.data.data));
-          dispatch(fetchAndSetLocaleData('id'));
-          Commons.reset(props.navigation, 'dashboard');
+  async function fetchImei() {
+    const hasPermission = await requestPermission();
+    if (hasPermission) {
+        try {
+            const imei = await ImeiModule.getImei();
+            console.log("IMEI:", imei);
+            return imei;
+        } catch (error) {
+            console.error(error);
         }
-        setLoading(false);
-      })
-      .catch(err => {
-        setLoading(false);
-        showToast(typeof err === 'string' ? err : err.message);
-      });
+    } else {
+        console.log("Permission denied");
+    }
+}
+
+  async function sha1AndLeftConcat(imei) {
+    const concatenated = 'ahmed' + imei + 'jerry';
+    // Generate the SHA-1 hash
+    const hash = sha1(concatenated);
+    
+    // Return the leftmost 6 characters of the hash
+    return hash.substring(0, 6);
+  }
+  
+  // Login function
+  const performLogin = async () => {
+    try {
+      // Request permission to read phone state (for Android)
+      // const permissionGranted = await requestPhoneStatePermission();
+      // if (!permissionGranted) {
+      //   Alert.alert('Permission Denied', 'Please give permission to use the paid version');
+      // }
+  
+      // // Fetch the device identifier (IMEI for Android, uniqueId for iOS)
+      // const deviceIdentifier = await fetchImei();
+      // if (!deviceIdentifier) {
+      //   showToast('Failed to retrieve device identifier');
+      // }
+      // console.log('imei ', deviceIdentifier);
+      // // Generate a SHA-1 hash of the device identifier
+      const hashedDeviceId = await sha1AndLeftConcat('123456789012345678901');
+      
+      // Compare the hashed device identifier with the registration key
+      if (hashedDeviceId === registrationKey) {
+        dispatch(setIsRegistered(true));
+        console.log('Key matched');
+      } else {
+        dispatch(setIsRegistered(false));
+        showToast('Registration key does not match'); // Notify the user of the mismatch
+      }
+  
+      // Proceed with the login API call
+      const body = {
+        username,
+        password,
+      };
+  
+      const res = await ApiService.post(Endpoints.login, body);
+      if (res.data.success) {
+        console.log('user:', username);
+        dispatch(login(username));
+        dispatch(setReportPermissions(res.data.data));
+        dispatch(setAdministrationPermissions(res.data.data));
+        dispatch(fetchAndSetLocaleData('id'));
+        Commons.reset(props.navigation, 'dashboard');
+      } else {
+        showToast(res.data.message || 'Login failed');
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed';
+      showToast(errorMessage);
+      console.error('Login error:', err);
+    }
   };
 
   return (
@@ -322,6 +399,7 @@ const Auth = props => {
             textInputStyle={{
               padding: 12,
               borderWidth: 1,
+              color: Colors.black,
               borderRadius: RFValue(10),
               fontFamily: Fonts.family.bold,
               borderColor: '#ccc',

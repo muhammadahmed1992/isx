@@ -49,44 +49,38 @@ const transactionModuleConfig = {
     ),
     props: {
       label: 'sales_transaction',
-      invoice_headers: true,
-      table: true,
-      invoiceDetail: false,
-      endPoints: {sales: Endpoints.salesInvoice, table: Endpoints.salesTable, sendSalesInvoice: Endpoints.sendSalesInvoice }
+      paymentDetails: false,
+      endPoints: {invoice: Endpoints.salesInvoice, table: Endpoints.salesTable, sendInvoice: Endpoints.sendSalesInvoice }
     },
   },
-  sales_order: {
+  sales_order_transaction: {
     id: 2,
-    label: 'sales_order',
-    name: 'sales_order',
+    label: 'sales_order_transaction',
+    name: 'sales_order_transaction',
     component: TransactionModuleScreen,
     condition: true,
     icon: (color, size) => (
       <MaterialIcon name="app-registration" color={color} size={20} />
     ),
     props: {
-      label: 'sales_order',
-      invoice_headers: true,
-      table: true,
-      invoiceDetail: false,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "Salesman", "Tax"]
+      label: 'sales_order_transaction',
+      paymentDetails: false,
+      endPoints: {invoice: Endpoints.salesOrderInvoice, table: Endpoints.salesOrderTable, sendInvoice: Endpoints.sendSalesOrderInvoice }
     },
   },
-  pos: {
+  point_of_sale_transaction: {
     id: 3,
-    label: 'pos',
-    name: 'pos',
+    label: 'point_of_sale_transaction',
+    name: 'point_of_sale_transaction',
     component: TransactionModuleScreen,
     condition: true,
     icon: (color, size) => (
       <MaterialIcon name="point-of-sale" color={color} size={20} />
     ),
     props: {
-      label: 'pos',
-      invoice_headers: true,
-      table: true,
-      invoiceDetail: true,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse", "Customer", "SPG", "Service Of Charge", "Tax", "Table"] // keys to be mapped for localization
+      label: 'point_of_sale_transaction',
+      paymentDetails: true,
+      endPoints: {invoice: Endpoints.pointOfSaleInvoice, table: Endpoints.pointOfSaleTable, sendInvoice: Endpoints.setPointOfSaleInvoice }
     },
   },
   stock_adjusment: {
@@ -100,10 +94,8 @@ const transactionModuleConfig = {
     ),
     props: {
       label: 'stock_adjusment',
-      invoice_headers: true,
-      table: true,
-      invoiceDetail: false,
-      invoiceHeadersPrompts: ["Invoice No", "Date", "Warehouse"]
+      paymentDetails: false,
+      endPoints: {invoice: Endpoints.stockInvoice, table: Endpoints.stockTable, sendInvoice: Endpoints.setStockInvoice }
     },
   },
 };

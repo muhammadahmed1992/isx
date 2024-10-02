@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet} from 'react-native';
 import Header from '../Header';
-import InputForm from './InputForm';
+import InputForm from './InvoiceForm';
 import Wizard from './WizardForm';
 import TableForm from './TableForm';
 import { useEffect, useState } from 'react';
@@ -11,49 +11,17 @@ import { Endpoints } from '../../utils';
 import ApiService from '../../services/ApiService';
 import { useSelector } from 'react-redux';
 import { State } from 'react-native-gesture-handler';
-
-const mockFormData = {
-  sales: {
-    invoice_no: '1234',
-    date: moment(new Date()).format('DD-MM-yyyy'),
-    warehouse: 'ABCD',
-    customer: '',
-    salesman: '',
-    tax: 10 + '%'
-  },
-  sales_order: {
-    invoice_no: '1234',
-    date: moment(new Date()).format('DD-MM-yyyy'),
-    warehouse: 'ABCD',
-    customer: '',
-    salesman: '',
-    tax: 10 + '%'
-  },
-  pos: {
-    invoice_no: '1234',
-    date: moment(new Date()).format('DD-MM-yyyy'),
-    warehouse: 'ABCD',
-    customer: '',
-    spg: '',
-    service_of_charge: '',
-    tax: 10 + '%',
-    table: ''
-  },
-  stock_adjusment: {
-    invoice_no: '1234',
-    date: Date.now(),
-    warehouse: 'ABCD',
-  }
-}
+import PaymentDetailForm from './PaymentForm';
 
 const TransactionModuleComponent = ({
   navigation,
   currentRouteName,
   label,
-  invoiceHeaderPrompts,
-  endPoints
+  endPoints,
+  paymentDetails
 }) => {
   const loggedInUser = store.getState().Auth.user;
+  const isStock = currentRouteName === 'stock_adjusment';
   const [invoiceFormData, setInvoiceFormData] = useState(); 
   const [tableForm, setTableFormData] = useState([]);  
   const [customers, setCustomers] = useState([]);
@@ -62,13 +30,34 @@ const TransactionModuleComponent = ({
   const [selectedSalesman, setSelectedSalesman] = useState({});
   const [postObject, setPostObject] = useState();
   const [onPost, setOnPost] = useState(false);
-  const tableHeaders = useSelector(state => state.Locale.headers[currentRouteName].table);
+  const [total, setTotal] = useState(0);
+  const [paymentData, setPaymentData] = useState({
+    total: 0,
+    voucher: 0,
+    cash: 0,
+    creditCard: 0,
+    debitCard: 0,
+    online: 0,
+    change: 0
+  });
   const localizedLabel = useSelector(state => state.Locale.menu);
+  const tableHeaders = useSelector(state => state.Locale.headers[currentRouteName].table);
+  console.log('headers',{tableHeaders});
   const invoiceHeaders = useSelector(state => state.Locale.headers[currentRouteName].invoice);
+  const paymentHeaders = currentRouteName === 'point_of_sale_transaction' ? useSelector(state => state.Locale.headers[currentRouteName].payment) : {};
   const removePkField = (dataArray) => {
     return dataArray.map(({ pk, ...rest }) => rest);
   };
-
+  useEffect(() => {
+    console.log(postObject);
+  })
+  useEffect(() => {
+    console.log({total});
+    setPaymentData(prev => ({
+      ...prev,
+      total: total,
+    }));
+  }, [total]);
   const handleBarcodeRead = async data => {
     if (!data) {
       setTableFormData([]);
@@ -77,7 +66,8 @@ const TransactionModuleComponent = ({
     }
     try {
       console.log('here');
-      const res = await ApiService.get(Endpoints.salesTable + encodeURIComponent(data));
+      const res = await ApiService.get(endPoints.table + encodeURIComponent(data));
+      console.log(res.data.data);
       if(res)
         setTableFormData([...tableForm, res.data.data[0]]); 
       setLoading(false);
@@ -110,30 +100,41 @@ const TransactionModuleComponent = ({
   const responseArrayObjectsToValues = data => data.map(obj => Object.values(obj)[0]);
 
   useEffect(() => {
-    console.log(postObject);
-  })
-
-  useEffect(() => {
     setSelectedCustomer(convertToDescAndPk(findObjectByValue(invoiceFormData?.Customer, customers)));
     setSelectedSalesman(convertToDescAndPk(findObjectByValue(invoiceFormData?.Salesman, salesmen)));
   }, [invoiceFormData, tableForm]);
 
   useEffect(() => {
     setPostObject({
-      loginUser: loggedInUser,
-      invoiceNo: invoiceFormData?.InvoiceNo,
-      date: invoiceFormData?.Date,
-      warehouse: invoiceFormData?.Warehouse.primaryKey,
-      customer: selectedCustomer,
-      salesman: selectedSalesman,
-      tax: invoiceFormData?.Tax,
-      tableFormData: tableForm  
+      invoice: {
+        loginUser: loggedInUser,
+        invoiceNo: invoiceFormData?.InvoiceNo,
+        date: invoiceFormData?.Date,
+        warehouse: invoiceFormData?.Warehouse.primaryKey,
+        customer: selectedCustomer,
+        salesman: selectedSalesman,
+        ...(currentRouteName === 'point_of_sale_transaction' && {
+          service: invoiceFormData?.service || '', 
+          table: invoiceFormData?.table || '', 
+        }),
+        tax: invoiceFormData?.Tax,
+      },
+      tableFormData: tableForm,
+      payment: {
+        voucher: paymentData?.voucher || 0, 
+        total: paymentData?.total || 0, 
+        creditCard: paymentData?.creditCard || 0, 
+        cash: paymentData?.cash || 0,
+        debitCard: paymentData?.debitCard || 0, 
+        online: paymentData?.online || 0,
+        change: paymentData?.change || 0, 
+      }
     });
   }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const invoiceData = await TransactionService.fetchInvoiceFormData(endPoints.sales, loggedInUser);
+      const invoiceData = await TransactionService.fetchInvoiceFormData(endPoints.invoice, loggedInUser);
       const customerResponse = await TransactionService.fetchCustomers();
       const salesmenResponse = await TransactionService.fetchSalesmen();
       setTableFormData([]);
@@ -150,10 +151,10 @@ const TransactionModuleComponent = ({
       <Header label={localizedLabel[label]} navigation={navigation} />
       <View style={styles.wizardContainer}>
         <Wizard onFinish={async () => {
-          const res = await TransactionService.postInvoiceFormData(endPoints.sendSalesInvoice, postObject); 
+          const res = await TransactionService.postInvoiceFormData(endPoints.sendInvoice, postObject); 
           setOnPost(true);
           console.log('res', res);
-        }} title={['Invoice Data', 'Fill Table', 'Invoice Detail']}>
+        }} title={['Invoice Data', 'Order Detail', 'Payment Detail']}>
           <InputForm
             data={invoiceFormData}
             invoiceHeaderPrompts={invoiceHeaders}
@@ -168,7 +169,11 @@ const TransactionModuleComponent = ({
           handleBarcodeRead={handleBarcodeRead} 
           tax={!invoiceFormData ? 0 : parseInt(invoiceFormData.Tax)}
           headers={tableHeaders}
+          setTableFormData={setTableFormData}
+          setTotal={setTotal}
+          isNotStock={!isStock}
           />
+          {paymentDetails && <PaymentDetailForm data={paymentData} headers={paymentHeaders} setPaymentFormData={setPaymentData} />}
         </Wizard>
       </View>
     </View>

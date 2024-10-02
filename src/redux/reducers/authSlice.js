@@ -4,6 +4,7 @@ const initialState = {
   user: '',
   isLoggedIn: false,
   ipAddress: null,
+  isRegistered: false,
 };
 
 export const authSlice = createSlice({
@@ -17,10 +18,14 @@ export const authSlice = createSlice({
     setIpAddress: (state, payload) => {
       state.ipAddress = payload.payload;
     },
+    setIsRegistered: (state, payload) => {
+      state.isRegistered = payload.payload;
+    },
     logout: state => {
       state.isLoggedIn = false;
+      state.user = '';
     },
   },
 });
-export const {login, logout, setIpAddress} = authSlice.actions;
+export const {login, logout, setIpAddress, setIsRegistered} = authSlice.actions;
 export default authSlice.reducer;

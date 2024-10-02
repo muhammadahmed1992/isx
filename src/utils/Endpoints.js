@@ -22,4 +22,13 @@ export default {
   salesInvoice: 'transactions/{user}/sales',
   sendSalesInvoice: 'transactions/sales',
   salesTable: 'transactions/sales-table?stockId=',
+  salesOrderInvoice: 'transactions/{user}/sales-order',
+  sendSalesOrderInvoice: 'transactions/sales-order',
+  salesOrderTable: 'transactions/sales-order-table?stockId=',
+  pointOfSaleInvoice: 'transactions/{user}/pos',
+  pointOfSaleTable: 'transactions/pos-table?stockId=',
+  setPointOfSaleInvoice: 'transactions/pos',
+  stockInvoice: 'transactions/{user}/stock',
+  stockTable: 'transactions/stock-table?stockId=',
+  setStockInvoice: 'transactions/stock'
 };
