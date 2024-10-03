@@ -28,15 +28,12 @@ import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
 import {setReportPermissions, setAdministrationPermissions} from '../redux/reducers/menuSlice';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
-import { Alert } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 
 const Auth = props => {
   const dispatch = useDispatch();
-  const registrationKey = useSelector(state => state.Registraion.registrationKey);
   const toastRef = useRef(null);
   const ipAddressRef = useRef(null);
-  const emailRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
 
@@ -148,17 +145,7 @@ const Auth = props => {
     } else {
         console.log("Permission denied");
     }
-}
-
-  async function sha1AndLeftConcat(imei) {
-    const concatenated = 'ahmed' + imei + 'jerry';
-    // Generate the SHA-1 hash
-    const hash = sha1(concatenated);
-    
-    // Return the leftmost 6 characters of the hash
-    return hash.substring(0, 6);
-  }
-  
+}  
   // Login function
   const performLogin = async () => {
     try {
@@ -175,16 +162,16 @@ const Auth = props => {
       // }
       // console.log('imei ', deviceIdentifier);
       // // Generate a SHA-1 hash of the device identifier
-      const hashedDeviceId = await sha1AndLeftConcat('123456789012345678901');
+      // const hashedDeviceId = await sha1AndLeftConcat('123456789012345678901');
       
-      // Compare the hashed device identifier with the registration key
-      if (hashedDeviceId === registrationKey) {
-        dispatch(setIsRegistered(true));
-        console.log('Key matched');
-      } else {
-        dispatch(setIsRegistered(false));
-        showToast('Registration key does not match'); // Notify the user of the mismatch
-      }
+      // // Compare the hashed device identifier with the registration key
+      // if (hashedDeviceId === registrationKey) {
+      //   dispatch(setIsRegistered(true));
+      //   console.log('Key matched');
+      // } else {
+      //   dispatch(setIsRegistered(false));
+      //   showToast('Registration key does not match'); // Notify the user of the mismatch
+      // }
   
       // Proceed with the login API call
       const body = {
