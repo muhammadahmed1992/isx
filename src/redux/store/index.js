@@ -7,6 +7,7 @@ import Auth from '../reducers/authSlice';
 import ConnectionString from '../reducers/connectionStringSlice';
 import Menu from '../reducers/menuSlice'; 
 import Locale from '../reducers/localeSlice';
+import Registration from '../reducers/registrationSlice';
 
 // Define persist configuration
 const persistConfig = {
@@ -20,6 +21,7 @@ const reducerToPersist = combineReducers({
   ConnectionString,
   Menu,
   Locale,
+  Registration
 });
 
 // Persist the combined reducer

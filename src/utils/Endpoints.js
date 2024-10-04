@@ -1,5 +1,6 @@
 export default {
   login: 'andriod2/auth/validate',
+  licenseValidation: 'admin/validate/license?imei=',
   localization: 'localization/translations/',
   scanBarcode: 'reports/stock-search-barcode?stockId=',
   priceReport: 'reports/price-list',
@@ -17,4 +18,18 @@ export default {
   fetchDatabases: 'schemaInfo/database-list',
   fetchStocks: 'schemaInfo/stock-group-list',
   fetchWarehouses: 'schemaInfo/ware-house-list',
+  fetchCustomers: 'setup/customers',
+  fetchSalesmen: 'setup/salesmen',
+  salesInvoice: 'transactions/{user}/sales',
+  sendSalesInvoice: 'transactions/sales',
+  salesTable: 'transactions/sales-table?stockId=',
+  salesOrderInvoice: 'transactions/{user}/sales-order',
+  sendSalesOrderInvoice: 'transactions/sales-order',
+  salesOrderTable: 'transactions/sales-order-table?stockId=',
+  pointOfSaleInvoice: 'transactions/{user}/pos',
+  pointOfSaleTable: 'transactions/pos-table?stockId=',
+  setPointOfSaleInvoice: 'transactions/pos',
+  stockInvoice: 'transactions/{user}/stock',
+  stockTable: 'transactions/stock-table?stockId=',
+  setStockInvoice: 'transactions/stock'
 };

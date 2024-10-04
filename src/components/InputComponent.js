@@ -4,11 +4,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Fonts } from '../utils';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-const SearchInputComponent = ({ 
-  placeholder = 'Search...', 
+const InputComponent = ({ 
+  placeholder = 'Enter value...', 
   placeholderColor = Colors.grey, 
-  onSearch, 
-  value 
+  onTextChange, 
+  onIconPress,
+  value, 
+  icon = true,
+  iconComponent,
+  debounceEnabled = true, 
+  disabled = false,
 }) => {
   const [localValue, setLocalValue] = useState(value);
   const [timeoutId, setTimeoutId] = useState(null);
@@ -26,39 +31,52 @@ const SearchInputComponent = ({
   }, [timeoutId]);
 
   const handleChangeText = (text) => {
+
     setLocalValue(text);
 
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    const newTimeoutId = setTimeout(() => {
-      if (onSearch) {
-        onSearch(text); 
+    if (debounceEnabled) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
-    }, 500); 
 
-    setTimeoutId(newTimeoutId);
+      const newTimeoutId = setTimeout(() => {
+        if (onTextChange) {
+          onTextChange(text); 
+        }
+      }, 500); 
+
+      setTimeoutId(newTimeoutId);
+    } else {
+      if (onTextChange) {
+        onTextChange(text);
+      }
+    }
   };
 
   const handleSearchButtonPress = () => {
-    if (onSearch) {
-      onSearch(localValue); 
+
+    if (onIconPress) {
+      onIconPress(localValue); 
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, disabled && styles.disabledContainer]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, disabled && styles.disabledInput]}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
+        placeholderTextColor={disabled ? Colors.disabledText : placeholderColor}
         value={localValue}
         onChangeText={handleChangeText}
         returnKeyType="search"
+        editable={!disabled}  
       />
-      <TouchableOpacity onPress={handleSearchButtonPress} style={styles.button}>
-        <Ionicons name="search" size={20} color={Colors.primary} />
+      <TouchableOpacity 
+        onPress={handleSearchButtonPress} 
+        style={styles.button}
+        disabled={disabled}  
+      >
+        {!iconComponent? (icon && <Ionicons name="search" size={20} color={disabled ? Colors.disabledIcon : Colors.primary}/>) : (iconComponent)}
       </TouchableOpacity>
     </View>
   );
@@ -75,6 +93,9 @@ const styles = StyleSheet.create({
     marginHorizontal: RFValue(10),
     marginTop: RFValue(10),
   },
+  disabledContainer: {
+    borderColor: Colors.primary,  
+  },
   input: {
     flex: 1,
     height: RFValue(40),
@@ -82,9 +103,15 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     fontFamily: Fonts.family.bold,
   },
+  disabledInput: {
+    color: Colors.black,  
+  },
   button: {
     padding: 10,
   },
+  disabledIcon: {
+    color: Colors.primary,  
+  },
 });
 
-export default SearchInputComponent;
+export default InputComponent;

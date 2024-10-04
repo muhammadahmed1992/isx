@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {Fonts, Colors} from '../utils';
+import {Fonts, Colors} from '../../utils';
 
 const Button = ({onPress, title, buttonStyle, textStyle, enabled}) => {
   return (
@@ -14,15 +14,18 @@ const Button = ({onPress, title, buttonStyle, textStyle, enabled}) => {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 15,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: Colors.primary,
     borderRadius: 4,
   },
   text: {
     fontFamily: Fonts.family.bold,
     color: Colors.white,
     textAlign: 'center',
+    width: 110,
+    flexWrap: 'wrap'
   },
 });
 

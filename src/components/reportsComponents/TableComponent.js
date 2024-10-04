@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Fonts, Colors } from '../utils';
+import { Fonts, Colors } from '../../utils';
 
 const cellWidth = 120;
 const rowsPerPage = 75; // Number of rows per page

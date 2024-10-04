@@ -8,26 +8,27 @@ import {
   Text,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Colors, Fonts } from '../utils';
-import { isCashDrawerReport } from '../utils/reports';
+import { Colors, Fonts } from '../../utils';
+import { isCashDrawerReport } from '../../utils/reports';
 import { RFValue } from 'react-native-responsive-fontsize';
 import TableComponent from './TableComponent';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
-import Loader from './loader';
+import Loader from '../loader';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-easy-toast';
-import Header from './Header';
-import ReportService from '../services/ReportService';
+import Header from '../Header';
+import ReportService from '../../services/ReportService';
 import Button from './Button';
 import InputField from './InputField';
-import SearchableDropDown from './searchableDropdown';
-import { Images } from '../utils';
+import SearchableDropDown from '../searchableDropdown';
+import { Images } from '../../utils';
 import Modal from 'react-native-modal';
 import { useSelector } from 'react-redux';
-import SearchInputComponent from './SearchInputComponent';
-import filterConfig from '../helper/filterConfig';
+import InputComponent from '../InputComponent';
+import filterConfig from '../../helper/filterConfig';
 import PaginationComponent from './Paginator';
+import ModalComponent from './Model';
 
 
 const ReportComponent = ({
@@ -98,7 +99,7 @@ const ReportComponent = ({
 
 
   useEffect(() => {
-    if(filtered && !(isCashDrawerReport(currentRouteName)) && !(data.length === 0)) {
+    if(filtered && !(data.length === 0)) {
         filter();
       }
   }, [sortDirection, sortColumn])
@@ -136,9 +137,7 @@ const ReportComponent = ({
         setLoading(false);
 
     } catch (error) {
-      console.log('fetch');
       setLoading(false);
-      console.error(error);
     }
   };
   
@@ -180,7 +179,7 @@ const ReportComponent = ({
     } catch (error) {
       setData([]);
       setLoading(false);
-      //showToast(typeof error === 'string' ? error : error.message);
+      showToast(typeof error === 'string' ? error : error.message);
     }
   };
   useEffect(()=> {
@@ -301,11 +300,12 @@ const ReportComponent = ({
         <View />
       )}
       {isCashDrawerReport(currentRouteName)? <View/> : 
-      <SearchInputComponent 
+      <InputComponent 
       placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
       placeholderColor={Colors.grey}
-      onSearch={handleSearch}
+      onTextChange={handleSearch}
       value={searchValue}
+      debounceEnabled={true}
     />
       }
       <View
@@ -399,155 +399,29 @@ const ReportComponent = ({
         opacity={0.8}
       />
       {stockInputField ? 
-      (<Modal
-        statusBarTranslucent={true}
-        isVisible={stocksModal}
-        onBackButtonPress={() => setStocksModal(false)}
-        onBackdropPress={() => setStocksModal(false)}
-        onRequestClose={() => setStocksModal(false)}>
-        <View
-          style={{
-            padding: RFValue(15),
-            backgroundColor: Colors.white,
-            borderRadius: RFValue(10),
-            marginVertical: RFValue(40),
-          }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                fontSize: RFValue(20),
-                flex: 1,
-              }}>
-              {stockPlaceholder}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setStocksModal(false);
-              }}>
-              <Image
-                source={Images.close}
-                style={{
-                  height: RFValue(20),
-                  width: RFValue(20),
-                  resizeMode: 'contain',
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <SearchableDropDown
-            onItemSelect={item => {
-              setStockGroup(item);
-              setStocksModal(false);
-            }}
-            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
-            textInputStyle={{
-              padding: 12,
-              borderWidth: 1,
-              borderRadius: RFValue(10),
-              fontFamily: Fonts.family.bold,
-              borderColor: '#ccc',
-              backgroundColor: Colors.white,
-            }}
-            itemStyle={{
-              padding: 10,
-              backgroundColor: '#FAF9F8',
-              borderBottomColor: Colors.light_grey,
-              borderBottomWidth: 1,
-            }}
-            itemTextStyle={{
-              color: Colors.black,
-              fontFamily: Fonts.family.bold,
-            }}
-            itemsContainerStyle={{
-              height: '60%',
-              // flex: 0.6,
-            }}
-            items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
-            placeholder={stockPlaceholder + '...'}
-            resetValue={false}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-      </Modal>) : (<View />) }
-
+      (<ModalComponent isVisible={stocksModal}
+        onClose={() => setStocksModal(false)} 
+        items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
+        onItemSelect={item => {
+         setStockGroup(item);
+         setStocksModal(false);
+       }}
+       placeholder={stockPlaceholder + '...'}
+       modalTitle={stockPlaceholder}
+       />
+ ) :(<View />)}
       {warehouseInputField ? 
-      (
-      <Modal
-        statusBarTranslucent={true}
-        isVisible={warehouseModal}
-        onBackButtonPress={() => setWarehouseModal(false)}
-        onBackdropPress={() => setWarehouseModal(false)}
-        onRequestClose={() => setWarehouseModal(false)}>
-        <View
-          style={{
-            padding: RFValue(15),
-            backgroundColor: Colors.white,
-            borderRadius: RFValue(10),
-            marginVertical: RFValue(40),
-          }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
-              style={{
-                fontFamily: Fonts.family.bold,
-                fontSize: RFValue(20),
-                flex: 1,
-              }}>
-              {wearhousePlaceholder}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setWarehouseModal(false);
-              }}>
-              <Image
-                source={Images.close}
-                style={{
-                  height: RFValue(20),
-                  width: RFValue(20),
-                  resizeMode: 'contain',
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <SearchableDropDown
-            onItemSelect={item => {
+      ( <ModalComponent isVisible={warehouseModal}
+             onClose={() => setWarehouseModal(false)} 
+             items={warehouses.length ? warehouses.map(item => item.cwhsdesc) : []}
+             onItemSelect={item => {
               setWarehouse(item);
               setWarehouseModal(false);
             }}
-            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
-            textInputStyle={{
-              padding: 12,
-              borderWidth: 1,
-              borderRadius: RFValue(10),
-              fontFamily: Fonts.family.bold,
-              borderColor: '#ccc',
-              backgroundColor: Colors.white,
-            }}
-            itemStyle={{
-              padding: 10,
-              backgroundColor: '#FAF9F8',
-              borderBottomColor: Colors.light_grey,
-              borderBottomWidth: 1,
-            }}
-            itemTextStyle={{
-              color: Colors.black,
-              fontFamily: Fonts.family.bold,
-            }}
-            itemsContainerStyle={{
-              height: '60%',
-              // flex: 0.6,
-            }}
-            items={
-              warehouses.length ? warehouses.map(item => item.cwhsdesc) : []
-            }
             placeholder={wearhousePlaceholder + '...'}
-            resetValue={false}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-      </Modal> ) :(<View />) } 
+            modalTitle={wearhousePlaceholder}
+            />
+      ) :(<View />) } 
 
       {loading && <Loader />}
     </View>

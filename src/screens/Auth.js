@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import {Platform} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-easy-toast';
 import {RFValue} from 'react-native-responsive-fontsize';
@@ -19,28 +20,32 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import ApiService from '../services/ApiService';
 import {Endpoints, Images} from '../utils';
-import {login, setIpAddress} from '../redux/reducers/authSlice';
-
+import {
+  login,
+  setIpAddress,
+  setIsRegistered,
+} from '../redux/reducers/authSlice';
 import {Fonts, Colors, Commons} from '../utils';
 import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
 import {setDataBase} from '../redux/reducers/connectionStringSlice';
-import {setRoutePermissions} from '../redux/reducers/menuSlice';
-import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
+import {
+  setReportPermissions,
+  setAdministrationPermissions,
+} from '../redux/reducers/menuSlice';
+import {fetchAndSetLocaleData} from '../redux/reducers/localeSlice';
+import DeviceInfo from 'react-native-device-info';
 
 const Auth = props => {
   const dispatch = useDispatch();
   const toastRef = useRef(null);
   const ipAddressRef = useRef(null);
-  const emailRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
-
   const {ipAddress} = useSelector(state => state.Auth);
   const [hidePassword, setHidePassword] = useState(true);
   const [ipAddressNew, setIPAddress] = useState(ipAddress ? ipAddress : '');
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const {database} = useSelector(state => state.ConnectionString);
@@ -81,8 +86,7 @@ const Auth = props => {
         }
         setDatabases(dataToPopulate);
       })
-      .catch(err => {
-      });
+      .catch(err => {});
   };
 
   const validate = () => {
@@ -109,26 +113,31 @@ const Auth = props => {
     setLoading(true);
   };
 
+  
+  // Login function
   const performLogin = async () => {
-    let body = {
-      username,
-      password,
-    };
+    try {
+      // Proceed with the login API call
+      const body = {
+        username,
+        password,
+      };
 
-    await ApiService.post(Endpoints.login, body)
-      .then((res) => {
-        if (res.data.success) {
-          dispatch(login());
-          dispatch(setRoutePermissions(res.data.data));
-          dispatch(fetchAndSetLocaleData('id'));
-          Commons.reset(props.navigation, 'dashboard');
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        setLoading(false);
-        showToast(typeof err === 'string' ? err : err.message);
-      });
+      const res = await ApiService.post(Endpoints.login, body);
+      if (res.data.success) {
+        dispatch(login(username));
+        dispatch(setReportPermissions(res.data.data));
+        dispatch(setAdministrationPermissions(res.data.data));
+        dispatch(fetchAndSetLocaleData('id'));
+        Commons.reset(props.navigation, 'dashboard');
+      } else {
+        showToast(res.data.message || 'Login failed');
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || err.message || 'Login failed';
+      showToast(errorMessage);
+    }
   };
 
   return (
@@ -320,6 +329,7 @@ const Auth = props => {
             textInputStyle={{
               padding: 12,
               borderWidth: 1,
+              color: Colors.black,
               borderRadius: RFValue(10),
               fontFamily: Fonts.family.bold,
               borderColor: '#ccc',
@@ -341,6 +351,7 @@ const Auth = props => {
             }}
             items={databases}
             placeholder={'Select a database...'}
+            placeholderTextColor={Colors.grey}
             resetValue={false}
             underlineColorAndroid="transparent"
           />

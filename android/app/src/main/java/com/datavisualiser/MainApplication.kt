@@ -1,4 +1,4 @@
-package com.datavisualiser
+package isx.com
 
 import android.app.Application
 import com.facebook.react.PackageList
