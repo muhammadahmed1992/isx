@@ -19,15 +19,30 @@ export class TransactionService {
     }
   }
   static async fetchCustomers() {
+    try {
     const res = await ApiService.get(Endpoints.fetchCustomers);
     return res.data;
+    }
+    catch (err) {
+      throw new Error(err.message);
+    }
   }
   static async fetchSalesmen() {
+    try {
     const res = await ApiService.get(Endpoints.fetchSalesmen);
     return res.data;
+    }
+    catch (err) {
+      throw new Error(err.message);
+    }
   }
   static async postInvoiceFormData(endPoint, body) {
+    try {
     const res = await ApiService.post(endPoint, body);
     return res;
+    }
+    catch (err) {
+      throw new Error(err.message);
+    }
   }
 }

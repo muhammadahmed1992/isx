@@ -6,7 +6,6 @@ const TransactionModuleScreen = ({navigation, route}) => {
       endPoints,
       paymentDetails
     } = route.params; 
-    console.log(route.params)
     const currentRouteName = route.name;
     return (<TransactionModuleComponent navigation={navigation} currentRouteName={currentRouteName} paymentDetails={paymentDetails} label={label} endPoints={endPoints}/>);
 }

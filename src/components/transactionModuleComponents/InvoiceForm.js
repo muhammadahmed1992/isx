@@ -25,7 +25,7 @@ const InvoiceForm = ({
       setFormData(initialFormData);
       setInvoiceFormData(initialFormData);
     }
-  }, [data, formData, setInvoiceFormData]);
+  }, [data]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({

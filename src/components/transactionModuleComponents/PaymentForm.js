@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import InputComponent from '../InputComponent';
 import { Colors } from '../../utils';
+import { compose } from 'redux';
 
 const PaymentDetailForm = ({
   data,
@@ -10,13 +11,12 @@ const PaymentDetailForm = ({
 }) => {
   const [formData, setFormData] = useState({});
   const [paymentValues, setPaymentValues] = useState({
-    cash: 0,
-    online: 0,
-    creditCard: 0,
-    debitCard: 0,
-    voucher: 0,
+    cash: data.cash,
+    online: data.online,
+    creditCard: data.creditCard,
+    debitCard: data.debitCard,
+    voucher: data.voucher,
   });
-
   useEffect(() => {
     if (data && Object.keys(formData).length === 0) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
@@ -30,8 +30,11 @@ const PaymentDetailForm = ({
   }, [data, formData, setPaymentFormData]);
 
   const handleInputChange = (field, value) => {
-    const parsedValue = parseInt(value) || 0; 
+    console.log(field);
+    console.log(value);
 
+    const parsedValue = parseInt(value) || 0; 
+    console.log(parsedValue);
     // Update the payment values
     setPaymentValues(prev => ({
       ...prev,
@@ -51,10 +54,12 @@ const PaymentDetailForm = ({
     // Update formData and paymentFormData with the new values
     setFormData(prev => ({
       ...prev,
+      [field]: parsedValue,
       change: change,
     }));
     setPaymentFormData(prev => ({
       ...prev,
+      [field]: parsedValue,
       change: change,
     }));
   };
@@ -64,7 +69,6 @@ const PaymentDetailForm = ({
       {Object.keys(headers).map((prompt, index) => {
         const fieldKey = !data ? '' : Object.keys(data)[index];
         const fieldValue = formData[fieldKey] || 0;
-        console.log(fieldKey, fieldValue);
         
         return (
           <View key={index} style={styles.inputContainer}>

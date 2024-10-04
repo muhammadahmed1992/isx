@@ -14,15 +14,18 @@ const Button = ({onPress, title, buttonStyle, textStyle, enabled}) => {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 15,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: Colors.primary,
     borderRadius: 4,
   },
   text: {
     fontFamily: Fonts.family.bold,
     color: Colors.white,
     textAlign: 'center',
+    width: 110,
+    flexWrap: 'wrap'
   },
 });
 

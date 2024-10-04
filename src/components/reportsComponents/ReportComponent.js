@@ -99,7 +99,7 @@ const ReportComponent = ({
 
 
   useEffect(() => {
-    if(filtered && !(isCashDrawerReport(currentRouteName)) && !(data.length === 0)) {
+    if(filtered && !(data.length === 0)) {
         filter();
       }
   }, [sortDirection, sortColumn])
@@ -137,9 +137,7 @@ const ReportComponent = ({
         setLoading(false);
 
     } catch (error) {
-      console.log('fetch');
       setLoading(false);
-      console.error(error);
     }
   };
   
@@ -181,7 +179,7 @@ const ReportComponent = ({
     } catch (error) {
       setData([]);
       setLoading(false);
-      //showToast(typeof error === 'string' ? error : error.message);
+      showToast(typeof error === 'string' ? error : error.message);
     }
   };
   useEffect(()=> {

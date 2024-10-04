@@ -3,10 +3,10 @@ import { StyleSheet, View, TouchableOpacity, Text, Animated, ScrollView } from "
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Colors } from "../../utils";
 
-const CustomButton = ({ title, onPress, disabled }) => {
+const CustomButton = ({ title, onPress, disabled, finish }) => {
   return (
     <TouchableOpacity
-      style={[styles.button, disabled && styles.disabledButton]}
+      style={[styles.button, finish && styles.finishButton, disabled && styles.disabledButton]}
       onPress={onPress}
       disabled={disabled}
     >
@@ -15,7 +15,7 @@ const CustomButton = ({ title, onPress, disabled }) => {
   );
 };
 
-function Wizard({ title, children, onFinish }) {
+function Wizard({ title, children, onFinish, icons }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -54,13 +54,13 @@ function Wizard({ title, children, onFinish }) {
         <View style={styles.group}>
           {steps.map((step, index) => {
             let circleStyle = index < currentStep 
-              ? { backgroundColor: "white", borderColor: 'blue' }
+              ? { backgroundColor: "white", borderColor: Colors.primary }
               : index === currentStep
-              ? { backgroundColor: 'blue', borderColor: 'blue' } 
+              ? { backgroundColor: Colors.primary, borderColor: Colors.primary } 
               : { backgroundColor: 'white', borderColor: 'grey' };
 
             let iconColor = index < currentStep 
-              ? "blue" 
+              ? Colors.primary 
               : index === currentStep 
               ? "white" 
               : "grey";
@@ -70,7 +70,7 @@ function Wizard({ title, children, onFinish }) {
                 <View style={[styles.circle, circleStyle]}>
                   <FontAwesome5
                     size={20}
-                    name={"clipboard-list"}
+                    name={icons[index]}
                     color={iconColor}
                   />
                 </View>
@@ -100,6 +100,7 @@ function Wizard({ title, children, onFinish }) {
         />
         <CustomButton
           title={currentStep === steps.length - 1 ? "Finish" : "Next"}
+          finish={currentStep === steps.length - 1}
           onPress={() => {
             if (currentStep === steps.length - 1) {
               handleFinish(); // Call onFinish on the last step
@@ -115,14 +116,17 @@ function Wizard({ title, children, onFinish }) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#007BFF",
+    backgroundColor: Colors.primary,
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 5,
     alignItems: "center",
   },
   disabledButton: {
-    backgroundColor: "#d3d3d3",
+    backgroundColor: Colors.grey,
+  },
+  finishButton: {
+    backgroundColor: Colors.black
   },
   buttonText: {
     color: "#FFFFFF",
@@ -131,6 +135,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    backgroundColor: Colors.white,
     flexDirection: "column",
     height: "100%",
     width: "100%",
@@ -159,7 +164,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "grey",
     textAlign: "center",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    width: 100, // Define a width for the Text component (adjust as needed)
+    flexWrap: "wrap", // Ensure the text wraps within the given width
+    alignSelf: "center", // Keep it centered within the parent container
   },
   rect: {
     position: "absolute",

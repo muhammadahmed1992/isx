@@ -1,5 +1,6 @@
 export default {
   login: 'andriod2/auth/validate',
+  licenseValidation: 'admin/validate/license?imei=',
   localization: 'localization/translations/',
   scanBarcode: 'reports/stock-search-barcode?stockId=',
   priceReport: 'reports/price-list',
