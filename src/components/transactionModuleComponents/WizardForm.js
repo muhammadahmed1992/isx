@@ -4,10 +4,10 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Colors } from "../../utils";
 import Alert from '../AlertComponent'; // Import the Alert Component
 
-const CustomButton = ({ title, onPress, disabled, finish }) => {
+const CustomButton = ({ title, onPress, disabled, style, finish }) => {
   return (
     <TouchableOpacity
-      style={[styles.button, finish && styles.finishButton, disabled && styles.disabledButton]}
+      style={[style? style : styles.defaultButton, styles.button, finish && styles.finishButton, disabled && styles.disabledButton]}
       onPress={onPress}
       disabled={disabled}
     >
@@ -16,7 +16,7 @@ const CustomButton = ({ title, onPress, disabled, finish }) => {
   );
 };
 
-function Wizard({ title, children, onFinish, icons }) {
+function Wizard({ title, children, onFinish, icons, onNew }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showFinishAlert, setShowFinishAlert] = useState(false); // State to handle the finish alert
@@ -99,6 +99,11 @@ function Wizard({ title, children, onFinish, icons }) {
           disabled={currentStep === 0}
         />
         <CustomButton
+          title={"New"}
+          onPress={onNew}
+          style={styles.newButton}
+        />
+        <CustomButton
           title={currentStep === steps.length - 1 ? "Finish" : "Next"}
           finish={currentStep === steps.length - 1}
           onPress={() => {
@@ -128,8 +133,10 @@ function Wizard({ title, children, onFinish, icons }) {
 }
 
 const styles = StyleSheet.create({
+  defaultButton: {
+    backgroundColor: Colors.primary
+  },
   button: {
-    backgroundColor: Colors.primary,
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 5,
@@ -140,6 +147,9 @@ const styles = StyleSheet.create({
   },
   finishButton: {
     backgroundColor: Colors.red
+  },
+  newButton: {
+    backgroundColor: Colors.blue
   },
   buttonText: {
     color: "#FFFFFF",

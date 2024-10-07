@@ -88,10 +88,6 @@ const TransactionModuleComponent = ({
     } catch (error) {}
   };
 
-  const showToast = msg => {
-    toastRef.current.show(msg, 2000);
-  };
-
   function findObjectByValue(inputString, objects) {
     for (const obj of objects) {
       const key = Object.keys(obj)[0];
@@ -164,6 +160,15 @@ const TransactionModuleComponent = ({
     const customerResponse = await TransactionService.fetchCustomers();
     const salesmenResponse = await TransactionService.fetchSalesmen();
     setTableFormData([]);
+    setPaymentData({
+      total: 0,
+      voucher: 0,
+      cash: 0,
+      creditCard: 0,
+      debitCard: 0,
+      online: 0,
+      change: 0,
+    });
     setCustomers(customerResponse.data);
     setSalesmen(salesmenResponse.data);
     setInvoiceFormData(invoiceData.data);
@@ -180,6 +185,7 @@ const TransactionModuleComponent = ({
       <Header label={localizedLabel[label]} navigation={navigation} />
       <View style={styles.wizardContainer}>
         <Wizard
+          onNew={fetchData}
           onFinish={async () => {
             try {
               if (

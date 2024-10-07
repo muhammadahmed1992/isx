@@ -57,12 +57,6 @@ const TableForm = ({
     setTableFormData(newData);
   };
 
-  const formatNumber = number => {
-    return parseInt(number)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
   const handleAddItem = item => {
     if (tableData.length >= 3 && !isRegistered) {
       showCustomAlert('Limit reached', 'You cannot add more than 3 items.');
@@ -81,7 +75,7 @@ const TableForm = ({
         </Text>
         {isNotStock && (
           <Text style={[styles.cell, styles.cellNumber, styles.cellPrice]}>
-            {formatNumber(item.price)}
+            {Commons.formatNumber(item.price)}
           </Text>
         )}
 
@@ -94,7 +88,7 @@ const TableForm = ({
 
         {isNotStock && (
           <Text style={[styles.cell, styles.cellNumber]}>
-            {formatNumber(calculateAmount(item.price, item.qty))}
+            {Commons.formatNumber(calculateAmount(item.price, item.qty))}
           </Text>
         )}
       </View>
@@ -242,12 +236,12 @@ const TableForm = ({
                   styles.cellNumber,
                   styles.cellQty,
                 ]}>
-                {formatNumber(totalQuantity)}
+                {Commons.formatNumber(totalQuantity)}
               </Text>
               {isNotStock && (
                 <Text
                   style={[styles.cell, styles.headerText, styles.cellNumber]}>
-                  {formatNumber(totalAmount)}
+                  {Commons.formatNumber(totalAmount)}
                 </Text>
               )}
             </View>

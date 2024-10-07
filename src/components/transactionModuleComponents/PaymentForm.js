@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import InputComponent from '../InputComponent';
-import { Colors } from '../../utils';
-import { compose } from 'redux';
+import { Colors, Commons } from '../../utils';
 
 const PaymentDetailForm = ({
   data,
@@ -10,7 +9,7 @@ const PaymentDetailForm = ({
   setPaymentFormData,
   setPaymentComplete,
 }) => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(data);
   const [paymentValues, setPaymentValues] = useState({
     cash: data.cash,
     online: data.online,
@@ -24,18 +23,13 @@ const PaymentDetailForm = ({
         acc[key] = data[key];
         return acc;
       }, {});
-      console.log({ initialFormData });
       setFormData(initialFormData);
       setPaymentFormData(initialFormData);
     }
-  }, [data, formData, setPaymentFormData]);
+  }, [data, formData]);
 
   const handleInputChange = (field, value) => {
-    console.log(field);
-    console.log(value);
-
     const parsedValue = parseInt(value) || 0; 
-    console.log(parsedValue);
     // Update the payment values
     setPaymentValues(prev => ({
       ...prev,
@@ -86,7 +80,7 @@ const PaymentDetailForm = ({
                 handleInputChange(fieldKey, text);
               }}
               disabled={['total', 'change'].includes(prompt)}
-              value={fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString()} // Display payment value
+              value={Commons.formatBalance(fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString())} // Display payment value
               icon={false}
               debounceEnabled={false}
             />
