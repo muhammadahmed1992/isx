@@ -8,6 +8,7 @@ const PaymentDetailForm = ({
   data,
   headers,
   setPaymentFormData,
+  setPaymentComplete,
 }) => {
   const [formData, setFormData] = useState({});
   const [paymentValues, setPaymentValues] = useState({
@@ -49,8 +50,13 @@ const PaymentDetailForm = ({
 
     // Calculate change
     const total = parseInt(formData.total) || 0; 
-    const change = totalPayment - total;
-
+    let change = totalPayment - total;
+    if (change < 0) {
+      change = 0;
+      setPaymentComplete(false);
+    } else {
+      setPaymentComplete(true);
+    }
     // Update formData and paymentFormData with the new values
     setFormData(prev => ({
       ...prev,
@@ -79,6 +85,7 @@ const PaymentDetailForm = ({
               onTextChange={text => {
                 handleInputChange(fieldKey, text);
               }}
+              disabled={['total', 'change'].includes(prompt)}
               value={fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString()} // Display payment value
               icon={false}
               debounceEnabled={false}

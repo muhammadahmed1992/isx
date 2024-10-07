@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, Animated, ScrollView } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Colors } from "../../utils";
+import Alert from '../AlertComponent'; // Import the Alert Component
 
 const CustomButton = ({ title, onPress, disabled, finish }) => {
   return (
@@ -18,6 +19,7 @@ const CustomButton = ({ title, onPress, disabled, finish }) => {
 function Wizard({ title, children, onFinish, icons }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [showFinishAlert, setShowFinishAlert] = useState(false); // State to handle the finish alert
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -43,9 +45,7 @@ function Wizard({ title, children, onFinish, icons }) {
   };
 
   const handleFinish = () => {
-    if (onFinish) {
-      onFinish();
-    }
+    setShowFinishAlert(true); // Trigger the alert
   };
 
   return (
@@ -103,13 +103,26 @@ function Wizard({ title, children, onFinish, icons }) {
           finish={currentStep === steps.length - 1}
           onPress={() => {
             if (currentStep === steps.length - 1) {
-              handleFinish(); // Call onFinish on the last step
+              handleFinish(); // Call handleFinish on the last step
             } else {
               handleNext();
             }
           }}
         />
       </View>
+
+      {/* Confirmation Alert on Finish */}
+      {showFinishAlert && (
+        <Alert
+          title="Confirmation"
+          message="Do you want to proceed?"
+          onOkPress={() => {
+            onFinish();
+            setShowFinishAlert(false);
+          }}
+          onCancelPress={() => {setShowFinishAlert(false)}}
+        />
+      )}
     </View>
   );
 }
@@ -126,7 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grey,
   },
   finishButton: {
-    backgroundColor: Colors.black
+    backgroundColor: Colors.red
   },
   buttonText: {
     color: "#FFFFFF",

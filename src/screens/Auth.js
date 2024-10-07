@@ -32,6 +32,7 @@ import {setDataBase} from '../redux/reducers/connectionStringSlice';
 import {
   setReportPermissions,
   setAdministrationPermissions,
+  setTransactionModulePermissions,
 } from '../redux/reducers/menuSlice';
 import {fetchAndSetLocaleData} from '../redux/reducers/localeSlice';
 import DeviceInfo from 'react-native-device-info';
@@ -128,6 +129,7 @@ const Auth = props => {
         dispatch(login(username));
         dispatch(setReportPermissions(res.data.data));
         dispatch(setAdministrationPermissions(res.data.data));
+        dispatch(setTransactionModulePermissions(res.data.data));
         dispatch(fetchAndSetLocaleData('id'));
         Commons.reset(props.navigation, 'dashboard');
       } else {

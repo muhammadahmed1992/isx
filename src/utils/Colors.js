@@ -7,4 +7,5 @@ export default {
   grey: '#A2A2A2',
   light_grey: '#FAFAFA',
   cart_bg: '#F1F1F1',
+  blue: '#007FFF',
 };

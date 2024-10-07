@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawer from '../components/CustomDrawer';
-import { Fonts } from '../utils';
+import { Colors, Fonts } from '../utils';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import { Splash, Auth } from '../screens';
 
@@ -57,7 +57,8 @@ export default function StackNavigation() {
             options={{
               headerShown: false,
               drawerLabel: menu[screen.label],
-              drawerIcon: ({ color, size }) => screen.icon(color, size),
+              drawerLabelStyle: {color: Colors.red, marginLeft: -25, fontFamily: Fonts.family.bold},
+              drawerIcon: ({ color, size }) => screen.icon(Colors.red, size),
               lazy: true,
             }}
             component={screen.component}
@@ -70,8 +71,8 @@ export default function StackNavigation() {
             name={screen.name}
             options={{
               headerShown: false,
-              drawerLabel: menu[screen.label],
-              drawerIcon: ({ color, size }) => screen.icon(color, size),
+              drawerLabel: menu[screen.label],drawerLabelStyle: {color: Colors.blue, marginLeft: -25, fontFamily: Fonts.family.bold},
+              drawerIcon: ({ color, size }) => screen.icon(Colors.blue, size),
               lazy: true,
             }}
             component={screen.component}

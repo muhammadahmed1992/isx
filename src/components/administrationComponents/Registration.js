@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Text, View, TextInput, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import Button from '../reportsComponents/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRegistrationKey } from '../../redux/reducers/registrationSlice';
@@ -10,12 +10,16 @@ import DeviceInfo from 'react-native-device-info';
 import Clipboard from '@react-native-clipboard/clipboard'; // Clipboard import
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the Icon
 import ApiService from '../../services/ApiService';
-import {Endpoints} from '../../utils';
+import { Endpoints } from '../../utils';
+import CustomAlert from '../AlertComponent'; // Use the CustomAlert Component
 
 const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
   const [registrationKey, setRegistrationKeyValue] = useState('');
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [imei, setImei] = useState(''); // IMEI state
+  const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
+  const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
+  const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const dispatch = useDispatch();
   const menu = useSelector(state => state.Locale.menu);
   const registrationKeyInputRef = useRef(null);
@@ -35,34 +39,41 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
       const imei = await DeviceInfo.getUniqueId();
       return imei;
     } catch (error) {
+      showCustomAlert('Error', 'Failed to retrieve device identifier');
     }
   }
 
   const handleSubmit = async () => {
-    if (registrationKey.length !== 6) {
-      Alert.alert('Invalid Key', 'Please enter a valid registration key');
+    if (registrationKey.length !== 5) {
+      showCustomAlert('Invalid Key', 'Please enter a valid registration key');
       return;
     }
     const deviceIdentifier = await fetchImei();
-    if (!deviceIdentifier) {
-      showToast('Failed to retrieve device identifier');
-    }
-    const licenseValidationResonse = await ApiService.get(
+    if (!deviceIdentifier) return;
+
+    const licenseValidationResponse = await ApiService.get(
       Endpoints.licenseValidation + deviceIdentifier,
     );
-    const hashedDeviceId = licenseValidationResonse.data.data; 
+    const hashedDeviceId = licenseValidationResponse.data.data; 
+    
     // Compare the hashed device identifier with the registration key
     if (hashedDeviceId === registrationKey) {
       dispatch(setRegistrationKey(registrationKey));
       dispatch(setIsRegistered(true));
+      showCustomAlert('Success', 'Registration key has been set');
     } else {
       dispatch(setIsRegistered(false));
-      Alert.alert('Invalid Key', 'Please enter a valid registration key');
+      showCustomAlert('Invalid Key', 'Please enter a valid registration key');
     }
-     // Dispatch the action to set the registration key in Redux
-    Alert.alert('Success', 'Registration key has been set');
+
     setRegistrationKeyValue(''); // Clear the input field
     registrationKeyInputRef.current.blur(); // Dismiss the keyboard
+  };
+
+  const showCustomAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
   };
 
   const copyToClipboard = () => {
@@ -84,7 +95,7 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
         returnKeyType="done"
         onSubmitEditing={handleSubmit}
       />
-      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
         <Button title={menu['set_key']} onPress={handleSubmit} />
         <Button title={menu['get_dev_num']} onPress={handleGetIMEI} color="#841584" />
       </View>
@@ -99,7 +110,7 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>{menu['dev_num']}</Text>
-            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
               <Text style={styles.imeiText}>{imei}</Text>
               <TouchableOpacity style={styles.iconContainer} onPress={copyToClipboard}>
                 <Icon name="content-copy" size={24} color={Colors.black} />
@@ -109,6 +120,14 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Custom Alert Component */}
+      <CustomAlert
+        visible={alertVisible}
+        onOkPress={() => setAlertVisible(false)}
+        title={alertTitle}
+        message={alertMessage}
+      />
     </View>
   );
 };

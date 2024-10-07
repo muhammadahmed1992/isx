@@ -19,6 +19,7 @@ const CustomDrawer = props => {
   const {host, username, database} = useSelector(
     state => state.ConnectionString,
   );
+  const isRegistered = useSelector(state => state.Auth.isRegistered);
   const {ipAddress} = useSelector(state => state.Auth);
 
   return (
@@ -45,6 +46,9 @@ const CustomDrawer = props => {
           </Text>
           <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>
             {database ? `${database}` : ''}
+          </Text>
+          <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>
+            {(isRegistered ? 'Registered' : 'Demo') + 'Version'}
           </Text>
         </View>
         <ScrollView>

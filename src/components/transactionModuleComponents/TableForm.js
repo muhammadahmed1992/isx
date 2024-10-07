@@ -13,6 +13,7 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {Colors, Fonts, Commons} from '../../utils';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import InputComponent from '../InputComponent';
+import CustomAlert from '../AlertComponent';
 
 const TableForm = ({
   navigation,
@@ -25,9 +26,18 @@ const TableForm = ({
   isNotStock,
 }) => {
   const [tableData, setTableData] = useState(data);
+  const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
+  const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
+  const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const menu = useSelector(state => state.Locale.menu);
   // Get the isRegistered flag from Redux
   const isRegistered = useSelector(state => state.Auth.isRegistered);
+
+  const showCustomAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
 
   const calculateAmount = (price, qty, tax = 0) => {
     return (
@@ -55,7 +65,7 @@ const TableForm = ({
 
   const handleAddItem = item => {
     if (tableData.length >= 3 && !isRegistered) {
-      Alert.alert('Limit reached', 'You cannot add more than 3 items.');
+      showCustomAlert('Limit reached', 'You cannot add more than 3 items.');
       return;
     }
     handleBarcodeRead(item);
@@ -64,9 +74,6 @@ const TableForm = ({
   const renderRow = (item, index) => {
     return (
       <View key={index} style={styles.row}>
-        <Text style={[styles.cell, styles.cellNumber, styles.cellID]}>
-          {index + 1}
-        </Text>
         <Text style={[styles.cell, styles.cellText]}>
           {item.stock_id_header}
           {'\n'}
@@ -160,9 +167,11 @@ const TableForm = ({
         </TouchableOpacity>
         <View style={{marginBottom: 10, width: '100%'}}>
           <InputComponent
+            value={''}
             placeholder={menu['enter_stock_id']}
             debounceEnabled={false}
             icon={true}
+            isUpperCase={true}
             iconComponent={
               <FontAwesome5Icon name="plus" size={20} color={Colors.primary} />
             }
@@ -174,9 +183,6 @@ const TableForm = ({
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View>
             <View style={[styles.row, styles.header]}>
-              <Text style={[styles.cell, styles.headerText, styles.cellID]}>
-                {headers['id']}
-              </Text>
               <Text style={[styles.cell, styles.headerText]}>
                 {headers['item_header']}
               </Text>
@@ -216,15 +222,6 @@ const TableForm = ({
                   styles.cell,
                   styles.headerText,
                   styles.cellText,
-                  styles.cellID,
-                ]}>
-                Total
-              </Text>
-              <Text
-                style={[
-                  styles.cell,
-                  styles.headerText,
-                  styles.cellText,
                   {textAlign: 'center'},
                 ]}>
                 {tableData.length}
@@ -257,6 +254,12 @@ const TableForm = ({
           </View>
         </ScrollView>
       </View>
+      <CustomAlert
+        visible={alertVisible}
+        onOkPress={() => setAlertVisible(false)}
+        title={alertTitle}
+        message={alertMessage}
+      />
     </View>
   );
 };
@@ -273,19 +276,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000',
   },
   cellQty: {
-    width: 50,
     textAlign: 'center',
   },
   cellID: {
-    width: 75,
     textAlign: 'left',
   },
   cellPrice: {
-    width: 75,
     textAlign: 'left',
   },
   cell: {
-    width: 90,
+    width: 120,
     paddingHorizontal: RFValue(6),
     paddingVertical: RFValue(6),
   },

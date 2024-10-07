@@ -11,6 +11,7 @@ import Loader from '../loader';
 import ApiService from '../../services/ApiService';
 import {useSelector} from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
+import CustomAlert from '../AlertComponent';
 
 const TransactionModuleComponent = ({
   navigation,
@@ -24,6 +25,9 @@ const TransactionModuleComponent = ({
   const loggedInUser = store.getState().Auth.user;
   const isStock = currentRouteName === 'stock_adjusment';
   const [invoiceFormData, setInvoiceFormData] = useState();
+  const [paymentComplete, setPaymentComplete] = useState(
+    !(currentRouteName === 'point_of_sale_transaction'),
+  );
   const [loading, setLoading] = useState(false);
   const [tableForm, setTableFormData] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -33,6 +37,9 @@ const TransactionModuleComponent = ({
   const [postObject, setPostObject] = useState();
   const [onPost, setOnPost] = useState(false);
   const [total, setTotal] = useState(0);
+  const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
+  const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
+  const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const [paymentData, setPaymentData] = useState({
     total: 0,
     voucher: 0,
@@ -55,9 +62,12 @@ const TransactionModuleComponent = ({
       ? useSelector(state => state.Locale.headers[currentRouteName].payment)
       : {};
 
-  const removePkField = dataArray => {
-    return dataArray.map(({pk, ...rest}) => rest);
+  const showCustomAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
   };
+
   useEffect(() => {
     setPaymentData(prev => ({
       ...prev,
@@ -81,6 +91,7 @@ const TransactionModuleComponent = ({
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
+
   function findObjectByValue(inputString, objects) {
     for (const obj of objects) {
       const key = Object.keys(obj)[0];
@@ -171,16 +182,40 @@ const TransactionModuleComponent = ({
         <Wizard
           onFinish={async () => {
             try {
-              if (tableForm.length !== 0 && selectedCustomer.pk) {
+              if (
+                tableForm.length !== 0 && // Table form check for all routes
+                paymentComplete &&
+                (currentRouteName === 'sales_transaction' ||
+                currentRouteName === 'sales_order_transaction'
+                  ? selectedCustomer.pk
+                  : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
+              ) {
                 setLoading(true);
-                const res = await TransactionService.postInvoiceFormData(
-                  endPoints.sendInvoice,
-                  postObject,
-                );
+                // const res = await TransactionService.postInvoiceFormData(
+                //   endPoints.sendInvoice,
+                //   postObject,
+                // );
+                showCustomAlert('Sent', 'Transcation Complete');
                 setOnPost(true);
               } else {
-                Alert.alert(!selectedCustomer.pk ? "Please Select A Customer" : "Please Fill the Order Details");
+                // Display appropriate warning based on missing fields
+                let warningMessage = '';
+
+                if (tableForm.length === 0) {
+                  warningMessage = 'Please Fill the Order Details';
+                } else if (!paymentComplete) {
+                  warningMessage = 'Payment is not complete';
+                } else if (
+                  (currentRouteName === 'sales_transaction' ||
+                    currentRouteName === 'sales_order_transaction') &&
+                  !selectedCustomer.pk
+                ) {
+                  warningMessage = 'Please Select A Customer';
+                }
+
+                showCustomAlert('Warning', warningMessage);
               }
+
               setLoading(false);
             } catch (err) {}
           }}
@@ -212,6 +247,7 @@ const TransactionModuleComponent = ({
               data={paymentData}
               headers={paymentHeaders}
               setPaymentFormData={setPaymentData}
+              setPaymentComplete={setPaymentComplete}
             />
           )}
         </Wizard>
@@ -225,6 +261,12 @@ const TransactionModuleComponent = ({
         opacity={0.8}
       />
       {loading && <Loader />}
+      <CustomAlert
+        visible={alertVisible}
+        onOkPress={() => setAlertVisible(false)}
+        title={alertTitle}
+        message={alertMessage}
+      />
     </View>
   );
 };
