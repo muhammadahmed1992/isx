@@ -38,7 +38,7 @@ const SwitchDatabase = props => {
   const localizeLabel = menu[label] || label;
   const databasePrompt = menu['select_database'] || 'Select Database';
   const connect = menu['connect'] || 'Connect';
-  const clear = menu['clear'] || 'Clear';
+  const clearPlaceholder = menu['clear'] || 'Clear';
   useEffect(() => {
     fetchAllDatabases();
   },[]);
@@ -64,7 +64,6 @@ const SwitchDatabase = props => {
         setLoading(false);
       })
       .catch(err => {
-        console.log('Fetch All Databases: ', err);
         setLoading(false);
       });
   };
@@ -169,7 +168,7 @@ const SwitchDatabase = props => {
               color: Colors.white,
               textAlign: 'center',
             }}>
-            {clear}
+            {clearPlaceholder}
           </Text>
         </TouchableOpacity>
 
@@ -251,6 +250,7 @@ const SwitchDatabase = props => {
               borderWidth: 1,
               borderRadius: RFValue(10),
               fontFamily: Fonts.family.bold,
+              color: Colors.black,
               borderColor: '#ccc',
               backgroundColor: Colors.white,
             }}
@@ -270,6 +270,7 @@ const SwitchDatabase = props => {
             }}
             items={databases}
             placeholder={databasePrompt + '...'}
+            placeholderTextColor={Colors.grey}
             resetValue={false}
             underlineColorAndroid="transparent"
           />

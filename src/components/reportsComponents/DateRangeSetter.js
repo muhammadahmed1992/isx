@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, TextInput, Text, StyleSheet } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize'; // Adjust according to your setup
-import {Colors, Fonts} from '../utils';
+import {Colors, Fonts} from '../../utils';
 
 const DateRangeSetter = ({
   dateValFrom,

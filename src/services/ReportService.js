@@ -18,6 +18,12 @@ class ReportService {
     warehouse,
     stocks,
     warehouses,
+    searchValue,
+    pageSize,
+    currentPage,
+    columnsToFilter,
+    sortColumn,
+    sortDirection
   }) {
     let query = '';
 
@@ -40,6 +46,24 @@ class ReportService {
       query += `&warehouse=${encodeURIComponent(
         warehouses.find(w => w.cwhsdesc === warehouse).cwhspk,
       )}`;
+    }
+    if(searchValue) {
+      query += `&searchValue=${encodeURIComponent(searchValue)}`
+    }
+    if(pageSize) {
+      query += `&pageSize=${encodeURIComponent(pageSize)}`
+    }
+    if(currentPage) {
+      query += `&pageNumber=${encodeURIComponent(currentPage)}`
+    }
+    if(columnsToFilter) {
+      query += `&columnsToFilter=${encodeURIComponent(columnsToFilter)}`
+    }
+    if(sortColumn) {
+      query += `&sortColumn=${encodeURIComponent(sortColumn)}`
+    }
+    if(sortDirection) {
+      query += `&sortDirection=${encodeURIComponent(sortDirection)}`
     }
     if (query.startsWith('&')) {
       query = '?' + query.slice(1);
@@ -85,6 +109,12 @@ class ReportService {
     warehouse,
     stocks,
     warehouses,
+    searchValue,
+    pageSize,
+    currentPage,
+    columnsToFilter,
+    sortColumn,
+    sortDirection
   }) {
 
     const query = this.buildQuery({
@@ -94,28 +124,37 @@ class ReportService {
       warehouse,
       stocks,
       warehouses,
+      searchValue,
+      pageSize,
+      currentPage,
+      columnsToFilter,
+      sortColumn,
+      sortDirection
     });
 
     try {
       const data = await this.fetchData(endPoints, query);
-
-      if (isPriceReport(reportType)) return data.data;
-      if (isStockReport(reportType)) return processStockReportData(data);
+      const {data: reportData} = data;
+      let processedData;
+      if (isPriceReport(reportType)) processedData = reportData;
+      if (isStockReport(reportType)) processedData = processStockReportData(reportData);
       if (isCashDrawerReport(reportType))
-        return processCashDrawerReportData(data);
+        processedData = processCashDrawerReportData(reportData);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
-        return processSalesOrPurchaseReportData(data);
+        processedData =  processSalesOrPurchaseReportData(reportData);
+      return {
+        data: processedData,
+      }
     } catch (error) {
       throw new Error(error);
     }
   }
 }
 
-function processStockReportData(response) {
-  const data = response.data;
+function processStockReportData(data) {
   const result = [];
 
-  if (data.length === 0) {
+  if (!data) {
     return result;
   }
 
@@ -149,11 +188,10 @@ function processStockReportData(response) {
   return result;
 }
 
-function processSalesOrPurchaseReportData(response) {
-  const data = response.data;
+function processSalesOrPurchaseReportData(data) {
   const result = [];
 
-  if (data.length === 0) {
+  if (!data) {
     return result;
   }
 
@@ -200,10 +238,9 @@ function processSalesOrPurchaseReportData(response) {
   return result;
 }
 
-function processCashDrawerReportData(response) {
+function processCashDrawerReportData(data) {
   const runningKey = 'running_';
   const mappedData = [];
-  const data = response.data;
   const lastEntry = data[data.length - 1];
   const totalRow = {};
   data.forEach(item => {

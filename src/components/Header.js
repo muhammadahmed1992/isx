@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Commons, Colors, Fonts} from '../utils';
 import {Platform, View, TouchableOpacity, Text} from 'react-native';
-import LanguagePopup from './LanguageSelectionDialog';
+import LanguageToggle from './LanguageSelectionDialog';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -38,8 +38,8 @@ const Header = ({label, navigation}) => {
             textAlign: 'center',
           }}>
           {label}
-        </Text>
-        <LanguagePopup onClose={togglePopup} />
+        </Text> 
+        <LanguageToggle />
       </View>
     </>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Pressable, TextInput, StyleSheet} from 'react-native';
-import {Fonts, Colors} from '../utils';
+import {Fonts, Colors} from '../../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 
 const InputField = ({
@@ -33,7 +33,7 @@ const InputField = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: RFValue(10),
@@ -43,9 +43,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: RFValue(50),
+    height: RFValue(40),
     color: Colors.primary,
-    fontSize: RFValue(16),
+    fontSize: RFValue(14),
     fontFamily: Fonts.family.bold,
   },
 });

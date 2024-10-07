@@ -1,40 +1,58 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { routeConfig1 } from '../../helper/routeConfig';
+import { reportConditionsConfig, administrationConditionConfig, transactionModuleConditions } from '../../helper/routeConfig';
 
 const initialState = {
-  ...routeConfig1,
+  reports: {
+    ...reportConditionsConfig,
+  },
+  administration: {
+    ...administrationConditionConfig,
+  },
+  transactionModule: {
+    ...transactionModuleConditions
+  }
 };
 
 export const menuSlice = createSlice({
   name: 'Routes',
   initialState,
   reducers: {
-    setRoutePermissions: (state, action) => {
-      state.switch_database.condition =
-        action.payload.IsSwitchDatabase;
-      state.stock_report.condition = action.payload.IsStockReportAllowed;
-      state.sales_report.condition =
+    setReportPermissions: (state, action) => {
+      state.reports.stock_report.condition = action.payload.IsStockReportAllowed;
+      state.reports.sales_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.sales_report_2.condition =
+      state.reports.sales_report_2.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.sales_analyst_report.condition =
+      state.reports.sales_analyst_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.sales_analyst_report_2.condition =
+      state.reports.sales_analyst_report_2.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.cash_drawer_report.condition =
+      state.reports.cash_drawer_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.cash_drawer_detail_report.condition =
+      state.reports.cash_drawer_detail_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      (state.purchase_report.condition =
-        action.payload.IsPurchaseReportAllowed),
-        (state.purchase_report_no_disc.condition =
-          action.payload.IsPurchaseReportAllowed),
-        (state.purchase_analyst_report.condition =
-          action.payload.IsPurchaseReportAllowed),
-        (state.purchase_analyst_report_no_disc.condition =
-          action.payload.IsPurchaseReportAllowed);
+      state.reports.purchase_report.condition =
+        action.payload.IsPurchaseReportAllowed,
+        state.reports.purchase_report_no_disc.condition =
+          action.payload.IsPurchaseReportAllowed,
+        state.reports.purchase_analyst_report.condition =
+          action.payload.IsPurchaseReportAllowed,
+        state.reports.purchase_analyst_report_no_disc.condition =
+          action.payload.IsPurchaseReportAllowed;
     },
+    setAdministrationPermissions: (state, action) => {
+      state.administration.switch_database.condition =
+      action.payload.IsSwitchDatabase;
+        state.administration.registration.condition = 
+        true
+    },
+    setTransactionModulePermissions: (state, action) => {
+      state.transactionModule.sales.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
+      state.transactionModule.pos.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
+      state.transactionModule.sales_order.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
+      state.transactionModule.stock_adjusment = action.payload.IsStockAdjusmentAllowed;
+    }
   },
 });
-export const { setRoutePermissions } = menuSlice.actions;
+export const { setReportPermissions, setAdministrationPermissions, setTransactionModulePermissions } = menuSlice.actions;
 export default menuSlice.reducer;
