@@ -3,7 +3,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import ModalComponent from '../reportsComponents/Model';
 import InputComponent from '../InputComponent';
 import InputField from '../reportsComponents/InputField';
-import {Colors} from '../../utils';
+import {Colors, Commons} from '../../utils';
 
 const InvoiceForm = ({
   data,
@@ -97,7 +97,14 @@ const InvoiceForm = ({
             </View>
           );
         }
-
+        let value;
+        if(prompt === 'tax') {
+          value = `${fieldValue}${fieldValue.includes('%') ? '' : '%'}`;
+        } else if (prompt === 'service_charge') {
+          value = Commons.formatNumber(fieldValue);
+        } else {
+          value = fieldValue;
+        }
         return (
           <View key={index} style={styles.inputContainer}>
             <Text>{invoiceHeaderPrompts[prompt]}</Text>
@@ -109,11 +116,7 @@ const InvoiceForm = ({
                   prompt === 'tax' ? text.replace('%', '') : text; 
                 handleInputChange(fieldKey, updatedText);
               }}
-              value={
-                prompt === 'tax'
-                  ? `${fieldValue}${fieldValue.includes('%') ? '' : '%'}`
-                  : fieldValue
-              } 
+              value={value} 
               icon={false}
               debounceEnabled={false}
               disabled={isDisabled}

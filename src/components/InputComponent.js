@@ -10,12 +10,13 @@ const InputComponent = ({
   onTextChange, 
   onIconPress,
   value, 
+  isUpperCase = false,
   icon = true,
   iconComponent,
   debounceEnabled = true, 
   disabled = false,
 }) => {
-  const [localValue, setLocalValue] = useState(value);
+  const [localValue, setLocalValue] = useState(value || '');
   const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ const InputComponent = ({
 
     if (onIconPress) {
       onIconPress(localValue); 
+      setLocalValue('');
     }
   };
 
@@ -66,7 +68,7 @@ const InputComponent = ({
         style={[styles.input, disabled && styles.disabledInput]}
         placeholder={placeholder}
         placeholderTextColor={disabled ? Colors.disabledText : placeholderColor}
-        value={localValue}
+        value={isUpperCase ? localValue.toUpperCase() : localValue}
         onChangeText={handleChangeText}
         returnKeyType="search"
         editable={!disabled}  

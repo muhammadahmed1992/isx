@@ -93,6 +93,12 @@ const goBack = navigation => {
   return true;
 };
 
+const formatNumber = number => {
+  return parseInt(number)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
 const toast = message => {
   if (Platform.OS === 'android') {
     ToastAndroid.showWithGravityAndOffset(
@@ -145,4 +151,5 @@ export default {
   toast,
   checkPermissions,
   formatBalance,
+  formatNumber
 };
