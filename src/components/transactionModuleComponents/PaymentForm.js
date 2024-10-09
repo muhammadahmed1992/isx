@@ -18,6 +18,9 @@ const PaymentDetailForm = ({
     voucher: data.voucher,
   });
   useEffect(() => {
+    console.log(formData);
+  })
+  useEffect(() => {
     if (data && Object.keys(formData).length === 0) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
         acc[key] = data[key];
@@ -77,10 +80,10 @@ const PaymentDetailForm = ({
               placeholder={headers[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => {
-                handleInputChange(fieldKey, text);
+                handleInputChange(fieldKey, Commons.removeCommas(text));
               }}
               disabled={['total', 'change'].includes(prompt)}
-              value={Commons.formatBalance(fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString())} // Display payment value
+              value={Commons.formatCommaSeparated(fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString())} // Display payment value
               icon={false}
               debounceEnabled={false}
             />

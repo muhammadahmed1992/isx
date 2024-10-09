@@ -42,9 +42,6 @@ const CustomDrawer = props => {
             {ipAddress ? `${ipAddress}` : ''}
           </Text>
           <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>
-            {host ? `${username}@${host}` : ''}
-          </Text>
-          <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>
             {database ? `${database}` : ''}
           </Text>
           <Text style={{fontFamily: Fonts.family.bold, color: 'white'}}>

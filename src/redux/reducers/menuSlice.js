@@ -50,7 +50,7 @@ export const menuSlice = createSlice({
       state.transactionModule.sales.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
       state.transactionModule.pos.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
       state.transactionModule.sales_order.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
-      state.transactionModule.stock_adjusment = action.payload.IsStockAdjusmentAllowed;
+      state.transactionModule.stock_adjusment.condition = action.payload.IsStockAdjusmentAllowed;
     }
   },
 });

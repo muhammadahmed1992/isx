@@ -96,8 +96,8 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
         onSubmitEditing={handleSubmit}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title={menu['set_key']} onPress={handleSubmit} />
         <Button title={menu['get_dev_num']} onPress={handleGetIMEI} color="#841584" />
+        <Button title={menu['set_key']} onPress={handleSubmit} />
       </View>
 
       {/* Custom Modal for displaying IMEI with Copy icon */}

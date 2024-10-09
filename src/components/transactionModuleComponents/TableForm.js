@@ -52,6 +52,7 @@ const TableForm = ({
 
   const handleQtyChange = (index, qty) => {
     const newData = [...data];
+    console.log(qty);
     newData[index].qty = qty ? qty : '0'; // Ensure qty is valid
     setTableData(newData);
     setTableFormData(newData);
@@ -78,12 +79,12 @@ const TableForm = ({
             {Commons.formatNumber(item.price)}
           </Text>
         )}
-
+        
         <TextInput
           style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
           keyboardType="numeric"
-          value={item.qty}
-          onChangeText={text => handleQtyChange(index, text)} // Update qty
+          value={Commons.formatCommaSeparated(item.qty)}
+          onChangeText={text => handleQtyChange(index, Commons.removeCommas(text))} // Update qty
         />
 
         {isNotStock && (
