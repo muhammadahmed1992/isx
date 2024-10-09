@@ -197,10 +197,10 @@ const TransactionModuleComponent = ({
                   : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
               ) {
                 setLoading(true);
-                // const res = await TransactionService.postInvoiceFormData(
-                //   endPoints.sendInvoice,
-                //   postObject,
-                // );
+                const res = await TransactionService.postInvoiceFormData(
+                  endPoints.sendInvoice,
+                  postObject,
+                );
                 showCustomAlert('Sent', 'Transcation Complete');
                 setOnPost(true);
               } else {

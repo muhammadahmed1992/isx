@@ -101,20 +101,20 @@ const InvoiceForm = ({
         if(prompt === 'tax') {
           value = `${fieldValue}${fieldValue.includes('%') ? '' : '%'}`;
         } else if (prompt === 'service_charge') {
-          value = Commons.formatNumber(fieldValue);
+          value = Commons.formatCommaSeparated(fieldValue);
         } else {
           value = fieldValue;
         }
         return (
           <View key={index} style={styles.inputContainer}>
-            <Text>{invoiceHeaderPrompts[prompt]}</Text>
+            {!(['date', 'warehouse', 'customer', 'salesman', 'spg'].includes(prompt)) && <Text>{invoiceHeaderPrompts[prompt]}</Text>}
             <InputComponent
               placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => {
                 const updatedText =
                   prompt === 'tax' ? text.replace('%', '') : text; 
-                handleInputChange(fieldKey, updatedText);
+                  handleInputChange(fieldKey, prompt === 'service_charge'? Commons.removeCommas(updatedText) : updatedText);
               }}
               value={value} 
               icon={false}

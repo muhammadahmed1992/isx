@@ -126,6 +126,39 @@ const checkPermissions = async () => {
   }
 };
 
+function formatCommaSeparated(value) {
+  // Create a new copy and format only if it's numeric
+  if (typeof value === 'number') {
+    return numberWithCommas(value); // Return formatted number string
+  } else if (typeof value === 'string') {
+    const numericValue = parseFloat(value.replace(/[^\d.-]/g, ''));
+    if (!isNaN(numericValue)) {
+      return numberWithCommas(numericValue); // Return formatted string
+    }
+  }
+  return value; // Return the original value if it's not numeric
+}
+
+function numberWithCommas(num) {
+  // Create a string copy of the number and format it
+  let parts = num.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format integer part
+  return parts.join('.'); // Join integer and decimal parts back and return
+}
+
+function removeCommas(value) {
+  if (typeof value === 'string') {
+    // Replace commas with an empty string for strings
+    return value.replace(/,/g, '');
+  } else if (typeof value === 'number') {
+    // Convert the number to a string, remove commas, and convert back to a number
+    return parseFloat(value.toString().replace(/,/g, ''));
+  }
+  // Return the original value if it's neither a string nor a number
+  return value;
+}
+
+
 const formatBalance = balance => {
   const num = Number(balance);
   if (isNaN(num)) {
@@ -140,6 +173,8 @@ const formatBalance = balance => {
 
 export default {
   size,
+  removeCommas,
+  formatCommaSeparated,
   height,
   width,
   calculateDateFromObj,
