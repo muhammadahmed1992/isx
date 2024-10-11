@@ -16,7 +16,7 @@ const CustomButton = ({ title, onPress, disabled, style, finish }) => {
   );
 };
 
-function Wizard({ title, children, onFinish, icons, onNew }) {
+function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showFinishAlert, setShowFinishAlert] = useState(false); // State to handle the finish alert
@@ -101,6 +101,7 @@ function Wizard({ title, children, onFinish, icons, onNew }) {
         <CustomButton
           title={"New"}
           onPress={onNew}
+          disabled={onNewButtonDisabled}
           style={styles.newButton}
         />
         <CustomButton

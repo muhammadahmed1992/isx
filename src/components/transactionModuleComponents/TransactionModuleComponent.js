@@ -24,7 +24,7 @@ const TransactionModuleComponent = ({
   const menu = useSelector(state => state.Locale.menu);
   const loggedInUser = store.getState().Auth.user;
   const isStock = currentRouteName === 'stock_adjusment';
-  const [invoiceFormData, setInvoiceFormData] = useState();
+  const [invoiceFormData, setInvoiceFormData] = useState(null);
   const [paymentComplete, setPaymentComplete] = useState(
     !(currentRouteName === 'point_of_sale_transaction'),
   );
@@ -35,11 +35,11 @@ const TransactionModuleComponent = ({
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSalesman, setSelectedSalesman] = useState({});
   const [postObject, setPostObject] = useState();
-  const [onPost, setOnPost] = useState(false);
   const [total, setTotal] = useState(0);
   const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
+  const [newButtonDisabled, setNewButtonDisabled] = useState(false);
   const [paymentData, setPaymentData] = useState({
     total: 0,
     voucher: 0,
@@ -129,36 +129,32 @@ const TransactionModuleComponent = ({
         loginUser: loggedInUser,
         invoiceNo: invoiceFormData?.InvoiceNo,
         date: invoiceFormData?.Date,
-        warehouse: invoiceFormData?.Warehouse.primaryKey,
+        warehouse: invoiceFormData?.Warehouse?.primaryKey,
         customer: selectedCustomer,
         salesman: selectedSalesman,
         ...(currentRouteName === 'point_of_sale_transaction' && {
-          service: invoiceFormData?.service || '',
+          service: invoiceFormData?.service || 0,
           table: invoiceFormData?.table || '',
         }),
         tax: invoiceFormData?.Tax,
       },
       tableFormData: tableForm,
       payment: {
-        voucher: paymentData.voucher || 0,
-        total: paymentData.total || 0,
-        creditCard: paymentData.creditCard || 0,
-        cash: paymentData.cash || 0,
-        debitCard: paymentData.debitCard || 0,
-        online: paymentData.online || 0,
-        change: paymentData.change || 0,
+        voucher: paymentData.voucher,
+        total: paymentData.total,
+        creditCard: paymentData.creditCard,
+        cash: paymentData.cash,
+        debitCard: paymentData.debitCard,
+        online: paymentData.online,
+        change: paymentData.change,
       },
     });
-  }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    const invoiceData = await TransactionService.fetchInvoiceFormData(
-      endPoints.invoice,
-      loggedInUser,
-    );
-    const customerResponse = await TransactionService.fetchCustomers();
-    const salesmenResponse = await TransactionService.fetchSalesmen();
+  }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm, paymentData]);
+  useEffect(() => {
+    
+  })
+  const resetData = () => {
+    setInvoiceFormData();
     setTableFormData([]);
     setPaymentData({
       total: 0,
@@ -169,16 +165,40 @@ const TransactionModuleComponent = ({
       online: 0,
       change: 0,
     });
-    setCustomers(customerResponse.data);
-    setSalesmen(salesmenResponse.data);
+  }
+
+  const fetchData = async () => {
+    setLoading(true);
+    const invoiceData = await TransactionService.fetchInvoiceFormData(
+      endPoints.invoice,
+      loggedInUser,
+    );
+    
+    setTableFormData([]);
+    setPaymentData({
+      total: 0,
+      voucher: 0,
+      cash: 0,
+      creditCard: 0,
+      debitCard: 0,
+      online: 0,
+      change: 0,
+    });
+    
     setInvoiceFormData(invoiceData.data);
-    setOnPost(false);
+    setNewButtonDisabled(true);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchData();
-  }, [currentRouteName, onPost]);
+    const fetchCustomersSalesmen = async () => {
+      const customerResponse = await TransactionService.fetchCustomers();
+      const salesmenResponse = await TransactionService.fetchSalesmen();
+      setCustomers(customerResponse.data);
+      setSalesmen(salesmenResponse.data);
+    }
+    fetchCustomersSalesmen();
+  }, [currentRouteName])
 
   return (
     <View style={styles.container}>
@@ -186,6 +206,7 @@ const TransactionModuleComponent = ({
       <View style={styles.wizardContainer}>
         <Wizard
           onNew={fetchData}
+          onNewButtonDisabled={newButtonDisabled}
           onFinish={async () => {
             try {
               if (
@@ -201,8 +222,9 @@ const TransactionModuleComponent = ({
                   endPoints.sendInvoice,
                   postObject,
                 );
+                resetData();
+                setNewButtonDisabled(false);
                 showCustomAlert('Sent', 'Transcation Complete');
-                setOnPost(true);
               } else {
                 // Display appropriate warning based on missing fields
                 let warningMessage = '';

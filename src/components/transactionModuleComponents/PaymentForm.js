@@ -3,13 +3,18 @@ import { View, Text, StyleSheet } from 'react-native';
 import InputComponent from '../InputComponent';
 import { Colors, Commons } from '../../utils';
 
+const isEqual = (a, b) => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
+
 const PaymentDetailForm = ({
   data,
   headers,
   setPaymentFormData,
   setPaymentComplete,
 }) => {
-  const [formData, setFormData] = useState(data);
+  const [formData, setFormData] = useState({});
   const [paymentValues, setPaymentValues] = useState({
     cash: data.cash,
     online: data.online,
@@ -17,11 +22,9 @@ const PaymentDetailForm = ({
     debitCard: data.debitCard,
     voucher: data.voucher,
   });
+  
   useEffect(() => {
-    console.log(formData);
-  })
-  useEffect(() => {
-    if (data && Object.keys(formData).length === 0) {
+    if (data && !isEqual(data, formData)) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
         acc[key] = data[key];
         return acc;
