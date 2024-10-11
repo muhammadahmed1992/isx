@@ -52,7 +52,6 @@ const TableForm = ({
 
   const handleQtyChange = (index, qty) => {
     const newData = [...data];
-    console.log(qty);
     newData[index].qty = qty ? qty : '0'; // Ensure qty is valid
     setTableData(newData);
     setTableFormData(newData);

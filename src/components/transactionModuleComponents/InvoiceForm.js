@@ -5,6 +5,10 @@ import InputComponent from '../InputComponent';
 import InputField from '../reportsComponents/InputField';
 import {Colors, Commons} from '../../utils';
 
+const isEqual = (a, b) => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
 const InvoiceForm = ({
   data,
   invoiceHeaderPrompts,
@@ -15,9 +19,9 @@ const InvoiceForm = ({
   const [formData, setFormData] = useState({});
   const [customerModal, setCustomerModal] = useState(false);
   const [salesmanModal, setSalesmanModal] = useState(false);
-
+  
   useEffect(() => {
-    if (data && Object.keys(formData).length === 0) {
+    if (data && !isEqual(data, formData)) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
         acc[key] = data[key];
         return acc;
@@ -56,7 +60,7 @@ const InvoiceForm = ({
               <InputComponent
                 placeholder={invoiceHeaderPrompts[prompt]}
                 placeholderColor={Colors.grey}
-                value={warehouseDescription}
+                value={!warehouseDescription? invoiceHeaderPrompts[prompt] : warehouseDescription}
                 onTextChange={text => {}}
                 disabled={true}
                 icon={false}
@@ -97,8 +101,9 @@ const InvoiceForm = ({
             </View>
           );
         }
+
         let value;
-        if(prompt === 'tax') {
+        if (prompt === 'tax') {
           value = `${fieldValue}${fieldValue.includes('%') ? '' : '%'}`;
         } else if (prompt === 'service_charge') {
           value = Commons.formatCommaSeparated(fieldValue);
@@ -107,16 +112,23 @@ const InvoiceForm = ({
         }
         return (
           <View key={index} style={styles.inputContainer}>
-            {!(['date', 'warehouse', 'customer', 'salesman', 'spg'].includes(prompt)) && <Text>{invoiceHeaderPrompts[prompt]}</Text>}
+            {!(['date', 'warehouse', 'customer', 'salesman', 'spg'].includes(prompt)) && (
+              <Text>{invoiceHeaderPrompts[prompt]}</Text>
+            )}
             <InputComponent
               placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => {
                 const updatedText =
-                  prompt === 'tax' ? text.replace('%', '') : text; 
-                  handleInputChange(fieldKey, prompt === 'service_charge'? Commons.removeCommas(updatedText) : updatedText);
+                  prompt === 'tax' ? text.replace('%', '') : text;
+                handleInputChange(
+                  fieldKey,
+                  prompt === 'service_charge'
+                    ? Commons.removeCommas(updatedText)
+                    : updatedText
+                );
               }}
-              value={value} 
+              value={!value && isDisabled? invoiceHeaderPrompts[prompt] : value}
               icon={false}
               debounceEnabled={false}
               disabled={isDisabled}
@@ -138,6 +150,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginVertical: 10,
   },
+  placeholderColor: {
+    color: Colors.grey,
+  }
 });
 
 export default InvoiceForm;
