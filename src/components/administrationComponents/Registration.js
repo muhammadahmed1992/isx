@@ -7,45 +7,45 @@ import { setIsRegistered } from '../../redux/reducers/authSlice';
 import Header from '../Header';
 import { Colors } from '../../utils';
 import DeviceInfo from 'react-native-device-info';
-import Clipboard from '@react-native-clipboard/clipboard'; // Clipboard import
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the Icon
+import Clipboard from '@react-native-clipboard/clipboard';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import ApiService from '../../services/ApiService';
 import { Endpoints } from '../../utils';
-import CustomAlert from '../AlertComponent'; // Use the CustomAlert Component
+import CustomAlert from '../AlertComponent';
 
-const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
+const RegistrationComponent = ({ navigation, label = 'registration' }) => {
   const [registrationKey, setRegistrationKeyValue] = useState('');
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
-  const [imei, setImei] = useState(''); // IMEI state
-  const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
-  const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
-  const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
+  const [modalVisible, setModalVisible] = useState(false);
+  const [imei, setImei] = useState('');
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
   const dispatch = useDispatch();
   const menu = useSelector(state => state.Locale.menu);
   const registrationKeyInputRef = useRef(null);
-
-  const handleGetIMEI = async () => {
-    try {
-      const imeiNumber = await DeviceInfo.getUniqueId();
-      setImei(imeiNumber);
-      setModalVisible(true); // Show modal after fetching IMEI
-    } catch (error) {
-      setImei('Error fetching IMEI');
-    }
-  };
 
   async function fetchImei() {
     try {
       const imei = await DeviceInfo.getUniqueId();
       return imei;
     } catch (error) {
-      showCustomAlert('Error', 'Failed to retrieve device identifier');
+      showCustomAlert(menu['error'], menu['error_fetching_imei']);
     }
   }
 
+  const handleGetIMEI = async () => {
+    try {
+      const imeiNumber = await fetchImei();
+      setImei(imeiNumber);
+      setModalVisible(true); // Show modal after fetching IMEI
+    } catch (error) {
+      showCustomAlert(menu['error'], menu['error_fetching_imei']);
+    }
+  };
+
   const handleSubmit = async () => {
     if (registrationKey.length !== 5) {
-      showCustomAlert('Invalid Key', 'Please enter a valid registration key');
+      showCustomAlert(menu['invalid_key'], menu['invalid_key_message']);
       return;
     }
     const deviceIdentifier = await fetchImei();
@@ -54,16 +54,16 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
     const licenseValidationResponse = await ApiService.get(
       Endpoints.licenseValidation + deviceIdentifier,
     );
-    const hashedDeviceId = licenseValidationResponse.data.data; 
-    
+    const hashedDeviceId = licenseValidationResponse.data.data;
+
     // Compare the hashed device identifier with the registration key
     if (hashedDeviceId === registrationKey) {
       dispatch(setRegistrationKey(registrationKey));
       dispatch(setIsRegistered(true));
-      showCustomAlert('Success', 'Registration key has been set');
+      showCustomAlert(menu['success'], menu['registration_set_success']);
     } else {
       dispatch(setIsRegistered(false));
-      showCustomAlert('Invalid Key', 'Please enter a valid registration key');
+      showCustomAlert(menu['invalid_key'], menu['invalid_key_warning']);
     }
 
     setRegistrationKeyValue(''); // Clear the input field
@@ -116,7 +116,7 @@ const RegistrationComponent = ({ navigation, label = 'Registration Page' }) => {
                 <Icon name="content-copy" size={24} color={Colors.black} />
               </TouchableOpacity>
             </View>
-            <Button title="Close" onPress={() => setModalVisible(false)} />
+            <Button title={menu['close']} onPress={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>
@@ -174,10 +174,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-  },
-  iconText: {
-    fontSize: 16,
-    marginLeft: 10,
   },
 });
 

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, Animated, ScrollView } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Colors } from "../../utils";
-import Alert from '../AlertComponent'; // Import the Alert Component
+import eventEmitter from "../../utils/EventEmitter";
 
 const CustomButton = ({ title, onPress, disabled, style, finish }) => {
   return (
@@ -19,8 +19,24 @@ const CustomButton = ({ title, onPress, disabled, style, finish }) => {
 function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }) {
   const steps = useMemo(() => React.Children.toArray(children), [children]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [showFinishAlert, setShowFinishAlert] = useState(false); // State to handle the finish alert
+  const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
+  const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const progressAnim = useRef(new Animated.Value(0)).current;
+
+
+  useEffect(() => {
+    const resetStep = () => {
+      setCurrentStep(0);
+    };
+
+    // Listen for the 'transactionCompleted' event
+    eventEmitter.on('transactionCompleted', resetStep);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      eventEmitter.off('transactionCompleted', resetStep);
+    };
+  }, []);
 
   useEffect(() => {
     const progressPercentage = ((currentStep + 1) / steps.length) * 100;
@@ -44,8 +60,8 @@ function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }
     }
   };
 
-  const handleFinish = () => {
-    setShowFinishAlert(true); // Trigger the alert
+  const handleFinish = async () => {
+    await onFinish();
   };
 
   return (
@@ -53,17 +69,19 @@ function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }
       <View style={styles.groupStack}>
         <View style={styles.group}>
           {steps.map((step, index) => {
-            let circleStyle = index < currentStep 
-              ? { backgroundColor: "white", borderColor: Colors.primary }
-              : index === currentStep
-              ? { backgroundColor: Colors.primary, borderColor: Colors.primary } 
-              : { backgroundColor: 'white', borderColor: 'grey' };
+            let circleStyle =
+              index < currentStep
+                ? {backgroundColor: 'white', borderColor: Colors.primary}
+                : index === currentStep
+                ? {backgroundColor: Colors.primary, borderColor: Colors.primary}
+                : {backgroundColor: 'white', borderColor: 'grey'};
 
-            let iconColor = index < currentStep 
-              ? Colors.primary 
-              : index === currentStep 
-              ? "white" 
-              : "grey";
+            let iconColor =
+              index < currentStep
+                ? Colors.primary
+                : index === currentStep
+                ? 'white'
+                : 'grey';
 
             return (
               <View key={index} style={styles.circleContainer}>
@@ -79,14 +97,21 @@ function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }
             );
           })}
         </View>
-        <Animated.View style={[styles.rect, { width: progressAnim.interpolate({
-          inputRange: [0, 100],
-          outputRange: ['0%', '100%'],
-        }) }]} />
+        <Animated.View
+          style={[
+            styles.rect,
+            {
+              width: progressAnim.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]}
+        />
       </View>
       <View style={styles.stepContainer}>
         <ScrollView showsVerticalScrollIndicator={true}>
-          <View style={{ alignItems: "center", overflow: "scroll", }}>
+          <View style={{alignItems: 'center', overflow: 'scroll'}}>
             {steps[currentStep]}
           </View>
         </ScrollView>
@@ -94,41 +119,32 @@ function Wizard({ title, children, onFinish, icons, onNew, onNewButtonDisabled }
 
       <View style={styles.buttonContainer}>
         <CustomButton
-          title={"Previous"}
+          title={'Previous'}
           onPress={handlePrevious}
-          disabled={currentStep === 0}
+          disabled={currentStep === 0 || !onNewButtonDisabled}
         />
         <CustomButton
-          title={"New"}
+          title={'New'}
           onPress={onNew}
           disabled={onNewButtonDisabled}
           style={styles.newButton}
         />
         <CustomButton
-          title={currentStep === steps.length - 1 ? "Finish" : "Next"}
+          title={currentStep === steps.length - 1 ? 'Finish' : 'Next'}
           finish={currentStep === steps.length - 1}
-          onPress={() => {
+          onPress={async () => {
             if (currentStep === steps.length - 1) {
-              handleFinish(); // Call handleFinish on the last step
+              await handleFinish(); // Call handleFinish on the last step
             } else {
               handleNext();
             }
           }}
+          disabled={!onNewButtonDisabled}
         />
       </View>
 
       {/* Confirmation Alert on Finish */}
-      {showFinishAlert && (
-        <Alert
-          title="Confirmation"
-          message="Do you want to proceed?"
-          onOkPress={() => {
-            onFinish();
-            setShowFinishAlert(false);
-          }}
-          onCancelPress={() => {setShowFinishAlert(false)}}
-        />
-      )}
+      
     </View>
   );
 }

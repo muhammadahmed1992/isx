@@ -12,6 +12,7 @@ import ApiService from '../../services/ApiService';
 import {useSelector} from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
+import eventEmitter from '../../utils/EventEmitter';
 
 const TransactionModuleComponent = ({
   navigation,
@@ -37,6 +38,7 @@ const TransactionModuleComponent = ({
   const [postObject, setPostObject] = useState();
   const [total, setTotal] = useState(0);
   const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
+  const [finishAlertVisible, setFinishAlertVisible] = useState(false); // State to handle the finish alert
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const [newButtonDisabled, setNewButtonDisabled] = useState(false);
@@ -66,6 +68,12 @@ const TransactionModuleComponent = ({
     setAlertTitle(title);
     setAlertMessage(message);
     setAlertVisible(true);
+  };
+
+  const showFinishAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setFinishAlertVisible(true);
   };
 
   useEffect(() => {
@@ -138,7 +146,7 @@ const TransactionModuleComponent = ({
         }),
         tax: invoiceFormData?.Tax,
       },
-      tableFormData: tableForm,
+      tableFormData: tableForm.filter(item => item.qty !== "0"),
       payment: {
         voucher: paymentData.voucher,
         total: paymentData.total,
@@ -190,6 +198,57 @@ const TransactionModuleComponent = ({
     setLoading(false);
   };
 
+  const handleFinish = async () => {
+    try {
+      if (
+        tableForm.length !== 0 && // Table form check for all routes
+        paymentComplete &&
+        (currentRouteName === 'sales_transaction' ||
+        currentRouteName === 'sales_order_transaction'
+          ? selectedCustomer.pk
+          : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
+      ) {
+        setLoading(true);
+        const res = await TransactionService.postInvoiceFormData(
+          endPoints.sendInvoice,
+          postObject,
+        );
+        console.log(res);
+        resetData();
+        setNewButtonDisabled(false);
+        showCustomAlert(menu['sent'], res.message);
+        eventEmitter.emit('transactionCompleted');
+      } else {
+        // Display appropriate warning based on missing fields
+        let warningMessage = '';
+
+        if (tableForm.length === 0) {
+          warningMessage = menu['fill_order'];
+        } else if (!paymentComplete) {
+          warningMessage = menu['fill_payment'];
+        } else if (
+          (currentRouteName === 'sales_transaction' ||
+            currentRouteName === 'sales_order_transaction') &&
+          !selectedCustomer.pk
+        ) {
+          warningMessage = menu['fill_customer'];
+        }
+
+        showCustomAlert(menu['warning'], warningMessage);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      throw new Error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onFinish = async () => {
+    showFinishAlert(menu['confirmation'], menu['proceed']);
+  }
+
   useEffect(() => {
     const fetchCustomersSalesmen = async () => {
       const customerResponse = await TransactionService.fetchCustomers();
@@ -207,46 +266,7 @@ const TransactionModuleComponent = ({
         <Wizard
           onNew={fetchData}
           onNewButtonDisabled={newButtonDisabled}
-          onFinish={async () => {
-            try {
-              if (
-                tableForm.length !== 0 && // Table form check for all routes
-                paymentComplete &&
-                (currentRouteName === 'sales_transaction' ||
-                currentRouteName === 'sales_order_transaction'
-                  ? selectedCustomer.pk
-                  : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
-              ) {
-                setLoading(true);
-                const res = await TransactionService.postInvoiceFormData(
-                  endPoints.sendInvoice,
-                  postObject,
-                );
-                resetData();
-                setNewButtonDisabled(false);
-                showCustomAlert('Sent', 'Transcation Complete');
-              } else {
-                // Display appropriate warning based on missing fields
-                let warningMessage = '';
-
-                if (tableForm.length === 0) {
-                  warningMessage = 'Please Fill the Order Details';
-                } else if (!paymentComplete) {
-                  warningMessage = 'Payment is not complete';
-                } else if (
-                  (currentRouteName === 'sales_transaction' ||
-                    currentRouteName === 'sales_order_transaction') &&
-                  !selectedCustomer.pk
-                ) {
-                  warningMessage = 'Please Select A Customer';
-                }
-
-                showCustomAlert('Warning', warningMessage);
-              }
-
-              setLoading(false);
-            } catch (err) {}
-          }}
+          onFinish={onFinish}
           title={[
             menu['transaction_1'],
             menu['transaction_2'],
@@ -295,6 +315,22 @@ const TransactionModuleComponent = ({
         title={alertTitle}
         message={alertMessage}
       />
+        <CustomAlert
+          visible={finishAlertVisible}
+          title={alertTitle}
+          message={alertMessage}
+          onOkPress={async () => {
+            try {
+              setFinishAlertVisible(false);
+              await handleFinish();
+            } catch (err) {
+              showCustomAlert(menu['error'], err.message);
+            }
+          }}
+          onCancelPress={() => {
+            setFinishAlertVisible(false);
+          }}
+        />
     </View>
   );
 };

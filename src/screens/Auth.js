@@ -98,7 +98,7 @@ const Auth = props => {
       return;
     }
     dispatch(setIpAddress(ipAddressNew));
-    if (username.length < 3) {
+    if (!username.length) {
       showToast('Please enter a valid username');
       return;
     }
@@ -111,12 +111,14 @@ const Auth = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-    setLoading(true);
+    
+    performLogin();
   };
 
   
   // Login function
   const performLogin = async () => {
+    setLoading(true);
     try {
       // Proceed with the login API call
       const body = {
@@ -139,6 +141,8 @@ const Auth = props => {
       const errorMessage =
         err.response?.data?.message || err.message || 'Login failed';
       showToast(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 

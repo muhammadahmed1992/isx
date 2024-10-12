@@ -79,6 +79,7 @@ const PaymentDetailForm = ({
         return (
           <View key={index} style={styles.inputContainer}>
             <Text>{headers[prompt]}</Text>
+            
             <InputComponent
               placeholder={headers[prompt]}
               placeholderColor={Colors.grey}

@@ -112,9 +112,7 @@ const InvoiceForm = ({
         }
         return (
           <View key={index} style={styles.inputContainer}>
-            {!(['date', 'warehouse', 'customer', 'salesman', 'spg'].includes(prompt)) && (
-              <Text>{invoiceHeaderPrompts[prompt]}</Text>
-            )}
+            <Text>{invoiceHeaderPrompts[prompt]}</Text>
             <InputComponent
               placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
