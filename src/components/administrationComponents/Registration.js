@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Text, View, TextInput, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import Button from '../reportsComponents/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -52,12 +52,11 @@ const RegistrationComponent = ({ navigation, label = 'registration' }) => {
     if (!deviceIdentifier) return;
 
     const licenseValidationResponse = await ApiService.get(
-      Endpoints.licenseValidation + deviceIdentifier,
+      Endpoints.licenseValidation + deviceIdentifier + `&key=${registrationKey.trim()}`,
     );
-    const hashedDeviceId = licenseValidationResponse.data.data;
 
     // Compare the hashed device identifier with the registration key
-    if (hashedDeviceId === registrationKey) {
+    if (licenseValidationResponse.data.data) {
       dispatch(setRegistrationKey(registrationKey));
       dispatch(setIsRegistered(true));
       showCustomAlert(menu['success'], menu['registration_set_success']);
@@ -99,8 +98,9 @@ const RegistrationComponent = ({ navigation, label = 'registration' }) => {
         <Button title={menu['get_dev_num']} onPress={handleGetIMEI} color="#841584" />
         <Button title={menu['set_key']} onPress={handleSubmit} />
       </View>
-
+      
       {/* Custom Modal for displaying IMEI with Copy icon */}
+      
       <Modal
         animationType="slide"
         transparent={true}
