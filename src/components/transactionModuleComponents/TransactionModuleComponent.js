@@ -213,10 +213,9 @@ const TransactionModuleComponent = ({
           endPoints.sendInvoice,
           postObject,
         );
-        console.log(res);
         resetData();
         setNewButtonDisabled(false);
-        showCustomAlert(menu['sent'], res.message);
+        showCustomAlert(menu['sent'], menu['complete']);
         eventEmitter.emit('transactionCompleted');
       } else {
         // Display appropriate warning based on missing fields

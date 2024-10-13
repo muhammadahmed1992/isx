@@ -52,7 +52,6 @@ const PaymentDetailForm = ({
     const total = parseInt(formData.total) || 0; 
     let change = totalPayment - total;
     if (change < 0) {
-      change = 0;
       setPaymentComplete(false);
     } else {
       setPaymentComplete(true);
