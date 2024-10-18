@@ -7,7 +7,6 @@ const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
 
-
 const PaymentDetailForm = ({
   data,
   headers,
@@ -22,50 +21,63 @@ const PaymentDetailForm = ({
     debitCard: data.debitCard,
     voucher: data.voucher,
   });
-  
+
+  // Function to calculate the total payment and change
+  const calculateChange = (payments, total) => {
+    const totalPayment = Object.values(payments).reduce((sum, amount) => sum + amount, 0);
+    const change = totalPayment - total;
+    setPaymentComplete(change >= 0); // Set payment as complete if change is >= 0
+    return change; // Return the change, can be negative if totalPayment < total
+  };
+
   useEffect(() => {
     if (data && !isEqual(data, formData)) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
         acc[key] = data[key];
         return acc;
       }, {});
+
       setFormData(initialFormData);
       setPaymentFormData(initialFormData);
+
+      // Calculate initial change based on total and initial payment fields
+      const total = parseInt(data.total) || 0;
+      const change = calculateChange(paymentValues, total);
+
+      setFormData(prev => ({
+        ...prev,
+        change: change, // Update formData with initial change
+      }));
+      setPaymentFormData(prev => ({
+        ...prev,
+        change: change, // Update paymentFormData with initial change
+      }));
     }
   }, [data, formData]);
 
   const handleInputChange = (field, value) => {
-    const parsedValue = parseInt(value) || 0; 
+    const parsedValue = parseInt(value) || 0;
+
     // Update the payment values
     setPaymentValues(prev => ({
       ...prev,
       [field]: parsedValue,
     }));
 
-    // Calculate the total payment
-    const totalPayment = Object.values({
-      ...paymentValues,
-      [field]: parsedValue, // Use the updated value for calculation
-    }).reduce((sum, amount) => sum + amount, 0);
+    // Calculate the new change
+    const total = parseInt(formData.total) || 0;
+    const change = calculateChange({ ...paymentValues, [field]: parsedValue }, total);
 
-    // Calculate change
-    const total = parseInt(formData.total) || 0; 
-    let change = totalPayment - total;
-    if (change < 0) {
-      setPaymentComplete(false);
-    } else {
-      setPaymentComplete(true);
-    }
     // Update formData and paymentFormData with the new values
     setFormData(prev => ({
       ...prev,
       [field]: parsedValue,
-      change: change,
+      change: change, // Update the change even if it's negative
     }));
     setPaymentFormData(prev => ({
       ...prev,
       [field]: parsedValue,
-      change: change,
+      change: change, // Update the change even if it's negative
     }));
   };
 
@@ -74,7 +86,7 @@ const PaymentDetailForm = ({
       {Object.keys(headers).map((prompt, index) => {
         const fieldKey = !data ? '' : Object.keys(data)[index];
         const fieldValue = formData[fieldKey] || 0;
-        
+
         return (
           <View key={index} style={styles.inputContainer}>
             <Text>{headers[prompt]}</Text>
