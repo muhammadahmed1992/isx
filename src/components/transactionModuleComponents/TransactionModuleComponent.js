@@ -146,7 +146,7 @@ const TransactionModuleComponent = ({
         }),
         tax: invoiceFormData?.Tax,
       },
-      tableFormData: tableForm.filter(item => item.qty !== "0"),
+      tableFormData: tableForm,
       payment: {
         voucher: paymentData.voucher,
         total: paymentData.total,

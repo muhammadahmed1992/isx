@@ -52,7 +52,7 @@ const TableForm = ({
 
   const handleQtyChange = (index, qty) => {
     const newData = [...data];
-    newData[index].qty = qty ? qty : '1'; // Ensure qty is valid
+    newData[index].qty = qty ? qty : '0'; // Ensure qty is valid
     setTableData(newData);
     setTableFormData(newData);
   };
