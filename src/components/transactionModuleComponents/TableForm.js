@@ -59,13 +59,12 @@ const TableForm = ({
 
   const handleAddItem = item => {
     if (tableData.length >= 3 && !isRegistered) {
-      showCustomAlert('Limit reached', 'You cannot add more than 3 items.');
+      showCustomAlert(menu['limit'], menu['limit_error']);
       return;
     }
     handleBarcodeRead(item);
   };
 
-  // New function to handle deletion of an item
   const handleDeleteItem = index => {
     const newData = [...tableData];
     newData.splice(index, 1); // Remove the item at the given index
@@ -105,8 +104,6 @@ const TableForm = ({
             {Commons.formatNumber(calculateAmount(item.price, item.qty))}
           </Text>
         )}
-
-        {/* Add delete button */}
         
       </View>
     );
