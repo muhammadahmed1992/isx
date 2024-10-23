@@ -1,9 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { reportConditionsConfig, administrationConditionConfig, transactionModuleConditions } from '../../helper/routeConfig';
+import { salesReportConditionsConfig, purchaseReportConditionsConfig, stockReportConditionConfig, administrationConditionConfig, transactionModuleConditions } from '../../helper/routeConfig';
 
 const initialState = {
-  reports: {
-    ...reportConditionsConfig,
+  salesReports: {
+    ...salesReportConditionsConfig,
+  },
+  purchaseReports: {
+    ...purchaseReportConditionsConfig,
+  },
+  stockReports: {
+    ...stockReportConditionConfig
   },
   administration: {
     ...administrationConditionConfig,
@@ -18,26 +24,26 @@ export const menuSlice = createSlice({
   initialState,
   reducers: {
     setReportPermissions: (state, action) => {
-      state.reports.stock_report.condition = action.payload.IsStockReportAllowed;
-      state.reports.sales_report.condition =
+      state.stockReports.stock_report.condition = action.payload.IsStockReportAllowed;
+      state.salesReports.sales_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.sales_report_2.condition =
+      state.salesReports.sales_report_2.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.sales_analyst_report.condition =
+      state.salesReports.sales_analyst_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.sales_analyst_report_2.condition =
+      state.salesReports.sales_analyst_report_2.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.cash_drawer_report.condition =
+      state.salesReports.cash_drawer_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.cash_drawer_detail_report.condition =
+      state.salesReports.cash_drawer_detail_report.condition =
         action.payload.IsSalesReportAndCashReportAllowed;
-      state.reports.purchase_report.condition =
+      state.purchaseReports.purchase_report.condition =
         action.payload.IsPurchaseReportAllowed,
-        state.reports.purchase_report_no_disc.condition =
+        state.purchaseReports.purchase_report_no_disc.condition =
           action.payload.IsPurchaseReportAllowed,
-        state.reports.purchase_analyst_report.condition =
+        state.purchaseReports.purchase_analyst_report.condition =
           action.payload.IsPurchaseReportAllowed,
-        state.reports.purchase_analyst_report_no_disc.condition =
+        state.purchaseReports.purchase_analyst_report_no_disc.condition =
           action.payload.IsPurchaseReportAllowed;
     },
     setAdministrationPermissions: (state, action) => {

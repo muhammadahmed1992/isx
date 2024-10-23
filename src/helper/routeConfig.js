@@ -7,8 +7,40 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Endpoints } from '../utils';
+import VideoLinks from '../screens/VideoLinks';
 
+
+const otherConfig = {
+  video: {
+    id: 1,
+    label: 'video',
+    name: 'video',
+    component: VideoLinks,
+    condition: true,
+    icon: (color, size) => (
+      <EntypoIcons name="video" color={color} size={20} />
+    ),
+    props: {
+      label: 'video',
+    },
+  },
+}
+
+// Administration Config
 const administrationConfig = {
+  scan_barCode: {
+    id: 3,
+    label: 'scan_barcode',
+    name: 'search',
+    component: PriceSearchScreen,
+    condition: true,
+    icon: (color, size) => (
+      <FontAwesome name="dollar" color={color} size={20} />
+    ),
+    props: {
+      label: 'scan_barcode',
+    },
+  },
   switch_database: {
     id: 1,
     label: 'switch_database',
@@ -35,7 +67,7 @@ const administrationConfig = {
       label: 'registration',
     },
   },
-}
+};
 
 const transactionModuleConfig = {
   sales_transaction: {
@@ -100,60 +132,14 @@ const transactionModuleConfig = {
   },
 };
 
-const reportConfig = {
-  scan_barCode: {
-    id: 1,
-    label: 'scan_barcode',
-    name: 'search',
-    component: PriceSearchScreen,
-    condition: true,
-    icon: (color, size) => (
-      <FontAwesome name="dollar" color={color} size={20} />
-    ),
-    props: {
-      label: 'scan_barcode',
-    },
-  },
-  price_report: {
-    id: 3,
-    name: 'price_report',
-    label: 'price_report',
-    condition: true,
-    icon: (color, size) => (
-      <FontAwesome5 name="database" color={color} size={20} />
-    ),
-    component: ReportGenerator,
-    props: {
-      label: 'price_report',
-      dateRangeSetter: false,
-      stockInputField: true,
-      warehouseInputField: false,
-      endPoint: Endpoints.priceReport,
-    },
-  },
-  stock_report: {
-    id: 4,
-    name: 'stock_report',
-    label: 'stock_report',
-    component: ReportGenerator,
-    condition: false,
-    icon: (color, size) => (
-      <FoundationIcon name="graph-trend" color={color} size={20} />
-    ),
-    props: {
-      label: 'stock_report',
-      dateRangeSetter: false,
-      stockInputField: true,
-      warehouseInputField: true,
-      endPoint: Endpoints.stockReport,
-    },
-  },
+// Sales Reports
+const salesReportsConfig = {
   sales_report: {
-    id: 14,
+    id: 1,
     name: 'sales_report',
     label: 'sales_report',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
@@ -166,14 +152,14 @@ const reportConfig = {
     },
   },
   sales_report_2: {
-    id: 5,
+    id: 2,
     name: 'sales_report_2',
     label: 'sales_report_2',
-    condition: false,
+    component: ReportGenerator,
+    condition: true,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
-    component: ReportGenerator,
     props: {
       label: 'sales_report_2',
       dateRangeSetter: true,
@@ -183,11 +169,11 @@ const reportConfig = {
     },
   },
   sales_analyst_report: {
-    id: 6,
+    id: 3,
     name: 'sales_analyst_report',
     label: 'sales_analyst_report',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
@@ -200,11 +186,11 @@ const reportConfig = {
     },
   },
   sales_analyst_report_2: {
-    id: 7,
+    id: 4,
     name: 'sales_analyst_report_2',
     label: 'sales_analyst_report_2',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
@@ -217,7 +203,7 @@ const reportConfig = {
     },
   },
   cash_drawer_report: {
-    id: 8,
+    id: 5,
     name: 'cash_drawer_report',
     label: 'cash_drawer_report',
     component: ReportGenerator,
@@ -234,7 +220,7 @@ const reportConfig = {
     },
   },
   cash_drawer_detail_report: {
-    id: 9,
+    id: 6,
     name: 'cash_drawer_report_detail',
     label: 'cash_drawer_report_detail',
     component: ReportGenerator,
@@ -250,12 +236,16 @@ const reportConfig = {
       endPoint: Endpoints.cashDrawerDetailReport,
     },
   },
+};
+
+// Purchase Reports
+const purchaseReportsConfig = {
   purchase_report: {
-    id: 10,
+    id: 1,
     name: 'purchasing_report',
     label: 'purchasing_report',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
@@ -268,14 +258,14 @@ const reportConfig = {
     },
   },
   purchase_report_no_disc: {
-    id: 11,
+    id: 2,
     name: 'purchasing_report_no_disc',
     label: 'purchasing_report_no_disc',
-    condition: false,
+    component: ReportGenerator,
+    condition: true,
     icon: (color, size) => (
       <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
-    component: ReportGenerator,
     props: {
       label: 'purchasing_report_no_disc',
       dateRangeSetter: true,
@@ -285,11 +275,11 @@ const reportConfig = {
     },
   },
   purchase_analyst_report: {
-    id: 12,
+    id: 3,
     name: 'purchasing_analyst_report',
     label: 'purchasing_analyst_report',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
@@ -302,11 +292,11 @@ const reportConfig = {
     },
   },
   purchase_analyst_report_no_disc: {
-    id: 13,
+    id: 4,
     name: 'purchasing_analyst_report_no_disc',
     label: 'purchasing_analyst_report_no_disc',
     component: ReportGenerator,
-    condition: false,
+    condition: true,
     icon: (color, size) => (
       <Ionicons name="analytics" color={color} size={20} />
     ),
@@ -319,6 +309,45 @@ const reportConfig = {
     },
   },
 };
+
+// Price and Stock Reports
+const stockReportConfig = {
+  price_report: {
+    id: 4,
+    name: 'price_report',
+    label: 'price_report',
+    component: ReportGenerator,
+    condition: true,
+    icon: (color, size) => (
+      <FontAwesome5 name="database" color={color} size={20} />
+    ),
+    props: {
+      label: 'price_report',
+      dateRangeSetter: false,
+      stockInputField: true,
+      warehouseInputField: false,
+      endPoint: Endpoints.priceReport,
+    },
+  },
+  stock_report: {
+    id: 3,
+    name: 'stock_report',
+    label: 'stock_report',
+    component: ReportGenerator,
+    condition: true,
+    icon: (color, size) => (
+      <FoundationIcon name="graph-trend" color={color} size={20} />
+    ),
+    props: {
+      label: 'stock_report',
+      dateRangeSetter: false,
+      stockInputField: true,
+      warehouseInputField: true,
+      endPoint: Endpoints.stockReport,
+    },
+  },
+};
+
 
 const transactionModuleConditions = {
   sales: {
@@ -347,14 +376,60 @@ const administrationConditionConfig = {
   registration: {
     id: 2,
     condition: true
-  }
-}
-
-const reportConditionsConfig = {
+  },
   scan_barCode: {
-    id: 1,
+    id: 3,
     condition: true,
   },
+}
+
+const salesReportConditionsConfig = {
+  sales_report: {
+    id: 1,
+    condition: false,
+  },
+  sales_report_2: {
+    id: 2,
+    condition: false,
+  },
+  sales_analyst_report: {
+    id: 3,
+    condition: false,
+  },
+  sales_analyst_report_2: {
+    id: 4,
+    condition: false,
+  },
+  cash_drawer_report: {
+    id: 5,
+    condition: false,
+  },
+  cash_drawer_detail_report: {
+    id: 6,
+    condition: false,
+  },
+};
+
+const purchaseReportConditionsConfig = {
+  purchase_report: {
+    id: 1,
+    condition: false,
+  },
+  purchase_report_no_disc: {
+    id: 2,
+    condition: false,
+  },
+  purchase_analyst_report: {
+    id: 3,
+    condition: false,
+  },
+  purchase_analyst_report_no_disc: {
+    id: 4,
+    condition: false,
+  },
+};
+
+const stockReportConditionConfig = {
   price_report: {
     id: 3,
     condition: true,
@@ -363,47 +438,14 @@ const reportConditionsConfig = {
     id: 4,
     condition: false,
   },
-  sales_report: {
-    id: 14,
-    condition: false,
-  },
-  sales_report_2: {
-    id: 5,
-    condition: false,
-  },
-  sales_analyst_report: {
-    id: 6,
-    condition: false,
-  },
-  sales_analyst_report_2: {
-    id: 7,
-    condition: false,
-  },
-  cash_drawer_report: {
-    id: 8,
-    condition: false,
-  },
-  cash_drawer_detail_report: {
-    id: 9,
-    condition: false,
-  },
-  purchase_report: {
-    id: 10,
-    condition: false,
-  },
-  purchase_report_no_disc: {
-    id: 11,
-    condition: false,
-  },
-  purchase_analyst_report: {
-    id: 12,
-    condition: false,
-  },
-  purchase_analyst_report_no_disc: {
-    id: 13,
-    condition: false
-  },
 };
 
-export { reportConditionsConfig, administrationConditionConfig, transactionModuleConditions }; // conditions
-export { reportConfig, administrationConfig, transactionModuleConfig}; // mapping-config
+export {
+  salesReportConditionsConfig,
+  purchaseReportConditionsConfig,
+  stockReportConditionConfig,
+  administrationConditionConfig,
+  transactionModuleConditions
+}; 
+
+export { administrationConfig, salesReportsConfig, purchaseReportsConfig, stockReportConfig, transactionModuleConfig, otherConfig }; 
