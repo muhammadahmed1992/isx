@@ -59,15 +59,28 @@ const TableForm = ({
 
   const handleAddItem = item => {
     if (tableData.length >= 3 && !isRegistered) {
-      showCustomAlert('Limit reached', 'You cannot add more than 3 items.');
+      showCustomAlert(menu['limit'], menu['limit_error']);
       return;
     }
     handleBarcodeRead(item);
   };
 
+  const handleDeleteItem = index => {
+    const newData = [...tableData];
+    newData.splice(index, 1); // Remove the item at the given index
+    setTableData(newData);
+    setTableFormData(newData);
+  };
+
   const renderRow = (item, index) => {
     return (
       <View key={index} style={styles.row}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteItem(index)}
+        >
+          <FontAwesome5Icon name="trash" size={20} color={Colors.black} />
+        </TouchableOpacity>
         <Text style={[styles.cell, styles.cellText]}>
           {item.stock_id_header}
           {'\n'}
@@ -82,8 +95,8 @@ const TableForm = ({
         <TextInput
           style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
           keyboardType="numeric"
-          value={item.qty}
-          onChangeText={text => handleQtyChange(index, text)} // Update qty
+          value={Commons.formatCommaSeparated(item.qty)}
+          onChangeText={text => handleQtyChange(index, Commons.removeCommas(text))} // Update qty
         />
 
         {isNotStock && (
@@ -91,6 +104,7 @@ const TableForm = ({
             {Commons.formatNumber(calculateAmount(item.price, item.qty))}
           </Text>
         )}
+        
       </View>
     );
   };
@@ -133,22 +147,12 @@ const TableForm = ({
               showToast('Camera permission is required');
             } else {
               const currentScreen =
-                navigation.getState().routeNames[navigation.getState().index]; // Get current screen
+                navigation.getState().routeNames[navigation.getState().index]; 
               Commons.navigate(navigation, 'barcode_scanner', {
                 onBarcodeRead: handleAddItem,
-                returnScreen: currentScreen, // Set the return screen
+                returnScreen: currentScreen, 
               });
             }
-            // function getRandomItem() {
-            //   const items = [
-            //     'HARD-1', 'HARD-2', 'HARD-3',
-            //     'MONI-1', 'MONI-2', 'MONI-3',
-            //     'KEYB-1', 'KEYB-2', 'KEYB-3'
-            //   ];
-            //   const randomIndex = Math.floor(Math.random() * items.length);
-            //   return items[randomIndex];
-            // }
-            // handleAddItem(getRandomItem());
           }}>
           <Text
             style={{
@@ -206,6 +210,9 @@ const TableForm = ({
                   {headers['amount_header']}
                 </Text>
               )}
+              <Text style={[styles.cell, styles.headerText]}>
+                {headers['actions']}
+              </Text>
             </View>
 
             {tableData.map(renderRow)}
@@ -268,6 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#000',
+    alignItems: 'center', // Align items in the center vertically
   },
   cellQty: {
     textAlign: 'center',
@@ -279,7 +287,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   cell: {
-    width: 120,
+    width: 100,
     paddingHorizontal: RFValue(6),
     paddingVertical: RFValue(6),
   },
@@ -293,6 +301,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderWidth: 1,
     borderColor: '#000',
+    paddingLeft: 32
   },
   headerText: {
     fontWeight: 'bold',
@@ -309,6 +318,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6e6e6',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
+    paddingLeft: 32
+  },
+  deleteButton: {
+    paddingHorizontal: RFValue(6),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

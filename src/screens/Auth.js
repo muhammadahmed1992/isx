@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Text,
   StyleSheet,
@@ -12,29 +12,29 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import {Platform} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { Platform } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Toast from 'react-native-easy-toast';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { RFValue } from 'react-native-responsive-fontsize';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import ApiService from '../services/ApiService';
-import {Endpoints, Images} from '../utils';
+import { Endpoints, Images } from '../utils';
 import {
   login,
   setIpAddress,
   setIsRegistered,
 } from '../redux/reducers/authSlice';
-import {Fonts, Colors, Commons} from '../utils';
+import { Fonts, Colors, Commons } from '../utils';
 import Modal from 'react-native-modal';
 import SearchableDropDown from '../components/searchableDropdown';
-import {setDataBase} from '../redux/reducers/connectionStringSlice';
+import { setDataBase } from '../redux/reducers/connectionStringSlice';
 import {
   setReportPermissions,
   setAdministrationPermissions,
   setTransactionModulePermissions,
 } from '../redux/reducers/menuSlice';
-import {fetchAndSetLocaleData} from '../redux/reducers/localeSlice';
+import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
 import DeviceInfo from 'react-native-device-info';
 
 const Auth = props => {
@@ -43,13 +43,13 @@ const Auth = props => {
   const ipAddressRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
-  const {ipAddress} = useSelector(state => state.Auth);
+  const { ipAddress } = useSelector(state => state.Auth);
   const [hidePassword, setHidePassword] = useState(true);
   const [ipAddressNew, setIPAddress] = useState(ipAddress ? ipAddress : '');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const {database} = useSelector(state => state.ConnectionString);
+  const { database } = useSelector(state => state.ConnectionString);
   const [databaseNew, setDatabase] = useState(database ? database : '');
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
@@ -87,7 +87,7 @@ const Auth = props => {
         }
         setDatabases(dataToPopulate);
       })
-      .catch(err => {});
+      .catch(err => { });
   };
 
   const validate = () => {
@@ -98,7 +98,7 @@ const Auth = props => {
       return;
     }
     dispatch(setIpAddress(ipAddressNew));
-    if (username.length < 3) {
+    if (!username.length) {
       showToast('Please enter a valid username');
       return;
     }
@@ -111,12 +111,14 @@ const Auth = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-    setLoading(true);
+
+    performLogin();
   };
 
-  
+
   // Login function
   const performLogin = async () => {
+    setLoading(true);
     try {
       // Proceed with the login API call
       const body = {
@@ -139,6 +141,8 @@ const Auth = props => {
       const errorMessage =
         err.response?.data?.message || err.message || 'Login failed';
       showToast(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,7 +160,7 @@ const Auth = props => {
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: RFValue(15)}}>
+        contentContainerStyle={{ paddingBottom: RFValue(15) }}>
         <View>
           <Text
             style={{
@@ -298,7 +302,7 @@ const Auth = props => {
             borderRadius: RFValue(10),
             marginVertical: RFValue(40),
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={{
                 fontFamily: Fonts.family.bold,
@@ -327,7 +331,7 @@ const Auth = props => {
               setDatabase(item);
               setModal(false);
             }}
-            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
             textInputStyle={{
               padding: 12,
               borderWidth: 1,
