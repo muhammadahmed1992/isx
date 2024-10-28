@@ -5,7 +5,8 @@ import Endpoints from '../../utils/Endpoints';
 const initialState = {
   language: 'id',
   menu: {},
-  headers: {}
+  headers: {},
+  videos: {},
 };
 
 export const localeSlice = createSlice({
@@ -15,6 +16,7 @@ export const localeSlice = createSlice({
     setLocaleData: (state, action) => {
       state.menu = action.payload.menu;
       state.headers = action.payload.headers;
+      state.videos = action.payload.videos;
     },
     setLanguage: (state, action) => {
       state.language = action.payload;
