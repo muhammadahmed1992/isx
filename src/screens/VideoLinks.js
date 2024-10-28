@@ -24,7 +24,7 @@ const VideoLinks = ({navigation, route}) => {
           style={styles.link}
           onPress={() => openLink(video.url)}
         >
-          <Text style={styles.linkText}>{`${menu[label]}: ${title[video.title]}`}</Text>
+          <Text style={styles.linkText}>{`${menu[label]}: ${video.title}`}</Text>
         </TouchableOpacity>
       ))}
     </View>
