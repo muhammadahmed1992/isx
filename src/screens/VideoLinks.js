@@ -2,35 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import Header from '../components/Header';
 import { useSelector } from 'react-redux';
+import videos from '../helper/videoConfig';
 
 const VideoLinks = ({navigation, route}) => {
     const {
       label,
     } = route.params; 
     const menu = useSelector(state => state.Locale.menu);
-  const videos = [
-    {
-      title: 'User Guide',
-      url: 'https://www.youtube.com/watch?v=5EG4_jpwbNk',
-    },
-    {
-      title: 'Install on PC',
-      url: 'https://www.youtube.com/watch?v=I-FO8O7f49Y',
-    },
-    {
-      title: 'Automatic Restart',
-      url: 'https://www.youtube.com/watch?v=mwB5Tf3tAAM',
-    },
-    {
-      title: 'Install on Hanphone',
-      url: 'https://www.youtube.com/watch?v=pWd5hj3UNRY',
-    },
-    {
-      title: 'Create IP VPN',
-      url: 'https://www.youtube.com/watch?v=D9933H3bZNs',
-    },
-  ];
-
+    const title = useSelector(state => state.Locale.videos);
   const openLink = (url) => {
     Linking.openURL(url);
   };
@@ -39,6 +18,7 @@ const VideoLinks = ({navigation, route}) => {
     <View>
       <Header label={menu[label]} navigation={navigation}/>
       {videos.map((video, index) => (
+        
         <TouchableOpacity
           key={index}
           style={styles.link}
