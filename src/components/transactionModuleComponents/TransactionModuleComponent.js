@@ -176,26 +176,32 @@ const TransactionModuleComponent = ({
   }
 
   const fetchData = async () => {
-    setLoading(true);
-    const invoiceData = await TransactionService.fetchInvoiceFormData(
-      endPoints.invoice,
-      loggedInUser,
-    );
-    
-    setTableFormData([]);
-    setPaymentData({
-      total: 0,
-      voucher: 0,
-      cash: 0,
-      creditCard: 0,
-      debitCard: 0,
-      online: 0,
-      change: 0,
-    });
-    
-    setInvoiceFormData(invoiceData.data);
-    setNewButtonDisabled(true);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const invoiceData = await TransactionService.fetchInvoiceFormData(
+        endPoints.invoice,
+        loggedInUser,
+      );
+      
+      setTableFormData([]);
+      setPaymentData({
+        total: 0,
+        voucher: 0,
+        cash: 0,
+        creditCard: 0,
+        debitCard: 0,
+        online: 0,
+        change: 0,
+      });
+      
+      setInvoiceFormData(invoiceData.data);
+      setNewButtonDisabled(true);
+      setLoading(false);
+    } catch (e) {
+      setAlertMessage(menu['error'], e.message);
+      setNewButtonDisabled(false);
+      setLoading(false);
+    }
   };
 
   const handleFinish = async () => {
