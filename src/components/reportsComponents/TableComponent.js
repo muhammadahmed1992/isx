@@ -3,8 +3,12 @@ import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-nati
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Fonts, Colors } from '../../utils';
 
-const cellWidth = 120;
 const rowsPerPage = 75; // Number of rows per page
+const cellWidth = {
+  qty_header: 120,
+  currency_header: 120,
+  date_header: 120,
+}
 
 const rightAlignedColumns = [
   'opening_header',
@@ -23,6 +27,7 @@ const rightAlignedColumns = [
   'price_header',
   'qty_header',
 ];
+
 
 const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -51,6 +56,7 @@ const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) 
           <Text
             key={key}
             style={[
+              {width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120},
               styles.cell,
               keyIndex < keys.length && styles.cellBorder,
               rightAlignedColumns.includes(key) ? styles.cellNumber : styles.cellText,
@@ -115,6 +121,7 @@ const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) 
               <TouchableOpacity key={index} onPress={() => handleHeaderClick(key)}>
                 <Text
                   style={[
+                    {width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120},
                     styles.cell,
                     index < Object.keys(headers).length - 1 && styles.cellBorder,
                     styles.headerText,
@@ -156,7 +163,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   cell: {
-    width: cellWidth,
     textAlign: 'center',
     fontFamily: Fonts.family.regular,
     flexWrap: 'wrap',
