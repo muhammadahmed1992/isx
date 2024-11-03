@@ -3,11 +3,11 @@ import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-nati
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Fonts, Colors } from '../../utils';
 
-const rowsPerPage = 75; // Number of rows per page
+const rowsPerPage = 100; // Number of rows per page
 const cellWidth = {
   qty_header: 120,
-  currency_header: 120,
-  date_header: 120,
+  currency_header: 60,
+  date_header: 100,
 }
 
 const rightAlignedColumns = [
