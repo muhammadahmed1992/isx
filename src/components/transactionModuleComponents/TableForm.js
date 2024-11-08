@@ -72,6 +72,13 @@ const TableForm = ({
     setTableFormData(newData);
   };
 
+  const handlePriceChange = (index, price) => {
+    const newData = [...data];
+    newData[index].price = price ? price : '0'; 
+    setTableData(newData);
+    setTableFormData(newData);
+  };
+  
   const renderRow = (item, index) => {
     return (
       <View key={index} style={styles.row}>
@@ -86,28 +93,32 @@ const TableForm = ({
           {'\n'}
           {item.stock_name}
         </Text>
+        
         {isNotStock && (
-          <Text style={[styles.cell, styles.cellNumber, styles.cellPrice]}>
-            {Commons.formatNumber(item.price)}
-          </Text>
+          <TextInput
+            style={[styles.cell, styles.cellNumber, styles.input]}
+            keyboardType="numeric"
+            value={Commons.formatCommaSeparated(item.price)}
+            onChangeText={text => handlePriceChange(index, Commons.removeCommas(text))}
+          />
         )}
-
+  
         <TextInput
           style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
           keyboardType="numeric"
           value={Commons.formatCommaSeparated(item.qty)}
-          onChangeText={text => handleQtyChange(index, Commons.removeCommas(text))} // Update qty
+          onChangeText={text => handleQtyChange(index, Commons.removeCommas(text))}
         />
-
+  
         {isNotStock && (
           <Text style={[styles.cell, styles.cellNumber]}>
             {Commons.formatNumber(calculateAmount(item.price, item.qty))}
           </Text>
         )}
-        
       </View>
     );
   };
+  
 
   const totalQuantity = tableData.reduce(
     (total, item) => total + parseInt(item.qty || 0),
@@ -210,9 +221,6 @@ const TableForm = ({
                   {headers['amount_header']}
                 </Text>
               )}
-              <Text style={[styles.cell, styles.headerText]}>
-                {headers['actions']}
-              </Text>
             </View>
 
             {tableData.map(renderRow)}
@@ -287,8 +295,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   cell: {
-    width: 100,
-    paddingHorizontal: RFValue(6),
+    width: 120,
+    marginHorizontal: 4,
     paddingVertical: RFValue(6),
   },
   cellText: {
@@ -311,8 +319,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: Colors.black,
     borderColor: '#ccc',
-    textAlign: 'right',
-    padding: RFValue(5),
+    textAlign: 'center',
+    padding: 5,
   },
   totalRow: {
     backgroundColor: '#e6e6e6',

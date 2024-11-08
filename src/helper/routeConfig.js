@@ -134,25 +134,8 @@ const transactionModuleConfig = {
 
 // Sales Reports
 const salesReportsConfig = {
-  sales_report: {
-    id: 1,
-    name: 'sales_report',
-    label: 'sales_report',
-    component: ReportGenerator,
-    condition: true,
-    icon: (color, size) => (
-      <FontAwesome5 name="clipboard-list" color={color} size={20} />
-    ),
-    props: {
-      label: 'sales_report',
-      dateRangeSetter: true,
-      stockInputField: false,
-      warehouseInputField: true,
-      endPoint: Endpoints.salesReport,
-    },
-  },
   sales_report_2: {
-    id: 2,
+    id: 1,
     name: 'sales_report_2',
     label: 'sales_report_2',
     component: ReportGenerator,
@@ -168,25 +151,25 @@ const salesReportsConfig = {
       endPoint: Endpoints.sales2Report,
     },
   },
-  sales_analyst_report: {
-    id: 3,
-    name: 'sales_analyst_report',
-    label: 'sales_analyst_report',
+  sales_report: {
+    id: 2,
+    name: 'sales_report',
+    label: 'sales_report',
     component: ReportGenerator,
     condition: true,
     icon: (color, size) => (
-      <Ionicons name="analytics" color={color} size={20} />
+      <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
-      label: 'sales_analyst_report',
+      label: 'sales_report',
       dateRangeSetter: true,
-      stockInputField: true,
+      stockInputField: false,
       warehouseInputField: true,
-      endPoint: Endpoints.salesAnalystReport,
+      endPoint: Endpoints.salesReport,
     },
   },
   sales_analyst_report_2: {
-    id: 4,
+    id: 3,
     name: 'sales_analyst_report_2',
     label: 'sales_analyst_report_2',
     component: ReportGenerator,
@@ -200,6 +183,23 @@ const salesReportsConfig = {
       stockInputField: true,
       warehouseInputField: true,
       endPoint: Endpoints.salesAnalyst2Report,
+    },
+  },
+  sales_analyst_report: {
+    id: 4,
+    name: 'sales_analyst_report',
+    label: 'sales_analyst_report',
+    component: ReportGenerator,
+    condition: true,
+    icon: (color, size) => (
+      <Ionicons name="analytics" color={color} size={20} />
+    ),
+    props: {
+      label: 'sales_analyst_report',
+      dateRangeSetter: true,
+      stockInputField: true,
+      warehouseInputField: true,
+      endPoint: Endpoints.salesAnalystReport,
     },
   },
   cash_drawer_report: {
@@ -240,25 +240,8 @@ const salesReportsConfig = {
 
 // Purchase Reports
 const purchaseReportsConfig = {
-  purchase_report: {
-    id: 1,
-    name: 'purchasing_report',
-    label: 'purchasing_report',
-    component: ReportGenerator,
-    condition: true,
-    icon: (color, size) => (
-      <FontAwesome5 name="clipboard-list" color={color} size={20} />
-    ),
-    props: {
-      label: 'purchasing_report',
-      dateRangeSetter: true,
-      stockInputField: false,
-      warehouseInputField: true,
-      endPoint: Endpoints.purchaseReport,
-    },
-  },
   purchase_report_no_disc: {
-    id: 2,
+    id: 1,
     name: 'purchasing_report_no_disc',
     label: 'purchasing_report_no_disc',
     component: ReportGenerator,
@@ -274,25 +257,25 @@ const purchaseReportsConfig = {
       endPoint: Endpoints.purchaseNoDiscReport,
     },
   },
-  purchase_analyst_report: {
-    id: 3,
-    name: 'purchasing_analyst_report',
-    label: 'purchasing_analyst_report',
+  purchase_report: {
+    id: 2,
+    name: 'purchasing_report',
+    label: 'purchasing_report',
     component: ReportGenerator,
     condition: true,
     icon: (color, size) => (
-      <Ionicons name="analytics" color={color} size={20} />
+      <FontAwesome5 name="clipboard-list" color={color} size={20} />
     ),
     props: {
-      label: 'purchasing_analyst_report',
+      label: 'purchasing_report',
       dateRangeSetter: true,
-      stockInputField: true,
+      stockInputField: false,
       warehouseInputField: true,
-      endPoint: Endpoints.purchaseAnalystReport,
+      endPoint: Endpoints.purchaseReport,
     },
   },
   purchase_analyst_report_no_disc: {
-    id: 4,
+    id: 3,
     name: 'purchasing_analyst_report_no_disc',
     label: 'purchasing_analyst_report_no_disc',
     component: ReportGenerator,
@@ -308,7 +291,24 @@ const purchaseReportsConfig = {
       endPoint: Endpoints.purchaseAnalystNoDiscReport,
     },
   },
-};
+  purchase_analyst_report: {
+    id: 4,
+    name: 'purchasing_analyst_report',
+    label: 'purchasing_analyst_report',
+    component: ReportGenerator,
+    condition: true,
+    icon: (color, size) => (
+      <Ionicons name="analytics" color={color} size={20} />
+    ),
+    props: {
+      label: 'purchasing_analyst_report',
+      dateRangeSetter: true,
+      stockInputField: true,
+      warehouseInputField: true,
+      endPoint: Endpoints.purchaseAnalystReport,
+    },
+  },
+  };
 
 // Price and Stock Reports
 const stockReportConfig = {

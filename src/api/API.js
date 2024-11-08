@@ -16,7 +16,7 @@ export const api = (method, endpoint, body) => {
       reject('IP Address is not configured');
     } else {
       const url = `http://${ipAddress}:3000/${endpoint}`;
-      const connectionString = `mysql://root:crmsrv@12A@${host}:${port}/${database}`;
+      const connectionString = `mysql://${username}:${password}@${host}:${port}/${database}`;
       console.log(`${method} -- ${url} -- ${connectionString}`);
 
       axios({
