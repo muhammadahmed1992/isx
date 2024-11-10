@@ -25,6 +25,7 @@ const TransactionModuleComponent = ({
   const menu = useSelector(state => state.Locale.menu);
   const loggedInUser = store.getState().Auth.user;
   const isStock = currentRouteName === 'stock_adjusment';
+  const isPos = currentRouteName === 'point_of_sale_transaction';
   const [invoiceFormData, setInvoiceFormData] = useState(null);
   const [paymentComplete, setPaymentComplete] = useState(
     !(currentRouteName === 'point_of_sale_transaction'),
@@ -294,6 +295,7 @@ const TransactionModuleComponent = ({
             setTableFormData={setTableFormData}
             setTotal={setTotal}
             isNotStock={!isStock}
+            isNotPos={!isPos}
           />
           {paymentDetails && (
             <PaymentDetailForm

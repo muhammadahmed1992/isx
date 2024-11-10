@@ -24,6 +24,7 @@ const TableForm = ({
   headers,
   setTotal,
   isNotStock,
+  isNotPos
 }) => {
   const [tableData, setTableData] = useState(data);
   const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
@@ -95,13 +96,19 @@ const TableForm = ({
         </Text>
         
         {isNotStock && (
+        isNotPos ? (
           <TextInput
             style={[styles.cell, styles.cellNumber, styles.input]}
             keyboardType="numeric"
             value={Commons.formatCommaSeparated(item.price)}
             onChangeText={text => handlePriceChange(index, Commons.removeCommas(text))}
           />
-        )}
+        ) : (
+          <Text style={[styles.cell, styles.cellNumber, styles.cellPrice]}>
+            {Commons.formatNumber(item.price)}
+          </Text>
+        )
+      )}
   
         <TextInput
           style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
