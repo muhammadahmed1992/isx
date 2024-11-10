@@ -286,6 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Align items in the center vertically
   },
   cellQty: {
+    width: 90,
     textAlign: 'center',
   },
   cellID: {

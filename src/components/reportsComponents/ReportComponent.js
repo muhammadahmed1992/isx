@@ -41,6 +41,7 @@ const ReportComponent = ({
   endPoints,
 }) => {
   const toastRef = useRef(null);
+  const database = useSelector(state => state.ConnectionString.database);
   const [stockGroup, setStockGroup] = useState('');
   const [warehouse, setWarehouse] = useState('');
   const [loading, setLoading] = useState(false);
@@ -95,8 +96,7 @@ const ReportComponent = ({
 
   useEffect(() => {
     fetchAllData();
-  }, []);
-
+  }, [])
 
   useEffect(() => {
     if(filtered && !(data.length === 0)) {
@@ -110,7 +110,6 @@ const ReportComponent = ({
   }, [currentRouteName]);
 
   const fetchAllData = async () => {
-    
     try {
       const promises = [];
 
@@ -126,7 +125,6 @@ const ReportComponent = ({
 
         const stocksResult = stockInputField ? responses.pop() : [];
         const warehousesResult = warehouseInputField ? responses.pop() : [];
-
         if (stockInputField) {
           setStocks(stocksResult);
         }
@@ -137,7 +135,10 @@ const ReportComponent = ({
         setLoading(false);
 
     } catch (error) {
+      setWarehouses([]);
+      setStocks([]);
       setLoading(false);
+      showToast(typeof error === 'string' ? error : error.message);
     }
   };
   

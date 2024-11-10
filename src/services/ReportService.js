@@ -76,7 +76,7 @@ class ReportService {
       const res = await ApiService.get(`${endPoint}${query}`);
       return res.data;
     } catch (error) {
-      throw new Error(error?.message);
+      throw error;
     }
   }
 
@@ -86,7 +86,8 @@ class ReportService {
       const data = res.data.data;
       return data;
     } catch (err) {
-      throw new Error(err);
+      console.log(err);
+      throw err;
     }
   }
 
@@ -96,7 +97,8 @@ class ReportService {
       const data = res.data.data;
       return data;
     } catch (err) {
-      throw new Error(err);
+      console.log(err);
+      throw err;
     }
   }
 
@@ -146,7 +148,7 @@ class ReportService {
         data: processedData,
       }
     } catch (error) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

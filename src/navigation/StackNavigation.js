@@ -92,6 +92,7 @@ export default function StackNavigation() {
             key={index}
             name={screen.name}
             options={{
+              unmountOnBlur: true,
               drawerLabel: menu[screen.label],
               drawerLabelStyle: { color: Colors.green,  fontFamily: Fonts.family.bold },
               drawerIcon: ({ size }) => screen.icon(Colors.green, size),
@@ -107,6 +108,7 @@ export default function StackNavigation() {
             key={index}
             name={screen.name}
             options={{
+              unmountOnBlur: true,
               drawerLabel: menu[screen.label],
               drawerLabelStyle: { color: Colors.green,  fontFamily: Fonts.family.bold },
               drawerIcon: ({ size }) => screen.icon(Colors.green, size),
@@ -121,6 +123,7 @@ export default function StackNavigation() {
             key={index}
             name={screen.name}
             options={{
+              unmountOnBlur: true,
               drawerLabel: menu[screen.label],
               drawerLabelStyle: { color: Colors.green,  fontFamily: Fonts.family.bold },
               drawerIcon: ({ size }) => screen.icon(Colors.green, size),
