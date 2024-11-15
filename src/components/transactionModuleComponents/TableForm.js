@@ -59,7 +59,7 @@ const TableForm = ({
   };
 
   const handleAddItem = item => {
-    if (tableData.length >= 3 && !isRegistered) {
+    if (tableData.length >= 5 && !isRegistered) {
       showCustomAlert(menu['limit'], menu['limit_error']);
       return;
     }

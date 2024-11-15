@@ -10,25 +10,57 @@ const VideoLinks = ({navigation, route}) => {
     const menu = useSelector(state => state.Locale.menu);
   const videos = [
     {
-      title: 'User Guide',
-      url: 'https://www.youtube.com/watch?v=5EG4_jpwbNk',
+      title: 'Scan Barcode',
+      url: 'https://www.youtube.com/watch?v=cu0FsyDFyoU',
     },
     {
-      title: 'Install on PC',
-      url: 'https://www.youtube.com/watch?v=I-FO8O7f49Y',
+      title: 'Ganti Database',
+      url: 'https://www.youtube.com/shorts/WNcKSv571Kc',
     },
     {
-      title: 'Automatic Restart',
-      url: 'https://www.youtube.com/watch?v=mwB5Tf3tAAM',
+      title: 'Penjualan',
+      url: 'https://www.youtube.com/watch?v=1hIAIIJCUwo',
     },
     {
-      title: 'Install on Hanphone',
-      url: 'https://www.youtube.com/watch?v=pWd5hj3UNRY',
+      title: 'Sales Order',
+      url: 'https://www.youtube.com/watch?v=IGVcSrl8ml8',
     },
     {
-      title: 'Create IP VPN',
-      url: 'https://www.youtube.com/watch?v=D9933H3bZNs',
+      title: 'POS',
+      url: 'https://www.youtube.com/watch?v=lm16rqcdj9s',
     },
+    {
+      title: 'Opname Stock',
+      url: 'https://www.youtube.com/watch?v=dc5SJOLGq80',
+    },
+    {
+      title: 'Laporan',
+      url: 'https://www.youtube.com/watch?v=FDHetRftUPw',
+    },
+    {
+      title: 'Registrasi',
+      url: 'https://www.youtube.com/shorts/_6BA35ltOw4',
+    },
+    {
+      title: 'Install di PC',
+      url: 'https://www.youtube.com/watch?v=guZEeHJkv08',
+    },    
+    {
+      title: 'Install di HP',
+      url: 'https://www.youtube.com/watch?v=AMc3B8IgTXc',
+    },
+    {
+      title: 'Autostart',
+      url: 'https://www.youtube.com/watch?v=ii69R0FYKK4',
+    },
+    {
+      title: 'Create IP',
+      url: 'https://www.youtube.com/watch?v=YBWoryjKnu8',
+    },        
+    {
+      title: 'Transaksi',
+      url: 'https://www.youtube.com/watch?v=WTUuHXaFtEI',
+    },            
   ];
 
   const openLink = (url) => {
