@@ -20,6 +20,7 @@ export default {
   fetchWarehouses: 'schemaInfo/ware-house-list',
   fetchCustomers: 'setup/customers',
   fetchSalesmen: 'setup/salesmen',
+  fetchStockNames: 'setup/stock-names',
   salesInvoice: 'transactions/{user}/sales',
   sendSalesInvoice: 'transactions/sales',
   salesTable: 'transactions/sales-table?stockId=',

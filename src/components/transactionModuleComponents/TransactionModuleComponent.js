@@ -30,6 +30,7 @@ const TransactionModuleComponent = ({
   const [paymentComplete, setPaymentComplete] = useState(
     !(currentRouteName === 'point_of_sale_transaction'),
   );
+  const [stockCodes, setStockCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tableForm, setTableFormData] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -183,6 +184,9 @@ const TransactionModuleComponent = ({
         endPoints.invoice,
         loggedInUser,
       );
+      const stockData = await TransactionService.fetchStockNames();
+
+      setStockCodes(stockData.data);
       
       setTableFormData([]);
       setPaymentData({
@@ -294,6 +298,7 @@ const TransactionModuleComponent = ({
             headers={tableHeaders}
             setTableFormData={setTableFormData}
             setTotal={setTotal}
+            stockCodes={stockCodes}
             isNotStock={!isStock}
             isNotPos={!isPos}
           />

@@ -14,6 +14,8 @@ import {Colors, Fonts, Commons} from '../../utils';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import InputComponent from '../InputComponent';
 import CustomAlert from '../AlertComponent';
+import InputField from '../reportsComponents/InputField';
+import ModalComponent from '../reportsComponents/Model';
 
 const TableForm = ({
   navigation,
@@ -22,16 +24,19 @@ const TableForm = ({
   handleBarcodeRead,
   tax,
   headers,
+  stockCodes,
   setTotal,
   isNotStock,
   isNotPos
 }) => {
   const [tableData, setTableData] = useState(data);
+  const [stockCodeModal, setStockCodeModal] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false); // Custom alert visibility
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
+  const [stockCode, setStockCode] = useState('');
   const menu = useSelector(state => state.Locale.menu);
-  // Get the isRegistered flag from Redux
+
   const isRegistered = useSelector(state => state.Auth.isRegistered);
 
   const showCustomAlert = (title, message) => {
@@ -46,6 +51,10 @@ const TableForm = ({
       (tax / 100) * (parseInt(price) * parseInt(qty))
     );
   };
+
+  useEffect(() => {
+    console.log(stockCodes.map(stock => Object.values(stock)[0]));
+  })
 
   useEffect(() => {
     setTableData(data);
@@ -193,6 +202,34 @@ const TableForm = ({
             }
             onIconPress={text => handleAddItem(text)}
           />
+          <InputField
+          enabled={true}
+          iconName={'search'}
+          iconColor={Colors.primary}
+          iconSize={20}
+          onPress={() => {
+            setStockCodeModal(true);
+          }}
+          onIconPress={() => {
+            handleAddItem(stockCode);
+          }}
+          placeholder={`${menu['search']} ${menu['stock_code']}`}
+          value={stockCode}
+        />
+          <ModalComponent
+                isVisible={stockCodeModal}
+                onClose={() => setStockCodeModal(false)}
+                items={stockCodes.map(stock => Object.values(stock)[0])}
+                onItemSelect={selectedValue => {
+                  const key = stockCodes.find(item => Object.values(item)[0] === selectedValue);
+                  const stockCodeKey = key ? Object.keys(key)[0] : null; // Extract the key if it exists
+                  console.log(stockCodeKey); // Log the key
+                  if (stockCodeKey) {
+                    setStockCode(stockCodeKey); // Set the key in stockCode
+                  }
+                  setStockCodeModal(false);
+                }}
+              />
         </View>
       </View>
       <View style={{alignSelf: 'center'}}>

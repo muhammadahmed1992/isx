@@ -36,6 +36,15 @@ export class TransactionService {
       throw new Error(err.message);
     }
   }
+  static async fetchStockNames() {
+    try {
+    const res = await ApiService.get(Endpoints.fetchStockNames);
+    return res.data;
+    }
+    catch (err) {
+      throw new Error(err.message);
+    }
+  }
   static async postInvoiceFormData(endPoint, body) {
     try {
     const res = await ApiService.post(endPoint, body);
