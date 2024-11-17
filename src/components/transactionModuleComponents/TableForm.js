@@ -53,10 +53,6 @@ const TableForm = ({
   };
 
   useEffect(() => {
-    console.log(stockCodes.map(stock => Object.values(stock)[0]));
-  })
-
-  useEffect(() => {
     setTableData(data);
   }, [tableData, data]);
 
