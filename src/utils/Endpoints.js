@@ -21,6 +21,7 @@ export default {
   fetchCustomers: 'setup/customers',
   fetchSalesmen: 'setup/salesmen',
   fetchStockNames: 'setup/stock-names',
+  fetchStockNamesForStockAdjusment: 'setup/stock-adjusment/stock-names',
   salesInvoice: 'transactions/{user}/sales',
   sendSalesInvoice: 'transactions/sales',
   salesTable: 'transactions/sales-table?stockId=',

@@ -36,9 +36,9 @@ export class TransactionService {
       throw new Error(err.message);
     }
   }
-  static async fetchStockNames() {
+  static async fetchStockNames(endPoint) {
     try {
-    const res = await ApiService.get(Endpoints.fetchStockNames);
+    const res = await ApiService.get(endPoint);
     return res.data;
     }
     catch (err) {

@@ -184,7 +184,7 @@ const TransactionModuleComponent = ({
         endPoints.invoice,
         loggedInUser,
       );
-      const stockData = await TransactionService.fetchStockNames();
+      const stockData = await TransactionService.fetchStockNames(endPoints.stock);
 
       setStockCodes(stockData.data);
       

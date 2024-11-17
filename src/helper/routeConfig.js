@@ -82,7 +82,7 @@ const transactionModuleConfig = {
     props: {
       label: 'sales_transaction',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.salesInvoice, table: Endpoints.salesTable, sendInvoice: Endpoints.sendSalesInvoice }
+      endPoints: {invoice: Endpoints.salesInvoice, table: Endpoints.salesTable, sendInvoice: Endpoints.sendSalesInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   sales_order_transaction: {
@@ -97,7 +97,7 @@ const transactionModuleConfig = {
     props: {
       label: 'sales_order_transaction',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.salesOrderInvoice, table: Endpoints.salesOrderTable, sendInvoice: Endpoints.sendSalesOrderInvoice }
+      endPoints: {invoice: Endpoints.salesOrderInvoice, table: Endpoints.salesOrderTable, sendInvoice: Endpoints.sendSalesOrderInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   point_of_sale_transaction: {
@@ -112,7 +112,7 @@ const transactionModuleConfig = {
     props: {
       label: 'point_of_sale_transaction',
       paymentDetails: true,
-      endPoints: {invoice: Endpoints.pointOfSaleInvoice, table: Endpoints.pointOfSaleTable, sendInvoice: Endpoints.setPointOfSaleInvoice }
+      endPoints: {invoice: Endpoints.pointOfSaleInvoice, table: Endpoints.pointOfSaleTable, sendInvoice: Endpoints.setPointOfSaleInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   stock_adjusment: {
@@ -127,7 +127,7 @@ const transactionModuleConfig = {
     props: {
       label: 'stock_adjusment',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.stockInvoice, table: Endpoints.stockTable, sendInvoice: Endpoints.setStockInvoice }
+      endPoints: {invoice: Endpoints.stockInvoice, table: Endpoints.stockTable, sendInvoice: Endpoints.setStockInvoice, stock: Endpoints.fetchStockNamesForStockAdjusment }
     },
   },
 };
