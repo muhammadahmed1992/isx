@@ -191,7 +191,7 @@ const TableForm = ({
           </Text>
         </TouchableOpacity>
         <View style={{marginBottom: 10, width: '100%'}}>
-          {/* <InputComponent
+          <InputComponent
             value={''}
             placeholder={menu['enter_stock_id']}
             debounceEnabled={false}
@@ -201,10 +201,10 @@ const TableForm = ({
               <FontAwesome5Icon name="plus" size={20} color={Colors.primary} />
             }
             onIconPress={text => handleAddItem(text)}
-          /> */}
+          />
           <InputField
           enabled={true}
-          iconName={'search'}
+          iconName={'plus'}
           iconColor={Colors.primary}
           iconSize={20}
           onPress={() => {
