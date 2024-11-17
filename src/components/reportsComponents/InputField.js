@@ -1,6 +1,6 @@
 import React from 'react';
 import {Pressable, TextInput, StyleSheet, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the icon library
+import Icon from 'react-native-vector-icons/FontAwesome5'; 
 import {Fonts, Colors} from '../../utils';
 import {RFValue} from 'react-native-responsive-fontsize';
 
@@ -47,7 +47,7 @@ const InputField = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center', // Adjust alignment for the icon and input
+    alignItems: 'center', 
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: RFValue(10),
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.family.bold,
   },
   icon: {
-    marginRight: RFValue(10), // Add space between icon and input
+    marginRight: RFValue(10), 
   },
 });
 

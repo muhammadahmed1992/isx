@@ -222,10 +222,9 @@ const TableForm = ({
                 items={stockCodes.map(stock => Object.values(stock)[0])}
                 onItemSelect={selectedValue => {
                   const key = stockCodes.find(item => Object.values(item)[0] === selectedValue);
-                  const stockCodeKey = key ? Object.keys(key)[0] : null; // Extract the key if it exists
-                  console.log(stockCodeKey); // Log the key
+                  const stockCodeKey = key ? Object.keys(key)[0] : null; 
                   if (stockCodeKey) {
-                    setStockCode(stockCodeKey); // Set the key in stockCode
+                    setStockCode(stockCodeKey); 
                   }
                   setStockCodeModal(false);
                 }}
