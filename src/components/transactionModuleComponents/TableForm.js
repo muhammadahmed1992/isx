@@ -208,6 +208,7 @@ const TableForm = ({
           }}
           onIconPress={() => {
             handleAddItem(stockCode);
+            setStockCode('');
           }}
           placeholder={`${menu['search']} ${menu['stock_code']}`}
           value={stockCode}
