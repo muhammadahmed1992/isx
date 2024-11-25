@@ -87,7 +87,7 @@ const TransactionModuleComponent = ({
 
   const handleBarcodeRead = async data => {
     if (!data) {
-      setTableFormData([]);
+      setTableFormData([...tableForm]);
       return;
     }
     try {
