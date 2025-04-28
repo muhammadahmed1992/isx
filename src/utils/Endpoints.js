@@ -33,5 +33,6 @@ export default {
   setPointOfSaleInvoice: 'transactions/pos',
   stockInvoice: 'transactions/{user}/stock',
   stockTable: 'transactions/stock-table?stockId=',
-  setStockInvoice: 'transactions/stock'
+  setStockInvoice: 'transactions/stock',
+  scanBarcodePurchasePrice: 'reports/stock-search-barcode-purchase-price?stockId=',
 };

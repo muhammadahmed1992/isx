@@ -1,14 +1,11 @@
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   TouchableOpacity,
-  Platform,
   ScrollView,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { Commons, Colors, Fonts, Endpoints } from '../utils';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Loader from '../components/loader';
@@ -17,13 +14,16 @@ import Toast from 'react-native-easy-toast';
 import Header from '../components/Header';
 import { useSelector } from 'react-redux';
 
-const PriceSearchScreen = props => {
+/*
+  This componenet is for showing purchase price for specific client requirement.
+*/
+const PriceSearchScreenPP = props => {
   const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const menu = useSelector(state => state.Locale.menu);
   const headerKeys = useSelector(state => state.Locale.headers);
-  const headers = headerKeys["scan_barcode_report"];
+  const headers = headerKeys["scan_barcode_report_purchase_price"];
 
   const label = props.route.params.label;
   const localizeLabel = menu[label] || label;
@@ -34,7 +34,7 @@ const PriceSearchScreen = props => {
     }
     setLoading(true);
     try {
-      await ApiService.get(Endpoints.scanBarcode + encodeURIComponent(data))
+      await ApiService.get(Endpoints.scanBarcodePurchasePrice + encodeURIComponent(data))
         .then(res => {
           setData(res.data.data);
           setLoading(false);
@@ -82,7 +82,7 @@ const PriceSearchScreen = props => {
             } else {
               Commons.navigate(props.navigation, 'barcode_scanner', {
                 onBarcodeRead: handleBarcodeRead,
-                returnScreen: 'search',
+                returnScreen: 'search_purchase_price',
               });
             }
           } catch (error) {
@@ -301,4 +301,4 @@ const PriceSearchScreen = props => {
   );
 };
 
-export default PriceSearchScreen;
+export default PriceSearchScreenPP;

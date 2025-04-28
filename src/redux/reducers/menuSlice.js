@@ -15,8 +15,8 @@ const initialState = {
     ...administrationConditionConfig,
   },
   transactionModule: {
-    ...transactionModuleConditions
-  }
+    ...transactionModuleConditions,
+  },
 };
 
 export const menuSlice = createSlice({
@@ -40,24 +40,22 @@ export const menuSlice = createSlice({
       state.purchaseReports.purchase_report.condition =
         action.payload.IsPurchaseReportAllowed,
         state.purchaseReports.purchase_report_no_disc.condition =
-          action.payload.IsPurchaseReportAllowed,
+        action.payload.IsPurchaseReportAllowed,
         state.purchaseReports.purchase_analyst_report.condition =
-          action.payload.IsPurchaseReportAllowed,
+        action.payload.IsPurchaseReportAllowed,
         state.purchaseReports.purchase_analyst_report_no_disc.condition =
-          action.payload.IsPurchaseReportAllowed;
+        action.payload.IsPurchaseReportAllowed;
     },
     setAdministrationPermissions: (state, action) => {
-      state.administration.switch_database.condition =
-      action.payload.IsSwitchDatabase;
-        state.administration.registration.condition = 
-        true
+      state.administration.switch_database.condition = action.payload.IsSwitchDatabase;
+      state.administration.scan_barCode_purchase_price.condition = action.payload.IsBarcodeWithPurchasePriceAllowed;
     },
     setTransactionModulePermissions: (state, action) => {
       state.transactionModule.sales.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
       state.transactionModule.pos.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
       state.transactionModule.sales_order.condition = action.payload.IsSalesAndSalesOrderAndPosTransactionAllowed;
       state.transactionModule.stock_adjusment.condition = action.payload.IsStockAdjusmentAllowed;
-    }
+    },
   },
 });
 export const { setReportPermissions, setAdministrationPermissions, setTransactionModulePermissions } = menuSlice.actions;
