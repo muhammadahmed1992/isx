@@ -52,8 +52,7 @@ const RegistrationComponent = ({ navigation, label = 'registration' }) => {
     if (!deviceIdentifier) return;
 
     const licenseValidationResponse = await ApiService.get(
-      Endpoints.licenseValidation + deviceIdentifier + `&key=${registrationKey.trim()}`,
-    );
+      Endpoints.licenseValidation + deviceIdentifier + `&key=${registrationKey.trim()}`);
 
     // Compare the hashed device identifier with the registration key
     if (licenseValidationResponse.data.data) {
@@ -83,7 +82,7 @@ const RegistrationComponent = ({ navigation, label = 'registration' }) => {
   return (
     <View style={styles.container}>
       <Header label={menu[label]} navigation={navigation} />
-      
+
       <TextInput
         ref={registrationKeyInputRef}
         style={styles.input}
@@ -98,9 +97,9 @@ const RegistrationComponent = ({ navigation, label = 'registration' }) => {
         <Button title={menu['get_dev_num']} onPress={handleGetIMEI} color="#841584" />
         <Button title={menu['set_key']} onPress={handleSubmit} />
       </View>
-      
+
       {/* Custom Modal for displaying IMEI with Copy icon */}
-      
+
       <Modal
         animationType="slide"
         transparent={true}

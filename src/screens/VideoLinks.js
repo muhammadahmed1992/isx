@@ -19,23 +19,23 @@ const VideoLinks = ({navigation, route}) => {
     },
     {
       title: 'Penjualan',
-      url: 'https://www.youtube.com/watch?v=1hIAIIJCUwo',
+      url: 'https://www.youtube.com/shorts/b11JAhdAcy8',
     },
     {
       title: 'Sales Order',
-      url: 'https://www.youtube.com/watch?v=IGVcSrl8ml8',
+      url: 'https://www.youtube.com/shorts/DhVB-NnjizU',
     },
     {
       title: 'POS',
-      url: 'https://www.youtube.com/watch?v=lm16rqcdj9s',
+      url: 'https://www.youtube.com/shorts/D75MUt4VBz4',
     },
     {
       title: 'Opname Stock',
-      url: 'https://www.youtube.com/watch?v=dc5SJOLGq80',
+      url: 'https://www.youtube.com/shorts/KL8uoQ28eEM',
     },
     {
       title: 'Laporan',
-      url: 'https://www.youtube.com/watch?v=FDHetRftUPw',
+      url: 'https://www.youtube.com/shorts/sOdhUmAtEC0',
     },
     {
       title: 'Registrasi',

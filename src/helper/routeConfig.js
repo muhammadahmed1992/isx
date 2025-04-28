@@ -1,4 +1,10 @@
-import { SwitchDatabase, PriceSearchScreen, ReportGenerator, RegistrationScreen, TransactionModuleScreen } from '../screens';
+import {
+  SwitchDatabase,
+  PriceSearchScreen,
+  ReportGenerator,
+  RegistrationScreen,
+  TransactionModuleScreen,
+} from '../screens';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import FoundationIcon from 'react-native-vector-icons/Foundation';
@@ -8,7 +14,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Endpoints } from '../utils';
 import VideoLinks from '../screens/VideoLinks';
-
+import PriceSearchScreenPP from '../screens/PriceSearchScreenPP';
 
 const otherConfig = {
   video: {
@@ -39,6 +45,19 @@ const administrationConfig = {
     ),
     props: {
       label: 'scan_barcode',
+    },
+  },
+  scan_barCode_purchase_price: {
+    id: 4,
+    label: 'scan_barcode_purchase_price',
+    name: 'search_purchase_price',
+    component: PriceSearchScreenPP,
+    condition: true,
+    icon: (color, size) => (
+      <FontAwesome name="dollar" color={color} size={20} />
+    ),
+    props: {
+      label: 'scan_barcode_purchase_price',
     },
   },
   switch_database: {
@@ -82,7 +101,7 @@ const transactionModuleConfig = {
     props: {
       label: 'sales_transaction',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.salesInvoice, table: Endpoints.salesTable, sendInvoice: Endpoints.sendSalesInvoice, stock: Endpoints.fetchStockNames }
+      endPoints: { invoice: Endpoints.salesInvoice, table: Endpoints.salesTable, sendInvoice: Endpoints.sendSalesInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   sales_order_transaction: {
@@ -97,7 +116,7 @@ const transactionModuleConfig = {
     props: {
       label: 'sales_order_transaction',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.salesOrderInvoice, table: Endpoints.salesOrderTable, sendInvoice: Endpoints.sendSalesOrderInvoice, stock: Endpoints.fetchStockNames }
+      endPoints: { invoice: Endpoints.salesOrderInvoice, table: Endpoints.salesOrderTable, sendInvoice: Endpoints.sendSalesOrderInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   point_of_sale_transaction: {
@@ -112,7 +131,7 @@ const transactionModuleConfig = {
     props: {
       label: 'point_of_sale_transaction',
       paymentDetails: true,
-      endPoints: {invoice: Endpoints.pointOfSaleInvoice, table: Endpoints.pointOfSaleTable, sendInvoice: Endpoints.setPointOfSaleInvoice, stock: Endpoints.fetchStockNames }
+      endPoints: { invoice: Endpoints.pointOfSaleInvoice, table: Endpoints.pointOfSaleTable, sendInvoice: Endpoints.setPointOfSaleInvoice, stock: Endpoints.fetchStockNames }
     },
   },
   stock_adjusment: {
@@ -127,7 +146,7 @@ const transactionModuleConfig = {
     props: {
       label: 'stock_adjusment',
       paymentDetails: false,
-      endPoints: {invoice: Endpoints.stockInvoice, table: Endpoints.stockTable, sendInvoice: Endpoints.setStockInvoice, stock: Endpoints.fetchStockNamesForStockAdjusment }
+      endPoints: { invoice: Endpoints.stockInvoice, table: Endpoints.stockTable, sendInvoice: Endpoints.setStockInvoice, stock: Endpoints.fetchStockNamesForStockAdjusment }
     },
   },
 };
@@ -308,7 +327,7 @@ const purchaseReportsConfig = {
       endPoint: Endpoints.purchaseAnalystReport,
     },
   },
-  };
+};
 
 // Price and Stock Reports
 const stockReportConfig = {
@@ -381,6 +400,10 @@ const administrationConditionConfig = {
     id: 3,
     condition: true,
   },
+  scan_barCode_purchase_price: {
+    id: 4,
+    condition: true,
+  },
 }
 
 const salesReportConditionsConfig = {
@@ -446,6 +469,6 @@ export {
   stockReportConditionConfig,
   administrationConditionConfig,
   transactionModuleConditions
-}; 
+};
 
 export { administrationConfig, salesReportsConfig, purchaseReportsConfig, stockReportConfig, transactionModuleConfig, otherConfig }; 
