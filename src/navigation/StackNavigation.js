@@ -6,14 +6,8 @@ import { Colors, Fonts } from '../utils';
 import { Splash, Auth } from '../screens';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import { useSelector } from 'react-redux';
-import {
-  salesReportsConfig,
-  stockReportConfig,
-  purchaseReportsConfig,
-  administrationConfig,
-  transactionModuleConfig,
-  otherConfig,
-} from '../helper/routeConfig';
+import { salesReportsConfig, stockReportConfig, purchaseReportsConfig, administrationConfig, transactionModuleConfig, otherConfig } from '../helper/routeConfig';
+import ReceiptPrinterScreen from '../components/administrationComponents/ReceiptPrinterScreen';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
@@ -66,6 +60,14 @@ export default function StackNavigation() {
         }}
         initialRouteName="search"
       >
+        <Drawer.Screen key={100}
+          name="printer"
+          component={ReceiptPrinterScreen}
+          options={{
+            drawerLabel: "Printer",
+            drawerLabelStyle: { color: Colors.red, fontFamily: Fonts.family.bold }
+          }}
+          initialParams={{}} />
         {administrationScreens.map((screen, index) => (
           <Drawer.Screen
             key={index}
@@ -153,6 +155,7 @@ export default function StackNavigation() {
             initialParams={{ ...screen.props }}
           />
         ))}
+
       </Drawer.Navigator>
     );
   };

@@ -35,5 +35,6 @@ export default {
   stockInvoice: 'transactions/{user}/stock',
   stockTable: 'transactions/stock-table?stockId=',
   setStockInvoice: 'transactions/stock',
+  getReceipt: 'receipt',
   scanBarcodePurchasePrice: 'reports/stock-search-barcode-purchase-price?stockId=',
 };
