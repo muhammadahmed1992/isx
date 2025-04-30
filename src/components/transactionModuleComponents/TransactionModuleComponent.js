@@ -1,15 +1,15 @@
-import {View, Text, StyleSheet, Alert} from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import Header from '../Header';
 import InputForm from './InvoiceForm';
 import Wizard from './WizardForm';
 import TableForm from './TableForm';
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Toast from 'react-native-easy-toast';
-import {TransactionService} from '../../services/TransactionService';
-import {store} from '../../redux/store';
+import { TransactionService } from '../../services/TransactionService';
+import { store } from '../../redux/store';
 import Loader from '../loader';
 import ApiService from '../../services/ApiService';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
 import eventEmitter from '../../utils/EventEmitter';
@@ -95,7 +95,7 @@ const TransactionModuleComponent = ({
         endPoints.table + encodeURIComponent(data),
       );
       if (res) setTableFormData([...tableForm, res.data.data[0]]);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   function findObjectByValue(inputString, objects) {
@@ -143,8 +143,8 @@ const TransactionModuleComponent = ({
         customer: selectedCustomer,
         salesman: selectedSalesman,
         ...(currentRouteName === 'point_of_sale_transaction' && {
-          service: invoiceFormData?.service || 0,
-          table: invoiceFormData?.table || '',
+          service: invoiceFormData?.Service || 0,
+          table: invoiceFormData?.Table || '',
         }),
         tax: invoiceFormData?.Tax,
       },
@@ -161,7 +161,7 @@ const TransactionModuleComponent = ({
     });
   }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm, paymentData]);
   useEffect(() => {
-    
+
   })
   const resetData = () => {
     setInvoiceFormData();
@@ -187,7 +187,7 @@ const TransactionModuleComponent = ({
       const stockData = await TransactionService.fetchStockNames(endPoints.stock);
 
       setStockCodes(stockData.data);
-      
+
       setTableFormData([]);
       setPaymentData({
         total: 0,
@@ -198,7 +198,7 @@ const TransactionModuleComponent = ({
         online: 0,
         change: 0,
       });
-      
+
       setInvoiceFormData(invoiceData.data);
       setNewButtonDisabled(true);
       setLoading(false);
@@ -215,11 +215,12 @@ const TransactionModuleComponent = ({
         tableForm.length !== 0 && // Table form check for all routes
         paymentComplete &&
         (currentRouteName === 'sales_transaction' ||
-        currentRouteName === 'sales_order_transaction'
+          currentRouteName === 'sales_order_transaction'
           ? selectedCustomer.pk
           : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
       ) {
         setLoading(true);
+        // TODO: Ahmed POS:
         const res = await TransactionService.postInvoiceFormData(
           endPoints.sendInvoice,
           postObject,
@@ -231,7 +232,6 @@ const TransactionModuleComponent = ({
       } else {
         // Display appropriate warning based on missing fields
         let warningMessage = '';
-
         if (tableForm.length === 0) {
           warningMessage = menu['fill_order'];
         } else if (!paymentComplete) {
@@ -327,22 +327,22 @@ const TransactionModuleComponent = ({
         title={alertTitle}
         message={alertMessage}
       />
-        <CustomAlert
-          visible={finishAlertVisible}
-          title={alertTitle}
-          message={alertMessage}
-          onOkPress={async () => {
-            try {
-              setFinishAlertVisible(false);
-              await handleFinish();
-            } catch (err) {
-              showCustomAlert(menu['error'], err.message);
-            }
-          }}
-          onCancelPress={() => {
+      <CustomAlert
+        visible={finishAlertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onOkPress={async () => {
+          try {
             setFinishAlertVisible(false);
-          }}
-        />
+            await handleFinish();
+          } catch (err) {
+            showCustomAlert(menu['error'], err.message);
+          }
+        }}
+        onCancelPress={() => {
+          setFinishAlertVisible(false);
+        }}
+      />
     </View>
   );
 };

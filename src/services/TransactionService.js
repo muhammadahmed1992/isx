@@ -1,4 +1,4 @@
-import {Endpoints} from '../utils';
+import { Endpoints } from '../utils';
 import ApiService from './ApiService';
 
 export class TransactionService {
@@ -20,8 +20,8 @@ export class TransactionService {
   }
   static async fetchCustomers() {
     try {
-    const res = await ApiService.get(Endpoints.fetchCustomers);
-    return res.data;
+      const res = await ApiService.get(Endpoints.fetchCustomers);
+      return res.data;
     }
     catch (err) {
       throw new Error(err.message);
@@ -29,8 +29,8 @@ export class TransactionService {
   }
   static async fetchSalesmen() {
     try {
-    const res = await ApiService.get(Endpoints.fetchSalesmen);
-    return res.data;
+      const res = await ApiService.get(Endpoints.fetchSalesmen);
+      return res.data;
     }
     catch (err) {
       throw new Error(err.message);
@@ -38,8 +38,8 @@ export class TransactionService {
   }
   static async fetchStockNames(endPoint) {
     try {
-    const res = await ApiService.get(endPoint);
-    return res.data;
+      const res = await ApiService.get(endPoint);
+      return res.data;
     }
     catch (err) {
       throw new Error(err.message);
@@ -47,10 +47,12 @@ export class TransactionService {
   }
   static async postInvoiceFormData(endPoint, body) {
     try {
-    const res = await ApiService.post(endPoint, body);
-    return res;
+      const res = await ApiService.post(endPoint, body);
+      return res;
     }
     catch (err) {
+      console.log(endPoint);
+      console.error(err);
       throw new Error(err.message);
     }
   }
