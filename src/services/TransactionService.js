@@ -51,7 +51,6 @@ export class TransactionService {
       return res;
     }
     catch (err) {
-      console.log(endPoint);
       console.error(err);
       throw new Error(err.message);
     }
