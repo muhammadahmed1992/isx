@@ -56,7 +56,7 @@ const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) 
           <Text
             key={key}
             style={[
-              {width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120},
+              { width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120 },
               styles.cell,
               keyIndex < keys.length && styles.cellBorder,
               rightAlignedColumns.includes(key) ? styles.cellNumber : styles.cellText,
@@ -121,7 +121,7 @@ const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) 
               <TouchableOpacity key={index} onPress={() => handleHeaderClick(key)}>
                 <Text
                   style={[
-                    {width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120},
+                    { width: Object.keys(cellWidth).includes(key) ? cellWidth[key] : 120 },
                     styles.cell,
                     index < Object.keys(headers).length - 1 && styles.cellBorder,
                     styles.headerText,
@@ -144,7 +144,7 @@ const TableComponent = ({ data, headers, onSort, currentPage, setCurrentPage }) 
       </ScrollView>
 
       {/* Pagination Controls */}
-      
+
     </View>
   );
 };

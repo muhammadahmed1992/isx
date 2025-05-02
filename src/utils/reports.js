@@ -10,16 +10,17 @@ const ReportTypes = {
     PURCHASE_REPORT: 'purchasing_report',
     PURCHASE_REPORT_NO_DISC: 'purchasing_report_no_disc',
     PURCHASE_ANALYST_REPORT: 'purchasing_analyst_report',
-    PURCHASE_ANALYST_REPORT_NO_DISC: 'purchasing_analyst_report_no_disc'
+    PURCHASE_ANALYST_REPORT_NO_DISC: 'purchasing_analyst_report_no_disc',
+    Stock_Balance_Report_Purchase_Price: 'stock_balance_report_purchase_price'
 };
 
 export default ReportTypes;
 
 export function isSalesReport(reportType) {
-    return reportType === ReportTypes.SALES_ANALYST_REPORT || 
-    reportType === ReportTypes.SALES_ANALYST_REPORT_2 || 
-    reportType === ReportTypes.SALES_REPORT || 
-    reportType === ReportTypes.SALES_REPORT_2; 
+    return reportType === ReportTypes.SALES_ANALYST_REPORT ||
+        reportType === ReportTypes.SALES_ANALYST_REPORT_2 ||
+        reportType === ReportTypes.SALES_REPORT ||
+        reportType === ReportTypes.SALES_REPORT_2;
 }
 
 export function isCashDrawerReport(reportType) {
@@ -27,7 +28,7 @@ export function isCashDrawerReport(reportType) {
 }
 
 export function isStockReport(reportType) {
-    return reportType === ReportTypes.STOCKS;
+    return reportType === ReportTypes.STOCKS || reportType === ReportTypes.Stock_Balance_Report_Purchase_Price;
 }
 
 export function isPriceReport(reportType) {
@@ -36,7 +37,7 @@ export function isPriceReport(reportType) {
 
 export function isPurchaseReport(reportType) {
     return reportType === ReportTypes.PURCHASE_REPORT ||
-           reportType === ReportTypes.PURCHASE_REPORT_NO_DISC ||
-           reportType === ReportTypes.PURCHASE_ANALYST_REPORT ||
-           reportType === ReportTypes.PURCHASE_ANALYST_REPORT_NO_DISC;
+        reportType === ReportTypes.PURCHASE_REPORT_NO_DISC ||
+        reportType === ReportTypes.PURCHASE_ANALYST_REPORT ||
+        reportType === ReportTypes.PURCHASE_ANALYST_REPORT_NO_DISC;
 }

@@ -47,22 +47,22 @@ class ReportService {
         warehouses.find(w => w.cwhsdesc === warehouse).cwhspk,
       )}`;
     }
-    if(searchValue) {
+    if (searchValue) {
       query += `&searchValue=${encodeURIComponent(searchValue)}`
     }
-    if(pageSize) {
+    if (pageSize) {
       query += `&pageSize=${encodeURIComponent(pageSize)}`
     }
-    if(currentPage) {
+    if (currentPage) {
       query += `&pageNumber=${encodeURIComponent(currentPage)}`
     }
-    if(columnsToFilter) {
+    if (columnsToFilter) {
       query += `&columnsToFilter=${encodeURIComponent(columnsToFilter)}`
     }
-    if(sortColumn) {
+    if (sortColumn) {
       query += `&sortColumn=${encodeURIComponent(sortColumn)}`
     }
-    if(sortDirection) {
+    if (sortDirection) {
       query += `&sortDirection=${encodeURIComponent(sortDirection)}`
     }
     if (query.startsWith('&')) {
@@ -118,7 +118,7 @@ class ReportService {
     sortColumn,
     sortDirection
   }) {
-
+    console.log(`report type: ${reportType}`);
     const query = this.buildQuery({
       dateValFrom,
       dateValTo,
@@ -136,14 +136,14 @@ class ReportService {
 
     try {
       const data = await this.fetchData(endPoints, query);
-      const {data: reportData} = data;
+      const { data: reportData } = data;
       let processedData;
       if (isPriceReport(reportType)) processedData = reportData;
-      if (isStockReport(reportType)) processedData = processStockReportData(reportData);
+      if (reportType) processedData = processStockReportData(reportData);
       if (isCashDrawerReport(reportType))
         processedData = processCashDrawerReportData(reportData);
       if (isSalesReport(reportType) || isPurchaseReport(reportType))
-        processedData =  processSalesOrPurchaseReportData(reportData);
+        processedData = processSalesOrPurchaseReportData(reportData);
       return {
         data: processedData,
       }

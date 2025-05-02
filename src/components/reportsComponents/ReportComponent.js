@@ -38,7 +38,7 @@ const ReportComponent = ({
   dateRangeSetter,
   stockInputField,
   warehouseInputField,
-  endPoints,
+  endPoints
 }) => {
   const toastRef = useRef(null);
   const database = useSelector(state => state.ConnectionString.database);
@@ -56,7 +56,7 @@ const ReportComponent = ({
   const [dateValTo, setDateValTo] = useState(
     moment(new Date()).format('DD-MM-yyyy'),
   );
-  const {pageSize} = filterConfig;
+  const { pageSize } = filterConfig;
   const [filtered, setFiltered] = useState(false);
   // const [shouldSearch, setShouldSearch] = useState(false);
   const [stocksModal, setStocksModal] = useState(false);
@@ -85,7 +85,7 @@ const ReportComponent = ({
     searchPlaceHolder.push(headers[header]);
   });
 
- 
+
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -99,9 +99,9 @@ const ReportComponent = ({
   }, [])
 
   useEffect(() => {
-    if(filtered && !(data.length === 0)) {
-        filter();
-      }
+    if (filtered && !(data.length === 0)) {
+      filter();
+    }
   }, [sortDirection, sortColumn])
 
   useEffect(() => {
@@ -114,25 +114,25 @@ const ReportComponent = ({
       const promises = [];
 
       if (warehouseInputField) {
-          promises.push(ReportService.fetchAllWarehouses());
-        }
-        if (stockInputField) {
-          promises.push(ReportService.fetchAllStocks());
-        }
-        setLoading(true);
+        promises.push(ReportService.fetchAllWarehouses());
+      }
+      if (stockInputField) {
+        promises.push(ReportService.fetchAllStocks());
+      }
+      setLoading(true);
 
-        const responses = await Promise.all(promises);
+      const responses = await Promise.all(promises);
 
-        const stocksResult = stockInputField ? responses.pop() : [];
-        const warehousesResult = warehouseInputField ? responses.pop() : [];
-        if (stockInputField) {
-          setStocks(stocksResult);
-        }
-        if (warehouseInputField) {
-          setWarehouses(warehousesResult);
-        }
+      const stocksResult = stockInputField ? responses.pop() : [];
+      const warehousesResult = warehouseInputField ? responses.pop() : [];
+      if (stockInputField) {
+        setStocks(stocksResult);
+      }
+      if (warehouseInputField) {
+        setWarehouses(warehousesResult);
+      }
 
-        setLoading(false);
+      setLoading(false);
 
     } catch (error) {
       setWarehouses([]);
@@ -141,7 +141,7 @@ const ReportComponent = ({
       showToast(typeof error === 'string' ? error : error.message);
     }
   };
-  
+
 
   const resetFilters = () => {
     setDateFrom(new Date());
@@ -174,7 +174,8 @@ const ReportComponent = ({
         sortColumn: sortColumn,
         sortDirection: sortDirection
       });
-      setData(result.data); 
+
+      setData(result.data);
       // setTotalPages(result.totalPages); 
       setLoading(false);
     } catch (error) {
@@ -183,11 +184,11 @@ const ReportComponent = ({
       showToast(typeof error === 'string' ? error : error.message);
     }
   };
-  useEffect(()=> {
-    if(filtered) {
+  useEffect(() => {
+    if (filtered) {
       filter();
-    } 
-  },[searchValue])
+    }
+  }, [searchValue])
   const showToast = msg => {
     toastRef.current.show(msg, 2000);
   };
@@ -300,14 +301,14 @@ const ReportComponent = ({
       ) : (
         <View />
       )}
-      {isCashDrawerReport(currentRouteName)? <View/> : 
-      <InputComponent 
-      placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
-      placeholderColor={Colors.grey}
-      onTextChange={handleSearch}
-      value={searchValue}
-      debounceEnabled={true}
-    />
+      {isCashDrawerReport(currentRouteName) ? <View /> :
+        <InputComponent
+          placeholder={`${searchPrompt} ${searchPlaceHolder.join(', ')}`}
+          placeholderColor={Colors.grey}
+          onTextChange={handleSearch}
+          value={searchValue}
+          debounceEnabled={true}
+        />
       }
       <View
         style={{
@@ -361,7 +362,7 @@ const ReportComponent = ({
         setCurrentPage={setCurrentPage}
       /> */}
       <ScrollView>
-        <TableComponent data={data} headers={headers} onSort={handleSort} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+        <TableComponent data={data} headers={headers} onSort={handleSort} currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </ScrollView>
       <DatePicker
         modal
@@ -399,30 +400,30 @@ const ReportComponent = ({
         fadeOutDuration={1000}
         opacity={0.8}
       />
-      {stockInputField ? 
-      (<ModalComponent isVisible={stocksModal}
-        onClose={() => setStocksModal(false)} 
-        items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
-        onItemSelect={item => {
-         setStockGroup(item);
-         setStocksModal(false);
-       }}
-       placeholder={stockPlaceholder + '...'}
-       modalTitle={stockPlaceholder}
-       />
- ) :(<View />)}
-      {warehouseInputField ? 
-      ( <ModalComponent isVisible={warehouseModal}
-             onClose={() => setWarehouseModal(false)} 
-             items={warehouses.length ? warehouses.map(item => item.cwhsdesc) : []}
-             onItemSelect={item => {
-              setWarehouse(item);
-              setWarehouseModal(false);
-            }}
-            placeholder={wearhousePlaceholder + '...'}
-            modalTitle={wearhousePlaceholder}
-            />
-      ) :(<View />) } 
+      {stockInputField ?
+        (<ModalComponent isVisible={stocksModal}
+          onClose={() => setStocksModal(false)}
+          items={stocks.length ? stocks.map(item => item.cgrpdesc) : []}
+          onItemSelect={item => {
+            setStockGroup(item);
+            setStocksModal(false);
+          }}
+          placeholder={stockPlaceholder + '...'}
+          modalTitle={stockPlaceholder}
+        />
+        ) : (<View />)}
+      {warehouseInputField ?
+        (<ModalComponent isVisible={warehouseModal}
+          onClose={() => setWarehouseModal(false)}
+          items={warehouses.length ? warehouses.map(item => item.cwhsdesc) : []}
+          onItemSelect={item => {
+            setWarehouse(item);
+            setWarehouseModal(false);
+          }}
+          placeholder={wearhousePlaceholder + '...'}
+          modalTitle={wearhousePlaceholder}
+        />
+        ) : (<View />)}
 
       {loading && <Loader />}
     </View>
