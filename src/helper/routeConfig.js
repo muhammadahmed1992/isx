@@ -15,6 +15,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import { Endpoints } from '../utils';
 import VideoLinks from '../screens/VideoLinks';
 import PriceSearchScreenPP from '../screens/PriceSearchScreenPP';
+import ReportTypes from '../utils/reports';
 
 const otherConfig = {
   video: {
@@ -332,7 +333,7 @@ const purchaseReportsConfig = {
 // Price and Stock Reports
 const stockReportConfig = {
   price_report: {
-    id: 4,
+    id: 2,
     name: 'price_report',
     label: 'price_report',
     component: ReportGenerator,
@@ -349,7 +350,7 @@ const stockReportConfig = {
     },
   },
   stock_report: {
-    id: 3,
+    id: 1,
     name: 'stock_report',
     label: 'stock_report',
     component: ReportGenerator,
@@ -363,6 +364,23 @@ const stockReportConfig = {
       stockInputField: true,
       warehouseInputField: true,
       endPoint: Endpoints.stockReport,
+    },
+  },
+  stock_balance_report_purchase_price: {
+    id: 3,
+    name: 'stock_balance_report_purchase_price',
+    label: 'stock_balance_report_purchase_price',
+    component: ReportGenerator,
+    condition: true,
+    icon: (color, size) => (
+      <FoundationIcon name="graph-trend" color={color} size={20} />
+    ),
+    props: {
+      label: 'stock_balance_report_purchase_price',
+      dateRangeSetter: false,
+      stockInputField: true,
+      warehouseInputField: true,
+      endPoint: Endpoints.stockBalanceReportPurchasePrice
     },
   },
 };
@@ -454,13 +472,18 @@ const purchaseReportConditionsConfig = {
 
 const stockReportConditionConfig = {
   price_report: {
-    id: 3,
+    id: 2,
     condition: true,
   },
   stock_report: {
-    id: 4,
+    id: 1,
     condition: false,
   },
+  stock_balance_report_purchase_price: {
+    id: 3,
+    condition: false,
+  },
+
 };
 
 export {

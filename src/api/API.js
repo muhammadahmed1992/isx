@@ -1,15 +1,15 @@
 import axios from 'axios';
-import {store} from '../redux/store/index';
-import {Endpoints} from '../utils';
+import { store } from '../redux/store/index';
+import { Endpoints } from '../utils';
 
 export const api = (method, endpoint, body) => {
   const state = store.getState();
-  const {ipAddress} = state.Auth;
-  const {host, username, password, port, database} = state.ConnectionString;
+  const { ipAddress } = state.Auth;
+  const { host, username, password, port, database } = state.ConnectionString;
   const language = state.Locale.language;
 
   return new Promise((resolve, reject) => {
-    console.log("connection",state.ConnectionString);
+    console.log("connection", state.ConnectionString);
     if (!host || !username || !password || !port || !database) {
       reject('Kindly connect the database first');
     } else if (!ipAddress) {
@@ -30,7 +30,9 @@ export const api = (method, endpoint, body) => {
         },
       })
         .then(res => {
-          if (res.data.success) resolve(res);
+          if (res.data.success) {
+            resolve(res);
+          }
           else {
             const errorObject = {
               code: 200,
