@@ -12,7 +12,13 @@ import ApiService from '../../services/ApiService';
 import { useSelector } from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
-import eventEmitter from '../../utils/EventEmitter';
+import {
+  requestBluetoothPermissions,
+  getPairedPrinters,
+  connectToPrinter,
+  getCachedPrinter,
+  printInvoice,
+} from '../../services/BluetoothService';
 
 const TransactionModuleComponent = ({
   navigation,
@@ -53,6 +59,9 @@ const TransactionModuleComponent = ({
     online: 0,
     change: 0,
   });
+
+  const [pairedPrinters, setPairedPrinters] = useState([]);
+  const [selectedPrinter, setSelectedPrinter] = useState(null);
 
   const localizedLabel = useSelector(state => state.Locale.menu);
   const tableHeaders = useSelector(
@@ -121,6 +130,10 @@ const TransactionModuleComponent = ({
     data.map(obj => Object.values(obj)[0]);
 
   useEffect(() => {
+    init();
+  }, [])
+
+  useEffect(() => {
     setSelectedCustomer(
       convertToDescAndPk(
         findObjectByValue(invoiceFormData?.Customer, customers),
@@ -160,9 +173,28 @@ const TransactionModuleComponent = ({
       },
     });
   }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm, paymentData]);
-  useEffect(() => {
 
-  })
+  const init = async () => {
+    const granted = await requestBluetoothPermissions();
+    if (!granted) {
+      Alert.alert('Bluetooth permissions are required');
+      return;
+    }
+
+    const cached = await getCachedPrinter();
+    if (cached) {
+      setSelectedPrinter(cached);
+    } else {
+      const printers = await getPairedPrinters();
+      setPairedPrinters(printers);
+    }
+  };
+
+  const handleSelectPrinter = async address => {
+    await connectToPrinter(address);
+    setSelectedPrinter(address);
+    Alert.alert('Connected!', 'Printer saved for future use.');
+  };
   const resetData = () => {
     setInvoiceFormData();
     setTableFormData([]);
@@ -210,48 +242,15 @@ const TransactionModuleComponent = ({
   };
 
   const handleFinish = async () => {
+    // TODO: Print receipt here...
     try {
-      if (
-        tableForm.length !== 0 && // Table form check for all routes
-        paymentComplete &&
-        (currentRouteName === 'sales_transaction' ||
-          currentRouteName === 'sales_order_transaction'
-          ? selectedCustomer.pk
-          : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
-      ) {
-        setLoading(true);
-        // TODO: Ahmed POS:
-        const res = await TransactionService.postInvoiceFormData(
-          endPoints.sendInvoice,
-          postObject,
-        );
-        resetData();
-        setNewButtonDisabled(false);
-        showCustomAlert(menu['sent'], menu['complete']);
-        eventEmitter.emit('transactionCompleted');
-      } else {
-        // Display appropriate warning based on missing fields
-        let warningMessage = '';
-        if (tableForm.length === 0) {
-          warningMessage = menu['fill_order'];
-        } else if (!paymentComplete) {
-          warningMessage = menu['fill_payment'];
-        } else if (
-          (currentRouteName === 'sales_transaction' ||
-            currentRouteName === 'sales_order_transaction') &&
-          !selectedCustomer.pk
-        ) {
-          warningMessage = menu['fill_customer'];
-        }
-
-        showCustomAlert(menu['warning'], warningMessage);
+      if (!selectedPrinter) {
+        Alert.alert('No printer selected');
+        return;
       }
-
-      setLoading(false);
-    } catch (err) {
-      throw new Error(err.message);
-    } finally {
-      setLoading(false);
+      await printInvoice(invoice);
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -265,9 +264,9 @@ const TransactionModuleComponent = ({
       const salesmenResponse = await TransactionService.fetchSalesmen();
       setCustomers(customerResponse.data);
       setSalesmen(salesmenResponse.data);
-    }
+    };
     fetchCustomersSalesmen();
-  }, [currentRouteName])
+  }, [currentRouteName]);
 
   return (
     <View style={styles.container}>

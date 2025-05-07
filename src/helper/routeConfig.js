@@ -3,7 +3,7 @@ import {
   PriceSearchScreen,
   ReportGenerator,
   RegistrationScreen,
-  TransactionModuleScreen,
+  TransactionModuleScreen
 } from '../screens';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
@@ -15,7 +15,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import { Endpoints } from '../utils';
 import VideoLinks from '../screens/VideoLinks';
 import PriceSearchScreenPP from '../screens/PriceSearchScreenPP';
-import ReportTypes from '../utils/reports';
+import PrinterSelectionScreen from '../screens/PrinterSelectionScreen';
 
 const otherConfig = {
   video: {
@@ -85,6 +85,20 @@ const administrationConfig = {
     ),
     props: {
       label: 'registration',
+    },
+  },
+  connect_printer: {
+    id: 5,
+    label: 'printer',
+    name: 'printer',
+    unmountOnBlur: true,
+    component: PrinterSelectionScreen,
+    condition: true,
+    icon: (color, size) => (
+      <EntypoIcons name="add-user" color={color} size={20} />
+    ),
+    props: {
+      label: 'printer',
     },
   },
 };
@@ -412,7 +426,7 @@ const administrationConditionConfig = {
   },
   registration: {
     id: 2,
-    condition: true
+    condition: true,
   },
   scan_barCode: {
     id: 3,
@@ -422,7 +436,11 @@ const administrationConditionConfig = {
     id: 4,
     condition: true,
   },
-}
+  connect_printer: {
+    id: 5,
+    condition: true,
+  },
+};
 
 const salesReportConditionsConfig = {
   sales_report: {
@@ -494,4 +512,4 @@ export {
   transactionModuleConditions
 };
 
-export { administrationConfig, salesReportsConfig, purchaseReportsConfig, stockReportConfig, transactionModuleConfig, otherConfig }; 
+export { administrationConfig, salesReportsConfig, purchaseReportsConfig, stockReportConfig, transactionModuleConfig, otherConfig };

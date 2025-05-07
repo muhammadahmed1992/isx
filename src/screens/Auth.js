@@ -23,7 +23,6 @@ import { Endpoints, Images } from '../utils';
 import {
   login,
   setIpAddress,
-  setIsRegistered,
 } from '../redux/reducers/authSlice';
 import { Fonts, Colors, Commons } from '../utils';
 import Modal from 'react-native-modal';
@@ -35,7 +34,6 @@ import {
   setTransactionModulePermissions,
 } from '../redux/reducers/menuSlice';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
-import DeviceInfo from 'react-native-device-info';
 
 const Auth = props => {
   const dispatch = useDispatch();
@@ -138,8 +136,7 @@ const Auth = props => {
         showToast(res.data.message || 'Login failed');
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.message || 'Login failed';
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed';
       showToast(errorMessage);
     } finally {
       setLoading(false);

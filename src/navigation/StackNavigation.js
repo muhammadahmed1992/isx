@@ -7,7 +7,6 @@ import { Splash, Auth } from '../screens';
 import BarcodeScanner from '../screens/BarcodeScanner';
 import { useSelector } from 'react-redux';
 import { salesReportsConfig, stockReportConfig, purchaseReportsConfig, administrationConfig, transactionModuleConfig, otherConfig } from '../helper/routeConfig';
-import ReceiptPrinterScreen from '../components/administrationComponents/ReceiptPrinterScreen';
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
@@ -37,7 +36,6 @@ export default function StackNavigation() {
 
     // Administration Screens
     const administrationPermissions = useSelector(state => state.Menu.administration);
-    console.log(administrationPermissions)
     const filteredAdministrationScreens = Object.values(administrationConfig);
     const administrationConditionScreens = Object.values(administrationPermissions);
 
@@ -50,7 +48,6 @@ export default function StackNavigation() {
     const transactionModuleScreens = filteredTransactionModuleScreens.filter(item => transactionModuleConditionScreens.find(val => val.id === item.id)?.condition);
 
     const menu = useSelector(state => state.Locale.menu);
-    //console.log('admin permissions', administrationScreens);
     return (
       <Drawer.Navigator
         drawerContent={props => <CustomDrawer {...props} />}
@@ -60,19 +57,12 @@ export default function StackNavigation() {
         }}
         initialRouteName="search"
       >
-        <Drawer.Screen key={100}
-          name="printer"
-          component={ReceiptPrinterScreen}
-          options={{
-            drawerLabel: "Printer",
-            drawerLabelStyle: { color: Colors.red, fontFamily: Fonts.family.bold }
-          }}
-          initialParams={{}} />
         {administrationScreens.map((screen, index) => (
           <Drawer.Screen
             key={index}
             name={screen.name}
             options={{
+              unmountOnBlur: screen.unmountOnBlur || false,
               drawerLabel: menu[screen.label],
               drawerLabelStyle: { color: Colors.red, fontFamily: Fonts.family.bold },
               drawerIcon: ({ size }) => screen.icon(Colors.red, size),

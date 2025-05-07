@@ -4611,7 +4611,7 @@ react-native-vector-icons@^10.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.20.0, react-native@>=0.42.0, react-native@>=0.65.0, react-native@0.74.2:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.20.0, react-native@>=0.42.0, react-native@>=0.55.4, react-native@>=0.65.0, react-native@0.74.2:
   version "0.74.2"
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
@@ -5210,6 +5210,11 @@ to-regex-range@^5.0.1:
 
 toidentifier@1.0.1:
   version "1.0.1"
+
+tp-react-native-bluetooth-printer@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/tp-react-native-bluetooth-printer/-/tp-react-native-bluetooth-printer-1.5.0.tgz"
+  integrity sha512-bK3Y0NtKJb13ThuIuWysve6aIvnVoeIapndajqJpghNZAqnFp1FeK2zpDgpZLceY7X7t1a/0apCUhCZhxiYmJw==
 
 tr46@~0.0.3:
   version "0.0.3"
