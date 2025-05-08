@@ -1,11 +1,12 @@
-import {createSlice} from '@reduxjs/toolkit';
-import ApiService from '../../services/ApiService'; 
-import Endpoints from '../../utils/Endpoints'; 
+import { createSlice } from '@reduxjs/toolkit';
+import ApiService from '../../services/ApiService';
+import Endpoints from '../../utils/Endpoints';
 
 const initialState = {
   language: 'id',
   menu: {},
   headers: {},
+  others: {},
 };
 
 export const localeSlice = createSlice({
@@ -15,6 +16,7 @@ export const localeSlice = createSlice({
     setLocaleData: (state, action) => {
       state.menu = action.payload.menu;
       state.headers = action.payload.headers;
+      state.others = action.payload.others;
     },
     setLanguage: (state, action) => {
       state.language = action.payload;
@@ -22,7 +24,7 @@ export const localeSlice = createSlice({
   },
 });
 
-export const {setLocaleData, setLanguage} = localeSlice.actions;
+export const { setLocaleData, setLanguage } = localeSlice.actions;
 
 export const fetchAndSetLocaleData = language => async dispatch => {
   try {

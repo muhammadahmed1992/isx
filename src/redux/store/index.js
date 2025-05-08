@@ -8,7 +8,7 @@ import ConnectionString from '../reducers/connectionStringSlice';
 import Menu from '../reducers/menuSlice';
 import Locale from '../reducers/localeSlice';
 import Registration from '../reducers/registrationSlice';
-import ReceiptPrinter from '../reducers/printer-receiptSlice'
+import ReceiptPrinter from '../reducers/printer-receiptSlice';
 
 // Define persist configuration
 const persistConfig = {

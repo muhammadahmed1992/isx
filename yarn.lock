@@ -4517,6 +4517,11 @@ react-native-ble-plx@^3.5.0:
   resolved "https://registry.npmjs.org/react-native-ble-plx/-/react-native-ble-plx-3.5.0.tgz"
   integrity sha512-PeSnRswHLwLRVMQkOfDaRICtrGmo94WGKhlSC09XmHlqX2EuYgH+vNJpGcLkd8lyiYpEJyf8wlFAdj9Akliwmw==
 
+react-native-bluetooth-state-manager@^1.3.5:
+  version "1.3.5"
+  resolved "https://registry.npmjs.org/react-native-bluetooth-state-manager/-/react-native-bluetooth-state-manager-1.3.5.tgz"
+  integrity sha512-yWuN67aYF/PBH47nouYSvyeSrUK8jpSz5FqzwPnWN57yewll4h3xTQXMusvY2eG+EsmBoyMwjbFJzVl38HAOwg==
+
 react-native-camera@^4.2.1:
   version "4.2.1"
   dependencies:
@@ -4611,7 +4616,7 @@ react-native-vector-icons@^10.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.20.0, react-native@>=0.42.0, react-native@>=0.55.4, react-native@>=0.65.0, react-native@0.74.2:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.44", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.20.0, react-native@>=0.42.0, react-native@>=0.55.4, react-native@>=0.65.0, react-native@0.74.2:
   version "0.74.2"
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
