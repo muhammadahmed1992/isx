@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView, Platform, Linking } from 'react-native';
-import { NativeModules, Platform } from 'react-native';
+import { 
+    //NativeModules,
+ } from 'react-native';
 
-const { BluetoothSettings } = NativeModules;
+//const { BluetoothSettings } = NativeModules;
 
 //Services
 import BluetoothService from '../services/BluetoothService';
@@ -111,7 +113,8 @@ const BluetoothDevices = () => {
 
     const openBluetoothSettings = () => {
         if (Platform.OS === 'android') {
-            BluetoothSettings.openBluetoothSettings();
+            console.log('blueeeee')
+            //BluetoothSettings.openBluetoothSettings();
         }
     };
 

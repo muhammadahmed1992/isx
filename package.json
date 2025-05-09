@@ -18,8 +18,7 @@
     "ios": "npx react-native run-ios",
     "start": "npx react-native start",
     "test": "jest",
-    "lint": "eslint .",
-    "postinstall": "powershell -ExecutionPolicy ByPass -File .\\fix-android-package.ps1"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
@@ -58,8 +57,7 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "text-encoding": "^0.7.0",
-    "tp-react-native-bluetooth-printer": "^1.5.0",
-    "yarn": "^1.22.22"
+    "tp-react-native-bluetooth-printer": "^1.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
