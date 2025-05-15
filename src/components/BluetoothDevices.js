@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Platform, Linking } from 'react-native';
-import { 
-    //NativeModules,
- } from 'react-native';
-
-//const { BluetoothSettings } = NativeModules;
+import { View, Text, Switch, StyleSheet, ScrollView, AppState, Linking } from 'react-native';
 
 //Services
 import BluetoothService from '../services/BluetoothService';
@@ -17,6 +12,10 @@ import CustomAlert from '../components/AlertComponent';
 //Redux from store
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors, Fonts } from '../utils';
+
+//Importing methods from Printer Slice..
+
+import { setPrinterNameAndAddress } from '../redux/reducers/printer-receiptSlice'
 
 const BluetoothDevices = () => {
     // Component specific state variables
@@ -37,34 +36,35 @@ const BluetoothDevices = () => {
         loadPrinters();
     }, []);
 
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', async (nextAppState) => {
+            console.log(`appstate: ${nextAppState}`);
+            if (nextAppState === 'active') {
+                await scanDevices();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
     const loadPrinters = async () => {
         try {
             setLoading(true);
             // Check and request Bluetooth permissions
             const hasPermission = await BluetoothService.requestBluetoothPermissions();
-            console.log(`permissiosn: ${hasPermission}`);
             if (!hasPermission) {
                 showCustomAlert(others["bluetooth_is_off"], others["allow_bluetooth_permission"]);
-                return;
             }
 
             // Check if Bluetooth is enabled
             const isBluetoothEnabled = await BluetoothService.isBluetoothEnabled();
             if (!isBluetoothEnabled) {
                 showCustomAlert(others["bluetooth_is_off"], others["turn_on_bluetooth"]);
-                return;
-            } else {
-                showCustomAlert(others["bluetooth_on"], others["bluetooth_connected_success"]);
             }
-
-            // Call the service method
-            const scannedDevices = await BluetoothService.scanBluetoothDevices();
-            console.log(scannedDevices);
-            if (scannedDevices && scannedDevices.length > 0) {
-                setPrinters(scannedDevices);
-            } else {
-                showCustomAlert(others["no_device_found"], others["no_device_found_bluetooth"]);
-            }
+            setLoading(false);
+            await scanDevices();
         } catch (error) {
             console.error('Scan failed:', error);
             showCustomAlert(others["failed_scan"], others["unable_to_scan"]);
@@ -73,6 +73,22 @@ const BluetoothDevices = () => {
         }
     };
 
+    const scanDevices = async () => {
+        // Call the service method
+        setLoading(true);
+        const scannedDevices = await BluetoothService.scanBluetoothDevices();
+        console.log('scaneed Devces');
+        console.log(scannedDevices);
+        if (scannedDevices && scannedDevices.length > 0) {
+            console.log(`in side scan devices'`);
+            setPrinters(scannedDevices);
+            enableDisablePairingSwitch(scannedDevices);
+        } else {
+            showCustomAlert(others["no_device_found"], others["no_device_found_bluetooth"]);
+        }
+        setLoading(false);
+    }
+
     const showCustomAlert = (title, message) => {
         setAlertTitle(title);
         setAlertMessage(message);
@@ -80,53 +96,46 @@ const BluetoothDevices = () => {
     };
 
     const onOkAlert = () => {
-        setLoading(false);
+        //setLoading(false);
         setAlertVisible(false);
     }
-    const handleToggle = (device) => {
+    const handleToggle = async (device) => {
         console.log(device);
+        //if (!device.isPaired) {
+        // openBluetoothSettings();
 
-        // If it is already paired then switch it. Otherwise open up the pairing settings...
-        if (enableDisablePairingSwitch()) {
-            return;
-        }
-
-        if (device.address === selectedAddress) {
+        //}
+        try {
+            await BluetoothService.connectToPrinter(device.address);
+            setSelectedAddress(device.address);
+            showCustomAlert(others["connected"], "");
+            //others["connected_device"].replace("{printerName}", device.name));
+        } catch (err) {
+            showCustomAlert(others["connection_error"], others["connection_error_detail"]);
             setSelectedAddress(null);
-            return;
+            console.error(err);
         }
-        console.log(`before platform:  ${device.isPaired}`);
-        if (!device.isPaired) {
-            openBluetoothSettings();
-        }
-        // try {
-        //     await BluetoothService.connectToPrinter(device.address);
-        //     setSelectedAddress(device.address);
-        //     showCustomAlert(others["connected"], "");
-        //     //others["connected_device"].replace("{printerName}", device.name));
-        // } catch (err) {
-        //     showCustomAlert(others["connection_error"], others["connection_error_detail"]);
-        //     setSelectedAddress(null);
-        //     console.error(err);
-        // }
     };
 
     const openBluetoothSettings = () => {
-        if (Platform.OS === 'android') {
-            console.log('blueeeee')
-            //BluetoothSettings.openBluetoothSettings();
-        }
+        Linking.sendIntent("android.settings.BLUETOOTH_SETTINGS");
     };
 
-    const enableDisablePairingSwitch = () => {
-
-        const pairedPrinter = printers.find((p) => p.isPaired) || {};
-
-        if (pairedPrinter?.address === selectedAddress) {
-            setSelectedAddress(device.address);
-            return true;
+    const enableDisablePairingSwitch = (scannedP) => {
+        const pairedPrinter = scannedP.find((p) => p.isPaired) || {};
+        if (pairedPrinter?.isPaired) {
+            console.log(`insdie paired check address: ${pairedPrinter.address}`);
+            setSelectedAddress(pairedPrinter.address);
+            setPairedPrinterToStore(pairedPrinter);
+        } else {
+            setSelectedAddress(null);
         }
-        return false;
+    }
+
+    const setPairedPrinterToStore = (printer) => {
+        // TODO: Ahmed.
+        console.log(`paired printer: ${JSON.stringify(printer)}`);
+        dispatch(setPrinterNameAndAddress(printer));
     }
 
     return (

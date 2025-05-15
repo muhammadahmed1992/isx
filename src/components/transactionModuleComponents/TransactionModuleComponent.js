@@ -12,13 +12,8 @@ import ApiService from '../../services/ApiService';
 import { useSelector } from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
-import {
-  requestBluetoothPermissions,
-  getPairedPrinters,
-  connectToPrinter,
-  getCachedPrinter,
-  printInvoice,
-} from '../../services/BluetoothService';
+import eventEmitter from '../../utils/EventEmitter';
+import BluetoothService from '../../services/BluetoothService';
 
 const TransactionModuleComponent = ({
   navigation,
@@ -60,9 +55,6 @@ const TransactionModuleComponent = ({
     change: 0,
   });
 
-  const [pairedPrinters, setPairedPrinters] = useState([]);
-  const [selectedPrinter, setSelectedPrinter] = useState(null);
-
   const localizedLabel = useSelector(state => state.Locale.menu);
   const tableHeaders = useSelector(
     state => state.Locale.headers[currentRouteName].table,
@@ -74,6 +66,8 @@ const TransactionModuleComponent = ({
     currentRouteName === 'point_of_sale_transaction'
       ? useSelector(state => state.Locale.headers[currentRouteName].payment)
       : {};
+
+  const printer = useSelector(state => state.ReceiptPrinter);
 
   const showCustomAlert = (title, message) => {
     setAlertTitle(title);
@@ -130,10 +124,6 @@ const TransactionModuleComponent = ({
     data.map(obj => Object.values(obj)[0]);
 
   useEffect(() => {
-    init();
-  }, [])
-
-  useEffect(() => {
     setSelectedCustomer(
       convertToDescAndPk(
         findObjectByValue(invoiceFormData?.Customer, customers),
@@ -174,27 +164,6 @@ const TransactionModuleComponent = ({
     });
   }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm, paymentData]);
 
-  const init = async () => {
-    const granted = await requestBluetoothPermissions();
-    if (!granted) {
-      Alert.alert('Bluetooth permissions are required');
-      return;
-    }
-
-    const cached = await getCachedPrinter();
-    if (cached) {
-      setSelectedPrinter(cached);
-    } else {
-      const printers = await getPairedPrinters();
-      setPairedPrinters(printers);
-    }
-  };
-
-  const handleSelectPrinter = async address => {
-    await connectToPrinter(address);
-    setSelectedPrinter(address);
-    Alert.alert('Connected!', 'Printer saved for future use.');
-  };
   const resetData = () => {
     setInvoiceFormData();
     setTableFormData([]);
@@ -242,16 +211,50 @@ const TransactionModuleComponent = ({
   };
 
   const handleFinish = async () => {
-    // TODO: Print receipt here...
-    try {
-      if (!selectedPrinter) {
-        Alert.alert('No printer selected');
-        return;
+    await connectPairedPrinter();
+    /*try {
+      if (
+        tableForm.length !== 0 && // Table form check for all routes
+        paymentComplete &&
+        (currentRouteName === 'sales_transaction' ||
+          currentRouteName === 'sales_order_transaction'
+          ? selectedCustomer.pk
+          : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
+      ) {
+        setLoading(true);
+        // TODO: Ahmed POS:
+        const res = await TransactionService.postInvoiceFormData(
+          endPoints.sendInvoice,
+          postObject,
+        );
+        resetData();
+        setNewButtonDisabled(false);
+        showCustomAlert(menu['sent'], menu['complete']);
+        eventEmitter.emit('transactionCompleted');
+      } else {
+        // Display appropriate warning based on missing fields
+        let warningMessage = '';
+        if (tableForm.length === 0) {
+          warningMessage = menu['fill_order'];
+        } else if (!paymentComplete) {
+          warningMessage = menu['fill_payment'];
+        } else if (
+          (currentRouteName === 'sales_transaction' ||
+            currentRouteName === 'sales_order_transaction') &&
+          !selectedCustomer.pk
+        ) {
+          warningMessage = menu['fill_customer'];
+        }
+
+        showCustomAlert(menu['warning'], warningMessage);
       }
-      await printInvoice(invoice);
-    } catch (e) {
-      console.log(e);
-    }
+
+      setLoading(false);
+    } catch (err) {
+      throw new Error(err.message);
+    } finally {
+      setLoading(false);*/
+    //}
   }
 
   const onFinish = async () => {
@@ -264,9 +267,20 @@ const TransactionModuleComponent = ({
       const salesmenResponse = await TransactionService.fetchSalesmen();
       setCustomers(customerResponse.data);
       setSalesmen(salesmenResponse.data);
-    };
+    }
     fetchCustomersSalesmen();
-  }, [currentRouteName]);
+  }, [currentRouteName])
+
+  const connectPairedPrinter = async () => {
+    // console.log(`active printer: ${JSON.stringify(printer)}`);
+    // const res = await BluetoothService.connectToPrinter(printer.address);
+    // console.log(`printer connection status: ${res}`);
+    // if (res) {
+    //   await new Promise(resolve => setTimeout(resolve, 1500)); // wait 1 sec
+
+    // }
+    await BluetoothService.printText(printer, "Hi it is from isx" + "\n\r");
+  }
 
   return (
     <View style={styles.container}>

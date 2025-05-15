@@ -1,5 +1,7 @@
-import BluetoothPrinter, { BluetoothManager } from 'tp-react-native-bluetooth-printer';
+import { BluetoothManager } from 'tp-react-native-bluetooth-printer';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
+import BluetoothSerial from 'react-native-bluetooth-serial-next';
+import { Buffer } from 'buffer';
 
 class BluetoothService {
   static async requestBluetoothPermissions() {
@@ -17,7 +19,7 @@ class BluetoothService {
 
   static async getPairedPrinters() {
     try {
-      const printers = await BluetoothPrinter.getBluetoothDeviceList();
+      const printers = await BluetoothManager.getConnectedDevice();
       return printers;
     } catch (err) {
       console.error('Error listing printers:', err);
@@ -27,7 +29,7 @@ class BluetoothService {
 
   static async connectToPrinter(address) {
     try {
-      await BluetoothPrinter.BluetoothManager.connect(address);
+      await BluetoothManager.connect(address);
       return true;
     } catch (err) {
       console.error('Connection failed:', err);
@@ -35,13 +37,23 @@ class BluetoothService {
     }
   }
 
-  static async printText(text) {
+  static async printText(printer, text) {
     try {
-      await BluetoothPrinter.printText(text);
+      console.log(`connected: Printer : ${printer.address}`);
+      await BluetoothSerial.connect(printer.address);
+
+      const commands = [
+        0x1b, 0x40, // init
+        ...Buffer.from('Hello from RN\r\n', 'ascii'),
+        0x1d, 0x56, 0x42, 0x00, // cut
+      ];
+
+      await BluetoothSerial.write(Buffer.from(commands));
+      await BluetoothSerial.disconnect();
+      console.log(`print success`);
       return true;
     } catch (err) {
-      console.warn('Print failed:', err);
-      Alert.alert('Print Failed', 'Could not print to the selected printer.');
+      console.error('Print failed:', err);
       return false;
     }
   }
@@ -77,16 +89,12 @@ class BluetoothService {
 
   static async isBluetoothEnabled() {
     const isBluetoothEnabled = await BluetoothManager.isBluetoothEnabled();
-    console.log(`Bluetooth on : ${isBluetoothEnabled}`);
     return isBluetoothEnabled;
   }
 
   static async enableBluetooth() {
     const enabled = await this.isBluetoothEnabled();
-    if (enabled)
-      return true;
-    const res = await BluetoothManager.enableBluetooth();
-    console.log('enabled bluetooth: ' + res);
+    if (enabled) return true;
   }
 }
 
