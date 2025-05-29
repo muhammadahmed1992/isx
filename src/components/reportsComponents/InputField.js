@@ -1,8 +1,8 @@
 import React from 'react';
-import {Pressable, TextInput, StyleSheet, View} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5'; 
-import {Fonts, Colors} from '../../utils';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { Pressable, TextInput, StyleSheet, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Fonts, Colors } from '../../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const InputField = ({
   enabled,
@@ -12,9 +12,9 @@ const InputField = ({
   containerStyle,
   inputStyle,
   onIconPress,
-  iconName, 
-  iconSize = RFValue(20), 
-  iconColor = Colors.primary, 
+  iconName,
+  iconSize = RFValue(20),
+  iconColor = Colors.primary,
 }) => {
   return (
     <Pressable
@@ -30,16 +30,16 @@ const InputField = ({
         value={value}
         returnKeyType="next"
         placeholderTextColor={Colors.grey}
+      />
+      {iconName && (
+        <Icon
+          name={iconName}
+          size={iconSize}
+          color={iconColor}
+          style={styles.icon}
+          onPress={onIconPress}
         />
-        {iconName && ( 
-          <Icon
-            name={iconName}
-            size={iconSize}
-            color={iconColor}
-            style={styles.icon}
-            onPress={onIconPress}
-          />
-        )}
+      )}
     </Pressable>
   );
 };
@@ -47,7 +47,7 @@ const InputField = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center', 
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: RFValue(10),
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.family.bold,
   },
   icon: {
-    marginRight: RFValue(10), 
+    marginRight: RFValue(10),
   },
 });
 
