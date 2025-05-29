@@ -1,21 +1,107 @@
-import { BluetoothManager } from 'tp-react-native-bluetooth-printer';
+import { BluetoothManager, BluetoothEscposPrinter } from 'tp-react-native-bluetooth-printer';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
-import BluetoothSerial from 'react-native-bluetooth-serial-next';
-import { Buffer } from 'buffer';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 class BluetoothService {
   static async requestBluetoothPermissions() {
     try {
-      const state = await BluetoothStateManager.getState();
-      if (state !== 'PoweredOn') {
-        const bleStatus = await BluetoothStateManager.requestToEnable();
-        return bleStatus;
+      if (Platform.OS === 'android') {
+        const sdk = Platform.constants?.Release ? parseInt(Platform.constants.Release, 10) : 0;
+        const version = Platform.Version;
+
+        // Android 12+ (API 31+)
+        if (version >= 31) {
+          const scanStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+            {
+              title: 'Bluetooth Scan Permission',
+              message: 'App needs permission to scan for Bluetooth devices.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            }
+          );
+
+          const connectStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            {
+              title: 'Bluetooth Connect Permission',
+              message: 'App needs permission to connect to Bluetooth devices.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            }
+          );
+
+          const locationStatus = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+          const p = [];
+          p.push(scanStatus);
+          p.push(connectStatus);
+          p.push(locationStatus);
+          const status = p.find((per) => per === 'denied' || per === 'never_ask_again');
+          console.log(`status: ${status}`);
+          if (status) {
+            await BluetoothStateManager.openSettings();
+            return true;
+          }
+          // return (
+          //   scanStatus === PermissionsAndroid.RESULTS.GRANTED &&
+          //   connectStatus === PermissionsAndroid.RESULTS.GRANTED &&
+          //   locationStatus === PermissionsAndroid.RESULTS.GRANTED
+          // );
+        }
+
+        // Android < 12 (API 28–30)
+        else {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
+        }
       }
-      return state === 'PoweredOn' ? true : false;
-    } catch (e) {
-      console.err(e);
+
+      // iOS or other platforms
+      return true;
+    } catch (error) {
+      console.error('Permission error:', error);
+      return false;
     }
-  }
+  };
+  // static async requestBluetoothPermissions() {
+  //   try {
+  //     const state = await BluetoothStateManager.getState();
+  //     if (state !== 'PoweredOn') {
+  //       if (Platform.OS === 'android') {
+  //         const granted = await PermissionsAndroid.requestMultiple([
+  //           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //           PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+  //           PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+  //           PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
+  //         ]);
+  //         console.log(`granted: ${JSON.stringify(granted)}`);
+  //         if (granted["android.permission.BLUETOOTH_CONNECT"] === "never_ask_again" ||
+  //           granted["android.permission.BLUETOOTH_SCAN"] === "never_ask_again"
+  //         ) {
+  //           // Show alert directing user to settings
+  //         }
+  //         if (
+  //           granted["android.permission.ACCESS_FINE_LOCATION"] !== PermissionsAndroid.RESULTS.GRANTED ||
+  //           granted["android.permission.BLUETOOTH_CONNECT"] !== PermissionsAndroid.RESULTS.GRANTED ||
+  //           granted["android.permission.BLUETOOTH_SCAN"] !== PermissionsAndroid.RESULTS.GRANTED ||
+  //           granted["android.permission.BLUETOOTH_ADVERTISE"] !== PermissionsAndroid.RESULTS.GRANTED
+  //         ) {
+  //           throw new Error("Required permissions not granted");
+  //         }
+  //         const bleStatus = await BluetoothStateManager.requestToEnable();
+  //         return bleStatus;
+  //       }
+  //     }
+  //     return state === 'PoweredOn' ? true : false;
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   static async getPairedPrinters() {
     try {
@@ -40,16 +126,9 @@ class BluetoothService {
   static async printText(printer, text) {
     try {
       console.log(`connected: Printer : ${printer.address}`);
-      await BluetoothSerial.connect(printer.address);
-
-      const commands = [
-        0x1b, 0x40, // init
-        ...Buffer.from('Hello from RN\r\n', 'ascii'),
-        0x1d, 0x56, 0x42, 0x00, // cut
-      ];
-
-      await BluetoothSerial.write(Buffer.from(commands));
-      await BluetoothSerial.disconnect();
+      await this.connectToPrinter(printer.address);
+      await BluetoothEscposPrinter.printText(text, {});
+      //await BluetoothEscposPrinter.printText("\x1D\x56\x00", {});
       console.log(`print success`);
       return true;
     } catch (err) {
@@ -61,6 +140,8 @@ class BluetoothService {
   static async scanBluetoothDevices() {
     try {
       const devices = await BluetoothManager.scanDevices();
+      console.log('devices');
+      console.log(devices);
       if (!devices) return [];
 
       let parsedDevices = [];
@@ -82,7 +163,7 @@ class BluetoothService {
       }
       return printers;
     } catch (err) {
-      console.error('Scan failed:', err);
+      console.error('Inside BluetoothService.js Scan failed:', err);
       return [];
     }
   }

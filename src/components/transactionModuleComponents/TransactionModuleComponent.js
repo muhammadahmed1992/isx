@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Header from '../Header';
 import InputForm from './InvoiceForm';
 import Wizard from './WizardForm';
@@ -12,8 +12,8 @@ import ApiService from '../../services/ApiService';
 import { useSelector } from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
-import eventEmitter from '../../utils/EventEmitter';
 import BluetoothService from '../../services/BluetoothService';
+import eventEmitter from '../../utils/EventEmitter';
 
 const TransactionModuleComponent = ({
   navigation,
@@ -45,6 +45,7 @@ const TransactionModuleComponent = ({
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const [newButtonDisabled, setNewButtonDisabled] = useState(false);
+  const [showOk, setShowOk] = useState(true);
   const [paymentData, setPaymentData] = useState({
     total: 0,
     voucher: 0,
@@ -56,6 +57,7 @@ const TransactionModuleComponent = ({
   });
 
   const localizedLabel = useSelector(state => state.Locale.menu);
+  const localizedOtherLabel = useSelector(state => state.Locale.others);
   const tableHeaders = useSelector(
     state => state.Locale.headers[currentRouteName].table,
   );
@@ -176,6 +178,7 @@ const TransactionModuleComponent = ({
       online: 0,
       change: 0,
     });
+    setLoading(false);
   }
 
   const fetchData = async () => {
@@ -211,8 +214,8 @@ const TransactionModuleComponent = ({
   };
 
   const handleFinish = async () => {
-    await connectPairedPrinter();
-    /*try {
+
+    try {
       if (
         tableForm.length !== 0 && // Table form check for all routes
         paymentComplete &&
@@ -222,7 +225,6 @@ const TransactionModuleComponent = ({
           : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
       ) {
         setLoading(true);
-        // TODO: Ahmed POS:
         const res = await TransactionService.postInvoiceFormData(
           endPoints.sendInvoice,
           postObject,
@@ -230,6 +232,19 @@ const TransactionModuleComponent = ({
         resetData();
         setNewButtonDisabled(false);
         showCustomAlert(menu['sent'], menu['complete']);
+        //If it is allowed to print for this screen and contains data.
+        if (printer.screens[currentRouteName] && res?.data?.data?.length > 0) {
+          showCustomAlert(localizedOtherLabel["print_inprogress"], localizedOtherLabel["print_inprogress_msg"]);
+          const printingStatus = await connectPairedPrinter(res.data.data);
+          if (printingStatus) {
+            setAlertTitle(localizedOtherLabel["print_complete"], localizedOtherLabel["print_complete_success"]);
+          } else {
+            setAlertTitle(localizedOtherLabel["print_error"], localizedOtherLabel["print_error_msg"]);
+          }
+          // Delay before hiding the alert to improve UX
+          await new Promise(resolve => setTimeout(resolve, 500));
+          setAlertVisible(false);
+        }
         eventEmitter.emit('transactionCompleted');
       } else {
         // Display appropriate warning based on missing fields
@@ -253,8 +268,8 @@ const TransactionModuleComponent = ({
     } catch (err) {
       throw new Error(err.message);
     } finally {
-      setLoading(false);*/
-    //}
+      setLoading(false);
+    }
   }
 
   const onFinish = async () => {
@@ -271,15 +286,9 @@ const TransactionModuleComponent = ({
     fetchCustomersSalesmen();
   }, [currentRouteName])
 
-  const connectPairedPrinter = async () => {
-    // console.log(`active printer: ${JSON.stringify(printer)}`);
-    // const res = await BluetoothService.connectToPrinter(printer.address);
-    // console.log(`printer connection status: ${res}`);
-    // if (res) {
-    //   await new Promise(resolve => setTimeout(resolve, 1500)); // wait 1 sec
-
-    // }
-    await BluetoothService.printText(printer, "Hi it is from isx" + "\n\r");
+  const connectPairedPrinter = async (data) => {
+    const response = await BluetoothService.printText(printer, data);
+    return response;
   }
 
   return (
@@ -339,6 +348,7 @@ const TransactionModuleComponent = ({
         onOkPress={() => setAlertVisible(false)}
         title={alertTitle}
         message={alertMessage}
+        showOk={showOk}
       />
       <CustomAlert
         visible={finishAlertVisible}

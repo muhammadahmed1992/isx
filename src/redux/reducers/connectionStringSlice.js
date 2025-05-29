@@ -1,5 +1,5 @@
-import {HOST_IP, USER_, PASSWORD, PORT, DATABASE} from '@env';
-import {createSlice} from '@reduxjs/toolkit';
+import { HOST_IP, USER_, PASSWORD, PORT, DATABASE, API_SERVER_PORT } from '@env';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   host: HOST_IP,
@@ -7,6 +7,7 @@ const initialState = {
   password: PASSWORD,
   port: PORT,
   database: DATABASE,
+  api_port: API_SERVER_PORT
 };
 
 export const connectionStringSlice = createSlice({
@@ -22,8 +23,9 @@ export const connectionStringSlice = createSlice({
       state.password = PASSWORD;
       state.port = PORT;
       state.database = DATABASE;
+      state.api_port = API_SERVER_PORT;
     },
   },
 });
-export const {clear, setDataBase} = connectionStringSlice.actions;
+export const { clear, setDataBase } = connectionStringSlice.actions;
 export default connectionStringSlice.reducer;

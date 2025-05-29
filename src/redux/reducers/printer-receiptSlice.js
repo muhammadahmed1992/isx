@@ -17,7 +17,6 @@ export const printerReceiptSlice = createSlice({
     initialState,
     reducers: {
         setPrinterNameAndAddress: (state, action) => {
-            console.log(`setting in store ${JSON.stringify(action.payload)}`);
             state.name = action.payload.name;
             state.address = action.payload.address;
         },

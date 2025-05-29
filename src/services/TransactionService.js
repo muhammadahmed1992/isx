@@ -47,6 +47,10 @@ export class TransactionService {
   }
   static async postInvoiceFormData(endPoint, body) {
     try {
+      console.log(`Transaction -- Service ${endPoint}`);
+      console.log(`body to be sent to backend`);
+      console.log(JSON.stringify(body));
+      console.log(`====================================`);
       const res = await ApiService.post(endPoint, body);
       return res;
     }

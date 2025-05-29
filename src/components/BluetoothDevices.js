@@ -15,7 +15,7 @@ import { Colors, Fonts } from '../utils';
 
 //Importing methods from Printer Slice..
 
-import { setPrinterNameAndAddress } from '../redux/reducers/printer-receiptSlice'
+import { setPrinterNameAndAddress } from '../redux/reducers/printer-receiptSlice';
 
 const BluetoothDevices = () => {
     // Component specific state variables
@@ -38,7 +38,6 @@ const BluetoothDevices = () => {
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', async (nextAppState) => {
-            console.log(`appstate: ${nextAppState}`);
             if (nextAppState === 'active') {
                 await scanDevices();
             }
@@ -56,12 +55,16 @@ const BluetoothDevices = () => {
             const hasPermission = await BluetoothService.requestBluetoothPermissions();
             if (!hasPermission) {
                 showCustomAlert(others["bluetooth_is_off"], others["allow_bluetooth_permission"]);
+                setLoading(false);
+                return;
             }
 
             // Check if Bluetooth is enabled
             const isBluetoothEnabled = await BluetoothService.isBluetoothEnabled();
             if (!isBluetoothEnabled) {
                 showCustomAlert(others["bluetooth_is_off"], others["turn_on_bluetooth"]);
+                setLoading(false);
+                return;
             }
             setLoading(false);
             await scanDevices();
@@ -77,14 +80,12 @@ const BluetoothDevices = () => {
         // Call the service method
         setLoading(true);
         const scannedDevices = await BluetoothService.scanBluetoothDevices();
-        console.log('scaneed Devces');
-        console.log(scannedDevices);
         if (scannedDevices && scannedDevices.length > 0) {
-            console.log(`in side scan devices'`);
             setPrinters(scannedDevices);
             enableDisablePairingSwitch(scannedDevices);
         } else {
             showCustomAlert(others["no_device_found"], others["no_device_found_bluetooth"]);
+            setPrinters([]);
         }
         setLoading(false);
     }
@@ -96,25 +97,23 @@ const BluetoothDevices = () => {
     };
 
     const onOkAlert = () => {
-        //setLoading(false);
         setAlertVisible(false);
     }
     const handleToggle = async (device) => {
         console.log(device);
-        //if (!device.isPaired) {
-        // openBluetoothSettings();
+        openBluetoothSettings();
 
-        //}
-        try {
-            await BluetoothService.connectToPrinter(device.address);
-            setSelectedAddress(device.address);
-            showCustomAlert(others["connected"], "");
-            //others["connected_device"].replace("{printerName}", device.name));
-        } catch (err) {
-            showCustomAlert(others["connection_error"], others["connection_error_detail"]);
-            setSelectedAddress(null);
-            console.error(err);
-        }
+        // //}
+        // try {
+        //     await BluetoothService.connectToPrinter(device.address);
+        //     setSelectedAddress(device.address);
+        //     showCustomAlert(others["connected"], "");
+        //     //others["connected_device"].replace("{printerName}", device.name));
+        // } catch (err) {
+        //     showCustomAlert(others["connection_error"], others["connection_error_detail"]);
+        //     setSelectedAddress(null);
+        //     console.error(err);
+        // }
     };
 
     const openBluetoothSettings = () => {
@@ -124,7 +123,6 @@ const BluetoothDevices = () => {
     const enableDisablePairingSwitch = (scannedP) => {
         const pairedPrinter = scannedP.find((p) => p.isPaired) || {};
         if (pairedPrinter?.isPaired) {
-            console.log(`insdie paired check address: ${pairedPrinter.address}`);
             setSelectedAddress(pairedPrinter.address);
             setPairedPrinterToStore(pairedPrinter);
         } else {
@@ -133,8 +131,6 @@ const BluetoothDevices = () => {
     }
 
     const setPairedPrinterToStore = (printer) => {
-        // TODO: Ahmed.
-        console.log(`paired printer: ${JSON.stringify(printer)}`);
         dispatch(setPrinterNameAndAddress(printer));
     }
 

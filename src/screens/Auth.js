@@ -55,16 +55,13 @@ const Auth = props => {
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     fetchAllDatabases();
-
     return () =>
       BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
 
   useEffect(() => {
-    if (loading) {
-      performLogin();
-    }
-  }, [loading]);
+    performLogin();
+  }, []);
 
   const backAction = () => {
     BackHandler.exitApp();
@@ -123,14 +120,13 @@ const Auth = props => {
         username,
         password,
       };
-
+      dispatch(fetchAndSetLocaleData('id'));
       const res = await ApiService.post(Endpoints.login, body);
       if (res.data.success) {
         dispatch(login(username));
         dispatch(setReportPermissions(res.data.data));
         dispatch(setAdministrationPermissions(res.data.data));
         dispatch(setTransactionModulePermissions(res.data.data));
-        dispatch(fetchAndSetLocaleData('id'));
         Commons.reset(props.navigation, 'dashboard');
       } else {
         showToast(res.data.message || 'Login failed');

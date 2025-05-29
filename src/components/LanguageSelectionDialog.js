@@ -19,6 +19,7 @@ const LanguageToggle = () => {
   };
 
   const handleToggle = newState => {
+    console.log(`in toggle: ${newState}`);
     const newLanguage = newState ? 'id' : 'en'; // Determine new language based on toggle state
     setToggleValue(newState);
     handleLanguageChange(newLanguage); // Update Redux with the new language
@@ -29,8 +30,8 @@ const LanguageToggle = () => {
       <Toggle
         value={toggleValue}
         onPress={newState => handleToggle(newState)}
-        leftComponent={<Text style={styles.text}>En</Text>}
-        rightComponent={<Text style={styles.text}>Id</Text>}
+        leftComponent={<Text style={styles.text}>Id</Text>}
+        rightComponent={<Text style={styles.text}>En</Text>}
         trackBar={styles.trackBar}
         thumbButton={styles.thumbButton}
       />
