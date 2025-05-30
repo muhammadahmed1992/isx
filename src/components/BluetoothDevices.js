@@ -3,6 +3,7 @@ import { View, Text, Switch, StyleSheet, ScrollView, AppState, Linking } from 'r
 
 //Services
 import BluetoothService from '../services/BluetoothService';
+import { BleManager } from 'react-native-ble-plx';
 
 //Custom components
 import Loader from '../components/loader';
@@ -16,12 +17,13 @@ import { Colors, Fonts } from '../utils';
 //Importing methods from Printer Slice..
 
 import { setPrinterNameAndAddress } from '../redux/reducers/printer-receiptSlice';
-
+const manager = new BleManager();
 const BluetoothDevices = () => {
     // Component specific state variables
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [printers, setPrinters] = useState([]);
+    const [printers, setPrinters] = useState(new Map());
+    //const [devices, setDevices] = useState(new Map());
 
     // Customer Alert State variables
     const [alertVisible, setAlertVisible] = useState(false);
@@ -32,6 +34,13 @@ const BluetoothDevices = () => {
     const dispatch = useDispatch();
     const others = useSelector(state => state.Locale.others);
 
+    // useEffect(() => {
+    //     startScan();
+    //     return () => {
+    //         manager.destroy(); // cleanup on unmount
+    //     };
+    // }, []);
+
     useEffect(() => {
         loadPrinters();
     }, []);
@@ -39,7 +48,7 @@ const BluetoothDevices = () => {
     useEffect(() => {
         const subscription = AppState.addEventListener('change', async (nextAppState) => {
             if (nextAppState === 'active') {
-                await scanDevices();
+                await loadPrinters();
             }
         });
 
@@ -47,6 +56,30 @@ const BluetoothDevices = () => {
             subscription.remove();
         };
     }, []);
+
+    const startScan = async () => {
+        const granted = await BluetoothService.requestBluetoothPermissions();
+        if (!granted) {
+            console.warn('Permissions not granted');
+            return;
+        }
+
+        manager.startDeviceScan(null, null, (error, device) => {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            console.log(`device from scanning: ${JSON.stringify(device)}`);
+            if (device && device.name) {
+                setPrinters(prev => new Map(prev.set(device.id, device)));
+            }
+        });
+
+        // Stop scan after 10 seconds
+        setTimeout(() => {
+            manager.stopDeviceScan();
+        }, 10000);
+    };
 
     const loadPrinters = async () => {
         try {
@@ -102,18 +135,6 @@ const BluetoothDevices = () => {
     const handleToggle = async (device) => {
         console.log(device);
         openBluetoothSettings();
-
-        // //}
-        // try {
-        //     await BluetoothService.connectToPrinter(device.address);
-        //     setSelectedAddress(device.address);
-        //     showCustomAlert(others["connected"], "");
-        //     //others["connected_device"].replace("{printerName}", device.name));
-        // } catch (err) {
-        //     showCustomAlert(others["connection_error"], others["connection_error_detail"]);
-        //     setSelectedAddress(null);
-        //     console.error(err);
-        // }
     };
 
     const openBluetoothSettings = () => {
@@ -166,9 +187,9 @@ const BluetoothDevices = () => {
                     </View>
 
                     {/* Device rows */}
-                    {printers.map((device) => (
-                        <View key={device.address} style={styles.row}>
-                            <Text style={[styles.cell, styles.boldText]}>{device.name}</Text>
+                    {printers?.length > 0 && printers.map((device) => (
+                        <View key={device.address || device.name} style={styles.row}>
+                            <Text style={[styles.cell, styles.boldText]}>{device.name || others["unknown_device"]}</Text>
                             <Text style={[styles.cell, styles.boldText]}>{device.isPaired ? others["paired"] : others["un_paired"]}</Text>
                             <View style={styles.cell}>
                                 <Switch

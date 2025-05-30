@@ -1,68 +1,30 @@
 import { BluetoothManager, BluetoothEscposPrinter } from 'tp-react-native-bluetooth-printer';
-import BluetoothStateManager from 'react-native-bluetooth-state-manager';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import { requestMultiple, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 class BluetoothService {
   static async requestBluetoothPermissions() {
     try {
-      if (Platform.OS === 'android') {
-        const sdk = Platform.constants?.Release ? parseInt(Platform.constants.Release, 10) : 0;
-        const version = Platform.Version;
+      const sdkVersion = Platform.constants?.Release || '0';
+      const sdk = parseInt(sdkVersion, 10);
 
-        // Android 12+ (API 31+)
-        if (version >= 31) {
-          const scanStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-            {
-              title: 'Bluetooth Scan Permission',
-              message: 'App needs permission to scan for Bluetooth devices.',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            }
-          );
+      const permissions = Platform.select({
+        android:
+          sdk >= 31
+            ? [
+              PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+              PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+              PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+            ]
+            : [PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
+      });
 
-          const connectStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-            {
-              title: 'Bluetooth Connect Permission',
-              message: 'App needs permission to connect to Bluetooth devices.',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            }
-          );
+      const statuses = await requestMultiple(permissions || []);
+      const allGranted = Object.values(statuses).every(
+        status => status === RESULTS.GRANTED
+      );
 
-          const locationStatus = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          );
-          const p = [];
-          p.push(scanStatus);
-          p.push(connectStatus);
-          p.push(locationStatus);
-          const status = p.find((per) => per === 'denied' || per === 'never_ask_again');
-          console.log(`status: ${status}`);
-          if (status) {
-            await BluetoothStateManager.openSettings();
-            return true;
-          }
-          // return (
-          //   scanStatus === PermissionsAndroid.RESULTS.GRANTED &&
-          //   connectStatus === PermissionsAndroid.RESULTS.GRANTED &&
-          //   locationStatus === PermissionsAndroid.RESULTS.GRANTED
-          // );
-        }
-
-        // Android < 12 (API 28–30)
-        else {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          );
-
-          return granted === PermissionsAndroid.RESULTS.GRANTED;
-        }
-      }
-
-      // iOS or other platforms
-      return true;
+      return allGranted;
     } catch (error) {
       console.error('Permission error:', error);
       return false;

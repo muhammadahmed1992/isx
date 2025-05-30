@@ -232,18 +232,23 @@ const TransactionModuleComponent = ({
         resetData();
         setNewButtonDisabled(false);
         showCustomAlert(menu['sent'], menu['complete']);
-        //If it is allowed to print for this screen and contains data.
-        if (printer.screens[currentRouteName] && res?.data?.data?.length > 0) {
-          showCustomAlert(localizedOtherLabel["print_inprogress"], localizedOtherLabel["print_inprogress_msg"]);
-          const printingStatus = await connectPairedPrinter(res.data.data);
-          if (printingStatus) {
-            setAlertTitle(localizedOtherLabel["print_complete"], localizedOtherLabel["print_complete_success"]);
-          } else {
-            setAlertTitle(localizedOtherLabel["print_error"], localizedOtherLabel["print_error_msg"]);
+
+        if (printer?.address) {
+          //If it is allowed to print for this screen and contains data.
+          if (printer.screens[currentRouteName] && res?.data?.data?.length > 0) {
+            showCustomAlert(localizedOtherLabel["print_inprogress"], localizedOtherLabel["print_inprogress_msg"]);
+            const printingStatus = await connectPairedPrinter(res.data.data);
+            if (printingStatus) {
+              setAlertTitle(localizedOtherLabel["print_complete"], localizedOtherLabel["print_complete_success"]);
+            } else {
+              setAlertTitle(localizedOtherLabel["print_error"], localizedOtherLabel["print_error_msg"]);
+            }
+            // Delay before hiding the alert to improve UX
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setAlertVisible(false);
           }
-          // Delay before hiding the alert to improve UX
-          await new Promise(resolve => setTimeout(resolve, 500));
-          setAlertVisible(false);
+        } else {
+          setAlertTitle(localizedOtherLabel["no_printer_setup"], localizedOtherLabel["connect_printer_first"]);
         }
         eventEmitter.emit('transactionCompleted');
       } else {
