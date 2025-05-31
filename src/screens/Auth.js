@@ -59,9 +59,9 @@ const Auth = props => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
 
-  useEffect(() => {
-    performLogin();
-  }, []);
+  // useEffect(() => {
+  //   performLogin();
+  // }, []);
 
   const backAction = () => {
     BackHandler.exitApp();
@@ -106,7 +106,7 @@ const Auth = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-
+    dispatch(fetchAndSetLocaleData('id'));
     performLogin();
   };
 
@@ -120,7 +120,6 @@ const Auth = props => {
         username,
         password,
       };
-      dispatch(fetchAndSetLocaleData('id'));
       const res = await ApiService.post(Endpoints.login, body);
       if (res.data.success) {
         dispatch(login(username));

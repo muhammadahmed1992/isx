@@ -4,8 +4,8 @@ import {
   PermissionsAndroid,
   Dimensions,
 } from 'react-native';
-import {CommonActions} from '@react-navigation/native';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { CommonActions } from '@react-navigation/native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const size = value => {
   return RFValue(value, Dimensions.get('window').height);
@@ -74,7 +74,7 @@ const timeDiff = (start, end) => {
 const reset = (navigation, screen) => {
   const resetAction = CommonActions.reset({
     index: 0,
-    routes: [{name: screen}],
+    routes: [{ name: screen }],
   });
 
   navigation.dispatch(resetAction);
@@ -164,11 +164,49 @@ const formatBalance = balance => {
   if (isNaN(num)) {
     return '';
   }
-  
+
   return num.toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+};
+
+const formatNumericInput = (value, allowPercent = false) => {
+  // Remove unwanted characters except digits, dot, comma, and optional %
+  let sanitized = value.replace(/[^0-9.,%]/g, '');
+
+  // Allow only one decimal point
+  const parts = sanitized.split('.');
+  if (parts.length > 2) {
+    sanitized = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  // Remove multiple % signs and keep only one at the end (if allowed)
+  if (allowPercent) {
+    sanitized = sanitized.replace(/%/g, '') + '%';
+  } else {
+    sanitized = sanitized.replace(/%/g, '');
+  }
+
+  // Strip commas to reformat
+  let numberPart = sanitized.replace(/,/g, '');
+  const isPercentage = allowPercent && sanitized.endsWith('%');
+
+  // Format integer part with commas
+  const [integer, decimal] = numberPart.replace('%', '').split('.');
+  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  let formatted = formattedInteger;
+  if (decimal) {
+    formatted += '.' + decimal;
+  }
+
+  // Reattach percent if needed
+  if (isPercentage) {
+    formatted += '%';
+  }
+
+  return formatted;
 };
 
 export default {
@@ -186,5 +224,6 @@ export default {
   toast,
   checkPermissions,
   formatBalance,
-  formatNumber
+  formatNumber,
+  formatNumericInput
 };
