@@ -27,7 +27,8 @@ const TableForm = ({
   stockCodes,
   setTotal,
   isNotStock,
-  isNotPos
+  isNotPos,
+  serviceCharges = 0
 }) => {
   const [tableData, setTableData] = useState(data);
   const [stockCodeModal, setStockCodeModal] = useState(false);
@@ -48,8 +49,8 @@ const TableForm = ({
 
   const calculateAmount = (price, qty, tax = 0) => {
     return (
-      parseInt(price) * parseInt(qty) +
-      (tax / 100) * (parseInt(price) * parseInt(qty))
+      (parseInt(price) * parseInt(qty) +
+      (tax / 100) * (parseInt(price) * parseInt(qty)))
     );
   };
 
@@ -137,12 +138,16 @@ const TableForm = ({
     (total, item) => total + parseInt(item.qty || 0),
     0,
   );
+
+  // This is for setting/showing total amount below the table's total..
   const totalAmount = tableData.reduce(
     (total, item) =>
       total +
       calculateAmount(item.price, item.qty, item.taxable === 1 ? tax : 0),
     0,
-  );
+  )+serviceCharges;
+
+  // Setting total for payment tab..
   setTotal(totalAmount);
 
   return (
@@ -198,7 +203,10 @@ const TableForm = ({
               <FontAwesome5Icon name="plus" size={30} color={Colors.primary} />
             }
             onTextChange={val => setStockId(val)}
-            onIconPress={text => handleAddItem(text)}
+            onIconPress={text => {
+              handleAddItem(text);
+              setStockId('');
+            }}
           />
           <InputField
             enabled={true}

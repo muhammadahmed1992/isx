@@ -102,8 +102,6 @@ class BluetoothService {
   static async scanBluetoothDevices() {
     try {
       const devices = await BluetoothManager.scanDevices();
-      console.log('devices');
-      console.log(devices);
       if (!devices) return [];
 
       let parsedDevices = [];

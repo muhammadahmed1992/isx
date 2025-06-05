@@ -20,10 +20,9 @@ import { setPrinterNameAndAddress } from '../redux/reducers/printer-receiptSlice
 const manager = new BleManager();
 const BluetoothDevices = () => {
     // Component specific state variables
-    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [selectedAddress, setSelectedAddress] = useState([]);
     const [loading, setLoading] = useState(false);
     const [printers, setPrinters] = useState(new Map());
-    //const [devices, setDevices] = useState(new Map());
 
     // Customer Alert State variables
     const [alertVisible, setAlertVisible] = useState(false);
@@ -33,13 +32,6 @@ const BluetoothDevices = () => {
     // State from Redux
     const dispatch = useDispatch();
     const others = useSelector(state => state.Locale.others);
-
-    // useEffect(() => {
-    //     startScan();
-    //     return () => {
-    //         manager.destroy(); // cleanup on unmount
-    //     };
-    // }, []);
 
     useEffect(() => {
         loadPrinters();
@@ -56,30 +48,6 @@ const BluetoothDevices = () => {
             subscription.remove();
         };
     }, []);
-
-    const startScan = async () => {
-        const granted = await BluetoothService.requestBluetoothPermissions();
-        if (!granted) {
-            console.warn('Permissions not granted');
-            return;
-        }
-
-        manager.startDeviceScan(null, null, (error, device) => {
-            if (error) {
-                console.error(error);
-                return;
-            }
-            console.log(`device from scanning: ${JSON.stringify(device)}`);
-            if (device && device.name) {
-                setPrinters(prev => new Map(prev.set(device.id, device)));
-            }
-        });
-
-        // Stop scan after 10 seconds
-        setTimeout(() => {
-            manager.stopDeviceScan();
-        }, 10000);
-    };
 
     const loadPrinters = async () => {
         try {
@@ -142,12 +110,13 @@ const BluetoothDevices = () => {
     };
 
     const enableDisablePairingSwitch = (scannedP) => {
-        const pairedPrinter = scannedP.find((p) => p.isPaired) || {};
-        if (pairedPrinter?.isPaired) {
-            setSelectedAddress(pairedPrinter.address);
+        const pairedPrinter = scannedP.filter((p) => p.isPaired) || [];
+        if (pairedPrinter?.length > 0) {
+            setSelectedAddress(pairedPrinter.map((a) => a.address));
             setPairedPrinterToStore(pairedPrinter);
         } else {
-            setSelectedAddress(null);
+            setSelectedAddress([]);
+            setPairedPrinterToStore([]);
         }
     }
 
@@ -193,7 +162,7 @@ const BluetoothDevices = () => {
                             <Text style={[styles.cell, styles.boldText]}>{device.isPaired ? others["paired"] : others["un_paired"]}</Text>
                             <View style={styles.cell}>
                                 <Switch
-                                    value={device.address === selectedAddress}
+                                    value={selectedAddress?.includes(device.address)}
                                     onValueChange={() => handleToggle(device)}
                                 />
                             </View>

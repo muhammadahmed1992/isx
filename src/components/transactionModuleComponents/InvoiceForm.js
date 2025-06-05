@@ -32,6 +32,17 @@ const InvoiceForm = ({
   }, [data]);
 
   const handleInputChange = (field, value) => {
+
+    if (field === 'Service') {
+      value = Commons.removeCommas(value);
+      if (!value || value === '' || value === ' ')
+        value = '0';
+    }
+    if (field === 'Tax') {
+      if (!value || value === '' || value === ' ')
+        value = '0';
+    }
+
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -118,13 +129,9 @@ const InvoiceForm = ({
               placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => {
-                const updatedText =
-                  prompt === 'tax' ? text.replace('%', '') : text;
                 handleInputChange(
                   fieldKey,
-                  prompt === 'service_charge'
-                    ? Commons.removeCommas(updatedText)
-                    : updatedText
+                  text
                 );
               }}
               value={!value && isDisabled ? invoiceHeaderPrompts[prompt] : value}
@@ -132,6 +139,7 @@ const InvoiceForm = ({
               debounceEnabled={false}
               disabled={isDisabled}
               keyboardType={fieldsToBeNumeric.includes(prompt) ? 'numeric' : 'default'}
+              inputMode={fieldsToBeNumeric.includes(prompt) ? 'decimal' : 'undefined'}
             />
           </View>
         );

@@ -2,8 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 
 const initialState = {
-    name: '',
-    address: '',
+    printers: [],
     screens: {
         sales_transaction: false,
         sales_order_transaction: true,
@@ -17,8 +16,9 @@ export const printerReceiptSlice = createSlice({
     initialState,
     reducers: {
         setPrinterNameAndAddress: (state, action) => {
-            state.name = action.payload.name;
-            state.address = action.payload.address;
+            console.log(`printers:`);
+            console.log(action.payload);
+            state.printers = action.payload;
         },
         toggleScreensPrintingFunctionality: (state, action) => {
             state.screens = {

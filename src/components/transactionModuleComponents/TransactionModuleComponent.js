@@ -69,7 +69,7 @@ const TransactionModuleComponent = ({
       ? useSelector(state => state.Locale.headers[currentRouteName].payment)
       : {};
 
-  const printer = useSelector(state => state.ReceiptPrinter);
+  const receipt = useSelector(state => state.ReceiptPrinter);
 
   const showCustomAlert = (title, message) => {
     setAlertTitle(title);
@@ -151,7 +151,7 @@ const TransactionModuleComponent = ({
           service: invoiceFormData?.Service || 0,
           table: invoiceFormData?.Table || '',
         }),
-        tax: invoiceFormData?.Tax,
+        tax: invoiceFormData?.Tax || 0,
       },
       tableFormData: tableForm,
       payment: {
@@ -232,10 +232,9 @@ const TransactionModuleComponent = ({
         resetData();
         setNewButtonDisabled(false);
         showCustomAlert(menu['sent'], menu['complete']);
-
-        if (printer?.address) {
+        if (receipt.printers?.length > 0) {
           //If it is allowed to print for this screen and contains data.
-          if (printer.screens[currentRouteName] && res?.data?.data?.length > 0) {
+          if (receipt.screens[currentRouteName] && res?.data?.data?.length > 0) {
             showCustomAlert(localizedOtherLabel["print_inprogress"], localizedOtherLabel["print_inprogress_msg"]);
             const printingStatus = await connectPairedPrinter(res.data.data);
             if (printingStatus) {
@@ -292,8 +291,14 @@ const TransactionModuleComponent = ({
   }, [currentRouteName])
 
   const connectPairedPrinter = async (data) => {
-    const response = await BluetoothService.printText(printer, data);
-    return response;
+    let res = [];
+    for (let printer of receipt.printers) {
+      res.push(await BluetoothService.printText(printer, data));
+    }
+    if (res.every(r=> r === false)) {
+      return false;
+    }
+    return true;
   }
 
   return (
@@ -328,6 +333,7 @@ const TransactionModuleComponent = ({
             stockCodes={stockCodes}
             isNotStock={!isStock}
             isNotPos={!isPos}
+            serviceCharges={!invoiceFormData ? 0 : parseInt(invoiceFormData.Service || 0)}
           />
           {paymentDetails && (
             <PaymentDetailForm

@@ -171,42 +171,54 @@ const formatBalance = balance => {
   });
 };
 
-const formatNumericInput = (value, allowPercent = false) => {
-  // Remove unwanted characters except digits, dot, comma, and optional %
-  let sanitized = value.replace(/[^0-9.,%]/g, '');
+const formatNumericInput = (raw, allowPercent = false) => {
 
-  // Allow only one decimal point
-  const parts = sanitized.split('.');
-  if (parts.length > 2) {
-    sanitized = parts[0] + '.' + parts.slice(1).join('');
-  }
+  // Keep only numbers, dot, comma, and %
+  let sanitized = raw.replace(/[^0-9.,%]/g, '');
 
-  // Remove multiple % signs and keep only one at the end (if allowed)
-  if (allowPercent) {
-    sanitized = sanitized.replace(/%/g, '') + '%';
+  // Handle percentage
+  let isPercentage = false;
+  if (allowPercent && sanitized.endsWith('%')) {
+    isPercentage = true;
+    sanitized = sanitized.slice(0, -1); // remove %
   } else {
-    sanitized = sanitized.replace(/%/g, '');
+    sanitized = sanitized.replace(/%/g, ''); // remove stray %
   }
 
-  // Strip commas to reformat
-  let numberPart = sanitized.replace(/,/g, '');
-  const isPercentage = allowPercent && sanitized.endsWith('%');
+  // Remove all commas
+  sanitized = sanitized.replace(/,/g, '');
 
-  // Format integer part with commas
-  const [integer, decimal] = numberPart.replace('%', '').split('.');
-  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-  let formatted = formattedInteger;
-  if (decimal) {
-    formatted += '.' + decimal;
+  // Allow only one dot
+  const firstDotIndex = sanitized.indexOf('.');
+  if (firstDotIndex !== -1) {
+    sanitized =
+      sanitized.slice(0, firstDotIndex + 1) +
+      sanitized.slice(firstDotIndex + 1).replace(/\./g, '');
   }
 
-  // Reattach percent if needed
+  // Split integer and decimal parts
+  let [integer = '', decimal = ''] = sanitized.split('.');
+
+  // Limit decimal to 2 digits
+  if (decimal.length > 2) {
+    decimal = decimal.slice(0, 2);
+  }
+
+  // Format integer with thousand separators
+  const formattedInt = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // Build final result
+  let result = formattedInt;
+  if (firstDotIndex !== -1) {
+    result += '.' + decimal;
+  }
+
   if (isPercentage) {
-    formatted += '%';
+    result += '%';
   }
 
-  return formatted;
+  return result;
+ 
 };
 
 export default {

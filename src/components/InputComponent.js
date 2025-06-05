@@ -66,7 +66,7 @@ const InputComponent = ({
   const handleSearchButtonPress = () => {
 
     if (onIconPress) {
-      onIconPress(localValue);
+      onIconPress(value);
       setLocalValue('');
     }
   };
@@ -83,6 +83,8 @@ const InputComponent = ({
         editable={!disabled}
         keyboardType={keyboardType}
         inputMode={inputMode}
+        autoCorrect={false}
+        importantForAutofill="no"
       />
       <TouchableOpacity
         onPress={handleSearchButtonPress}
