@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import ModalComponent from '../reportsComponents/Model';
 import InputComponent from '../InputComponent';
 import InputField from '../reportsComponents/InputField';
-import {Colors, Commons} from '../../utils';
+import { Colors, Commons } from '../../utils';
 
 const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -19,7 +19,7 @@ const InvoiceForm = ({
   const [formData, setFormData] = useState({});
   const [customerModal, setCustomerModal] = useState(false);
   const [salesmanModal, setSalesmanModal] = useState(false);
-  
+  const fieldsToBeNumeric = ['service_charge', 'tax']
   useEffect(() => {
     if (data && !isEqual(data, formData)) {
       const initialFormData = Object.keys(data).reduce((acc, key) => {
@@ -32,6 +32,17 @@ const InvoiceForm = ({
   }, [data]);
 
   const handleInputChange = (field, value) => {
+
+    if (field === 'Service') {
+      value = Commons.removeCommas(value);
+      if (!value || value === '' || value === ' ')
+        value = '0';
+    }
+    if (field === 'Tax') {
+      if (!value || value === '' || value === ' ')
+        value = '0';
+    }
+
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -60,8 +71,8 @@ const InvoiceForm = ({
               <InputComponent
                 placeholder={invoiceHeaderPrompts[prompt]}
                 placeholderColor={Colors.grey}
-                value={!warehouseDescription? invoiceHeaderPrompts[prompt] : warehouseDescription}
-                onTextChange={text => {}}
+                value={!warehouseDescription ? invoiceHeaderPrompts[prompt] : warehouseDescription}
+                onTextChange={text => { }}
                 disabled={true}
                 icon={false}
               />
@@ -104,7 +115,7 @@ const InvoiceForm = ({
 
         let value;
         if (prompt === 'tax') {
-          value = `${fieldValue}${fieldValue.includes('%') ? '' : '%'}`;
+          value = `${fieldValue}`;
         } else if (prompt === 'service_charge') {
           value = Commons.formatCommaSeparated(fieldValue);
         } else {
@@ -112,24 +123,23 @@ const InvoiceForm = ({
         }
         return (
           <View key={index} style={styles.inputContainer}>
-            <Text>{invoiceHeaderPrompts[prompt]}</Text>
+            {/* For the sake of clarity, I'm printing % if it is tax field */}
+            <Text>{invoiceHeaderPrompts[prompt]} {prompt === 'tax' ? '%' : ''}</Text>
             <InputComponent
               placeholder={invoiceHeaderPrompts[prompt]}
               placeholderColor={Colors.grey}
               onTextChange={text => {
-                const updatedText =
-                  prompt === 'tax' ? text.replace('%', '') : text;
                 handleInputChange(
                   fieldKey,
-                  prompt === 'service_charge'
-                    ? Commons.removeCommas(updatedText)
-                    : updatedText
+                  text
                 );
               }}
-              value={!value && isDisabled? invoiceHeaderPrompts[prompt] : value}
+              value={!value && isDisabled ? invoiceHeaderPrompts[prompt] : value}
               icon={false}
               debounceEnabled={false}
               disabled={isDisabled}
+              keyboardType={fieldsToBeNumeric.includes(prompt) ? 'numeric' : 'default'}
+              inputMode={fieldsToBeNumeric.includes(prompt) ? 'decimal' : 'undefined'}
             />
           </View>
         );

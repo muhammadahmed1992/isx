@@ -45,9 +45,8 @@ export const menuSlice = createSlice({
         action.payload.IsPurchaseReportAllowed,
         state.purchaseReports.purchase_analyst_report_no_disc.condition =
         action.payload.IsPurchaseReportAllowed;
-      console.log('permission');
-      console.log(action.payload.IsStockReportPurchasePriceAllowed);
       state.stockReports.stock_balance_report_purchase_price.condition = action.payload.IsStockReportPurchasePriceAllowed;
+
     },
     setAdministrationPermissions: (state, action) => {
       state.administration.switch_database.condition = action.payload.IsSwitchDatabase;

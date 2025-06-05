@@ -356,11 +356,6 @@ const ReportComponent = ({
           }}
         />
       </View>
-      {/* <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-      /> */}
       <ScrollView>
         <TableComponent data={data} headers={headers} onSort={handleSort} currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </ScrollView>

@@ -5,17 +5,16 @@ import { Endpoints } from '../utils';
 export const api = (method, endpoint, body) => {
   const state = store.getState();
   const { ipAddress } = state.Auth;
-  const { host, username, password, port, database } = state.ConnectionString;
+  const { host, username, password, port, database, api_port } = state.ConnectionString;
   const language = state.Locale.language;
 
   return new Promise((resolve, reject) => {
-    console.log("connection", state.ConnectionString);
     if (!host || !username || !password || !port || !database) {
       reject('Kindly connect the database first');
     } else if (!ipAddress) {
       reject('IP Address is not configured');
     } else {
-      const url = `http://${ipAddress}:3000/${endpoint}`;
+      const url = `http://${ipAddress}:${api_port}/${endpoint}`;
       const connectionString = `mysql://${username}:${password}@${host}:${port}/${database}`;
       console.log(`${method} -- ${url} -- ${connectionString}`);
 

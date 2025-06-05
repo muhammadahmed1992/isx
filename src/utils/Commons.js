@@ -4,8 +4,8 @@ import {
   PermissionsAndroid,
   Dimensions,
 } from 'react-native';
-import {CommonActions} from '@react-navigation/native';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { CommonActions } from '@react-navigation/native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const size = value => {
   return RFValue(value, Dimensions.get('window').height);
@@ -74,7 +74,7 @@ const timeDiff = (start, end) => {
 const reset = (navigation, screen) => {
   const resetAction = CommonActions.reset({
     index: 0,
-    routes: [{name: screen}],
+    routes: [{ name: screen }],
   });
 
   navigation.dispatch(resetAction);
@@ -164,11 +164,61 @@ const formatBalance = balance => {
   if (isNaN(num)) {
     return '';
   }
-  
+
   return num.toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+};
+
+const formatNumericInput = (raw, allowPercent = false) => {
+
+  // Keep only numbers, dot, comma, and %
+  let sanitized = raw.replace(/[^0-9.,%]/g, '');
+
+  // Handle percentage
+  let isPercentage = false;
+  if (allowPercent && sanitized.endsWith('%')) {
+    isPercentage = true;
+    sanitized = sanitized.slice(0, -1); // remove %
+  } else {
+    sanitized = sanitized.replace(/%/g, ''); // remove stray %
+  }
+
+  // Remove all commas
+  sanitized = sanitized.replace(/,/g, '');
+
+  // Allow only one dot
+  const firstDotIndex = sanitized.indexOf('.');
+  if (firstDotIndex !== -1) {
+    sanitized =
+      sanitized.slice(0, firstDotIndex + 1) +
+      sanitized.slice(firstDotIndex + 1).replace(/\./g, '');
+  }
+
+  // Split integer and decimal parts
+  let [integer = '', decimal = ''] = sanitized.split('.');
+
+  // Limit decimal to 2 digits
+  if (decimal.length > 2) {
+    decimal = decimal.slice(0, 2);
+  }
+
+  // Format integer with thousand separators
+  const formattedInt = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // Build final result
+  let result = formattedInt;
+  if (firstDotIndex !== -1) {
+    result += '.' + decimal;
+  }
+
+  if (isPercentage) {
+    result += '%';
+  }
+
+  return result;
+ 
 };
 
 export default {
@@ -186,5 +236,6 @@ export default {
   toast,
   checkPermissions,
   formatBalance,
-  formatNumber
+  formatNumber,
+  formatNumericInput
 };

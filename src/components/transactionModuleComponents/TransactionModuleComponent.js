@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Header from '../Header';
 import InputForm from './InvoiceForm';
 import Wizard from './WizardForm';
@@ -12,6 +12,7 @@ import ApiService from '../../services/ApiService';
 import { useSelector } from 'react-redux';
 import PaymentDetailForm from './PaymentForm';
 import CustomAlert from '../AlertComponent';
+import BluetoothService from '../../services/BluetoothService';
 import eventEmitter from '../../utils/EventEmitter';
 
 const TransactionModuleComponent = ({
@@ -44,6 +45,7 @@ const TransactionModuleComponent = ({
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const [newButtonDisabled, setNewButtonDisabled] = useState(false);
+  const [showOk, setShowOk] = useState(true);
   const [paymentData, setPaymentData] = useState({
     total: 0,
     voucher: 0,
@@ -55,6 +57,7 @@ const TransactionModuleComponent = ({
   });
 
   const localizedLabel = useSelector(state => state.Locale.menu);
+  const localizedOtherLabel = useSelector(state => state.Locale.others);
   const tableHeaders = useSelector(
     state => state.Locale.headers[currentRouteName].table,
   );
@@ -65,6 +68,8 @@ const TransactionModuleComponent = ({
     currentRouteName === 'point_of_sale_transaction'
       ? useSelector(state => state.Locale.headers[currentRouteName].payment)
       : {};
+
+  const receipt = useSelector(state => state.ReceiptPrinter);
 
   const showCustomAlert = (title, message) => {
     setAlertTitle(title);
@@ -146,7 +151,7 @@ const TransactionModuleComponent = ({
           service: invoiceFormData?.Service || 0,
           table: invoiceFormData?.Table || '',
         }),
-        tax: invoiceFormData?.Tax,
+        tax: invoiceFormData?.Tax || 0,
       },
       tableFormData: tableForm,
       payment: {
@@ -160,9 +165,7 @@ const TransactionModuleComponent = ({
       },
     });
   }, [invoiceFormData, selectedCustomer, selectedSalesman, tableForm, paymentData]);
-  useEffect(() => {
 
-  })
   const resetData = () => {
     setInvoiceFormData();
     setTableFormData([]);
@@ -175,6 +178,7 @@ const TransactionModuleComponent = ({
       online: 0,
       change: 0,
     });
+    setLoading(false);
   }
 
   const fetchData = async () => {
@@ -210,6 +214,7 @@ const TransactionModuleComponent = ({
   };
 
   const handleFinish = async () => {
+
     try {
       if (
         tableForm.length !== 0 && // Table form check for all routes
@@ -220,7 +225,6 @@ const TransactionModuleComponent = ({
           : true) // Customer selection mandatory only for sales_transaction and sales_order_transaction
       ) {
         setLoading(true);
-        // TODO: Ahmed POS:
         const res = await TransactionService.postInvoiceFormData(
           endPoints.sendInvoice,
           postObject,
@@ -228,6 +232,23 @@ const TransactionModuleComponent = ({
         resetData();
         setNewButtonDisabled(false);
         showCustomAlert(menu['sent'], menu['complete']);
+        if (receipt.printers?.length > 0) {
+          //If it is allowed to print for this screen and contains data.
+          if (receipt.screens[currentRouteName] && res?.data?.data?.length > 0) {
+            showCustomAlert(localizedOtherLabel["print_inprogress"], localizedOtherLabel["print_inprogress_msg"]);
+            const printingStatus = await connectPairedPrinter(res.data.data);
+            if (printingStatus) {
+              setAlertTitle(localizedOtherLabel["print_complete"], localizedOtherLabel["print_complete_success"]);
+            } else {
+              setAlertTitle(localizedOtherLabel["print_error"], localizedOtherLabel["print_error_msg"]);
+            }
+            // Delay before hiding the alert to improve UX
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setAlertVisible(false);
+          }
+        } else {
+          setAlertTitle(localizedOtherLabel["no_printer_setup"], localizedOtherLabel["connect_printer_first"]);
+        }
         eventEmitter.emit('transactionCompleted');
       } else {
         // Display appropriate warning based on missing fields
@@ -269,6 +290,17 @@ const TransactionModuleComponent = ({
     fetchCustomersSalesmen();
   }, [currentRouteName])
 
+  const connectPairedPrinter = async (data) => {
+    let res = [];
+    for (let printer of receipt.printers) {
+      res.push(await BluetoothService.printText(printer, data));
+    }
+    if (res.every(r=> r === false)) {
+      return false;
+    }
+    return true;
+  }
+
   return (
     <View style={styles.container}>
       <Header label={localizedLabel[label]} navigation={navigation} />
@@ -301,6 +333,7 @@ const TransactionModuleComponent = ({
             stockCodes={stockCodes}
             isNotStock={!isStock}
             isNotPos={!isPos}
+            serviceCharges={!invoiceFormData ? 0 : parseInt(invoiceFormData.Service || 0)}
           />
           {paymentDetails && (
             <PaymentDetailForm
@@ -326,6 +359,7 @@ const TransactionModuleComponent = ({
         onOkPress={() => setAlertVisible(false)}
         title={alertTitle}
         message={alertMessage}
+        showOk={showOk}
       />
       <CustomAlert
         visible={finishAlertVisible}

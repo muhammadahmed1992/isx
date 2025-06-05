@@ -5,9 +5,10 @@ import { combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from '../reducers/authSlice';
 import ConnectionString from '../reducers/connectionStringSlice';
-import Menu from '../reducers/menuSlice'; 
+import Menu from '../reducers/menuSlice';
 import Locale from '../reducers/localeSlice';
 import Registration from '../reducers/registrationSlice';
+import ReceiptPrinter from '../reducers/printer-receiptSlice';
 
 // Define persist configuration
 const persistConfig = {
@@ -21,7 +22,8 @@ const reducerToPersist = combineReducers({
   ConnectionString,
   Menu,
   Locale,
-  Registration
+  Registration,
+  ReceiptPrinter
 });
 
 // Persist the combined reducer
@@ -36,4 +38,4 @@ const store = configureStore({
 // Set up the persistor
 const persistor = persistStore(store);
 
-export { store, persistor};
+export { store, persistor };

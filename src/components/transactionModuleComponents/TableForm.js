@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux'; // To get the isRegistered flag
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux'; // To get the isRegistered flag
 import {
   ScrollView,
   StyleSheet,
@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {Colors, Fonts, Commons} from '../../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Colors, Fonts, Commons } from '../../utils';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import InputComponent from '../InputComponent';
 import CustomAlert from '../AlertComponent';
@@ -27,7 +27,8 @@ const TableForm = ({
   stockCodes,
   setTotal,
   isNotStock,
-  isNotPos
+  isNotPos,
+  serviceCharges = 0
 }) => {
   const [tableData, setTableData] = useState(data);
   const [stockCodeModal, setStockCodeModal] = useState(false);
@@ -35,6 +36,7 @@ const TableForm = ({
   const [alertMessage, setAlertMessage] = useState(''); // Custom alert message
   const [alertTitle, setAlertTitle] = useState(''); // Custom alert title
   const [stockCode, setStockCode] = useState('');
+  const [stockId, setStockId] = useState('');
   const menu = useSelector(state => state.Locale.menu);
 
   const isRegistered = useSelector(state => state.Auth.isRegistered);
@@ -47,8 +49,8 @@ const TableForm = ({
 
   const calculateAmount = (price, qty, tax = 0) => {
     return (
-      parseInt(price) * parseInt(qty) +
-      (tax / 100) * (parseInt(price) * parseInt(qty))
+      (parseInt(price) * parseInt(qty) +
+      (tax / 100) * (parseInt(price) * parseInt(qty)))
     );
   };
 
@@ -80,11 +82,11 @@ const TableForm = ({
 
   const handlePriceChange = (index, price) => {
     const newData = [...data];
-    newData[index].price = price ? price : '0'; 
+    newData[index].price = price ? price : '0';
     setTableData(newData);
     setTableFormData(newData);
   };
-  
+
   const renderRow = (item, index) => {
     return (
       <View key={index} style={styles.row}>
@@ -99,29 +101,29 @@ const TableForm = ({
           {'\n'}
           {item.stock_name}
         </Text>
-        
+
         {isNotStock && (
-        isNotPos ? (
-          <TextInput
-            style={[styles.cell, styles.cellNumber, styles.input]}
-            keyboardType="numeric"
-            value={Commons.formatCommaSeparated(item.price)}
-            onChangeText={text => handlePriceChange(index, Commons.removeCommas(text))}
-          />
-        ) : (
-          <Text style={[styles.cell, styles.cellNumber, styles.cellPrice]}>
-            {Commons.formatNumber(item.price)}
-          </Text>
-        )
-      )}
-  
+          isNotPos ? (
+            <TextInput
+              style={[styles.cell, styles.cellNumber, styles.input]}
+              keyboardType="numeric"
+              value={Commons.formatCommaSeparated(item.price)}
+              onChangeText={text => handlePriceChange(index, Commons.removeCommas(text))}
+            />
+          ) : (
+            <Text style={[styles.cell, styles.cellNumber, styles.cellPrice]}>
+              {Commons.formatNumber(item.price)}
+            </Text>
+          )
+        )}
+
         <TextInput
           style={[styles.cell, styles.cellNumber, styles.input, styles.cellQty]}
           keyboardType="numeric"
           value={Commons.formatCommaSeparated(item.qty)}
           onChangeText={text => handleQtyChange(index, Commons.removeCommas(text))}
         />
-  
+
         {isNotStock && (
           <Text style={[styles.cell, styles.cellNumber]}>
             {Commons.formatNumber(calculateAmount(item.price, item.qty))}
@@ -130,18 +132,22 @@ const TableForm = ({
       </View>
     );
   };
-  
+
 
   const totalQuantity = tableData.reduce(
     (total, item) => total + parseInt(item.qty || 0),
     0,
   );
+
+  // This is for setting/showing total amount below the table's total..
   const totalAmount = tableData.reduce(
     (total, item) =>
       total +
       calculateAmount(item.price, item.qty, item.taxable === 1 ? tax : 0),
     0,
-  );
+  )+serviceCharges;
+
+  // Setting total for payment tab..
   setTotal(totalAmount);
 
   return (
@@ -170,10 +176,10 @@ const TableForm = ({
               showToast('Camera permission is required');
             } else {
               const currentScreen =
-                navigation.getState().routeNames[navigation.getState().index]; 
+                navigation.getState().routeNames[navigation.getState().index];
               Commons.navigate(navigation, 'barcode_scanner', {
                 onBarcodeRead: handleAddItem,
-                returnScreen: currentScreen, 
+                returnScreen: currentScreen,
               });
             }
           }}>
@@ -186,49 +192,53 @@ const TableForm = ({
             {menu['scan_barcode']}
           </Text>
         </TouchableOpacity>
-        <View style={{marginBottom: 10, width: '100%'}}>
+        <View style={{ marginBottom: 10, width: '100%' }}>
           <InputComponent
-            value={''}
+            value={stockId}
             placeholder={menu['enter_stock_id']}
             debounceEnabled={false}
             icon={true}
             isUpperCase={true}
             iconComponent={
-              <FontAwesome5Icon name="plus" size={20} color={Colors.primary} />
+              <FontAwesome5Icon name="plus" size={30} color={Colors.primary} />
             }
-            onIconPress={text => handleAddItem(text)}
+            onTextChange={val => setStockId(val)}
+            onIconPress={text => {
+              handleAddItem(text);
+              setStockId('');
+            }}
           />
           <InputField
-          enabled={true}
-          iconName={'plus'}
-          iconColor={Colors.primary}
-          iconSize={20}
-          onPress={() => {
-            setStockCodeModal(true);
-          }}
-          onIconPress={() => {
-            handleAddItem(stockCode);
-            setStockCode('');
-          }}
-          placeholder={`${menu['search']} ${menu['stock_code']}`}
-          value={stockCode}
-        />
+            enabled={true}
+            iconName={'plus'}
+            iconColor={Colors.primary}
+            iconSize={30}
+            onPress={() => {
+              setStockCodeModal(true);
+            }}
+            onIconPress={() => {
+              handleAddItem(stockCode);
+              setStockCode('');
+            }}
+            placeholder={`${menu['search']} ${menu['stock_code']}`}
+            value={stockCode}
+          />
           <ModalComponent
-                isVisible={stockCodeModal}
-                onClose={() => setStockCodeModal(false)}
-                items={stockCodes.map(stock => Object.values(stock)[0])}
-                onItemSelect={selectedValue => {
-                  const key = stockCodes.find(item => Object.values(item)[0] === selectedValue);
-                  const stockCodeKey = key ? Object.keys(key)[0] : null; 
-                  if (stockCodeKey) {
-                    setStockCode(stockCodeKey); 
-                  }
-                  setStockCodeModal(false);
-                }}
-              />
+            isVisible={stockCodeModal}
+            onClose={() => setStockCodeModal(false)}
+            items={stockCodes.map(stock => Object.values(stock)[0])}
+            onItemSelect={selectedValue => {
+              const key = stockCodes.find(item => Object.values(item)[0] === selectedValue);
+              const stockCodeKey = key ? Object.keys(key)[0] : null;
+              if (stockCodeKey) {
+                setStockCode(stockCodeKey);
+              }
+              setStockCodeModal(false);
+            }}
+          />
         </View>
       </View>
-      <View style={{alignSelf: 'center'}}>
+      <View style={{ alignSelf: 'center' }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View>
             <View style={[styles.row, styles.header]}>
@@ -271,7 +281,7 @@ const TableForm = ({
                   styles.cell,
                   styles.headerText,
                   styles.cellText,
-                  {textAlign: 'center'},
+                  { textAlign: 'center' },
                 ]}>
                 {tableData.length}
               </Text>

@@ -1,5 +1,5 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
+import { Dimensions } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 import Fonts from './Fonts';
 import Colors from './Colors';
 
@@ -32,7 +32,7 @@ export default {
     color: Colors.white,
     marginTop: RFValue(24),
   },
-  splashTextualView: {alignItems: 'center', marginTop: RFValue(40)},
+  splashTextualView: { alignItems: 'center', marginTop: RFValue(40) },
   button: {
     borderRadius: RFValue(10),
     alignItems: 'center',
@@ -136,10 +136,10 @@ export default {
   loader: {
     alignSelf: 'center',
   },
-  divider10: {marginVertical: RFValue(5)},
-  divider20: {marginVertical: RFValue(10)},
-  divider30: {marginVertical: RFValue(15)},
-  padder10: {marginHorizontal: RFValue(5)},
-  padder20: {marginHorizontal: RFValue(10)},
-  padder30: {marginHorizontal: RFValue(15)},
+  divider10: { marginVertical: RFValue(5) },
+  divider20: { marginVertical: RFValue(10) },
+  divider30: { marginVertical: RFValue(15) },
+  padder10: { marginHorizontal: RFValue(5) },
+  padder20: { marginHorizontal: RFValue(10) },
+  padder30: { marginHorizontal: RFValue(15) },
 };

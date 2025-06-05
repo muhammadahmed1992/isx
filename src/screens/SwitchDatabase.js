@@ -10,12 +10,12 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Commons, Colors, Fonts, Endpoints, Images} from '../utils';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {useDispatch, useSelector} from 'react-redux';
-import {clear, setDataBase} from '../redux/reducers/connectionStringSlice';
+import { Commons, Colors, Fonts, Endpoints, Images } from '../utils';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useDispatch, useSelector } from 'react-redux';
+import { clear, setDataBase } from '../redux/reducers/connectionStringSlice';
 import Toast from 'react-native-easy-toast';
 import ApiService from '../services/ApiService';
 import SearchableDropDown from '../components/searchableDropdown';
@@ -26,14 +26,14 @@ import Header from '../components/Header';
 const SwitchDatabase = props => {
   const dispatch = useDispatch();
   const toastRef = useRef(null);
-  const {host, username, password, port, database} = useSelector(
+  const { host, username, password, port, database } = useSelector(
     state => state.ConnectionString,
   );
   const [databaseNew, setDatabase] = useState(database ? database : '');
   const [modal, setModal] = useState(false);
   const [databases, setDatabases] = useState([]);
   const [loading, setLoading] = useState(false);
-   const menu = useSelector(state => state.Locale.menu);
+  const menu = useSelector(state => state.Locale.menu);
   const label = props.route.params.label;
   const localizeLabel = menu[label] || label;
   const databasePrompt = menu['select_database'] || 'Select Database';
@@ -41,7 +41,7 @@ const SwitchDatabase = props => {
   const clearPlaceholder = menu['clear'] || 'Clear';
   useEffect(() => {
     fetchAllDatabases();
-  },[]);
+  }, []);
 
   useEffect(() => {
     setDatabase(database ? database : '');
@@ -78,39 +78,8 @@ const SwitchDatabase = props => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: Colors.primary,
-          paddingHorizontal: RFValue(15),
-          paddingBottom: RFValue(15),
-          paddingTop: Platform.OS === 'android' ? RFValue(15) : RFValue(50),
-        }}>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.openDrawer();
-          }}>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.white} />
-        </TouchableOpacity>
-
-        <Text
-          style={{
-            flex: 1,
-            fontFamily: Fonts.family.bold,
-            color: Colors.white,
-            textAlign: 'center',
-          }}>
-          Switch Database
-        </Text>
-
-        <View>
-          <Icon name="menu" size={Commons.size(25)} color={Colors.primary} />
-        </View>
-      </View> */}
       <Header label={localizeLabel} navigation={props.navigation} />
       <Pressable
         onPress={() => setModal(true)}
@@ -215,7 +184,7 @@ const SwitchDatabase = props => {
             borderRadius: RFValue(10),
             marginVertical: RFValue(40),
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={{
                 fontFamily: Fonts.family.bold,
@@ -244,7 +213,7 @@ const SwitchDatabase = props => {
               setDatabase(item);
               setModal(false);
             }}
-            containerStyle={{padding: 5, margin: 0, flexGrow: 0.6}}
+            containerStyle={{ padding: 5, margin: 0, flexGrow: 0.6 }}
             textInputStyle={{
               padding: 12,
               borderWidth: 1,

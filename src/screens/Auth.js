@@ -23,7 +23,6 @@ import { Endpoints, Images } from '../utils';
 import {
   login,
   setIpAddress,
-  setIsRegistered,
 } from '../redux/reducers/authSlice';
 import { Fonts, Colors, Commons } from '../utils';
 import Modal from 'react-native-modal';
@@ -35,7 +34,6 @@ import {
   setTransactionModulePermissions,
 } from '../redux/reducers/menuSlice';
 import { fetchAndSetLocaleData } from '../redux/reducers/localeSlice';
-import DeviceInfo from 'react-native-device-info';
 
 const Auth = props => {
   const dispatch = useDispatch();
@@ -57,16 +55,13 @@ const Auth = props => {
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     fetchAllDatabases();
-
     return () =>
       BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
 
-  useEffect(() => {
-    if (loading) {
-      performLogin();
-    }
-  }, [loading]);
+  // useEffect(() => {
+  //   performLogin();
+  // }, []);
 
   const backAction = () => {
     BackHandler.exitApp();
@@ -111,7 +106,7 @@ const Auth = props => {
       return;
     }
     dispatch(setDataBase(databaseNew));
-
+    dispatch(fetchAndSetLocaleData('id'));
     performLogin();
   };
 
@@ -125,21 +120,18 @@ const Auth = props => {
         username,
         password,
       };
-
       const res = await ApiService.post(Endpoints.login, body);
       if (res.data.success) {
         dispatch(login(username));
         dispatch(setReportPermissions(res.data.data));
         dispatch(setAdministrationPermissions(res.data.data));
         dispatch(setTransactionModulePermissions(res.data.data));
-        dispatch(fetchAndSetLocaleData('id'));
         Commons.reset(props.navigation, 'dashboard');
       } else {
         showToast(res.data.message || 'Login failed');
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.message || 'Login failed';
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed';
       showToast(errorMessage);
     } finally {
       setLoading(false);

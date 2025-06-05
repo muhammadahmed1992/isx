@@ -2,7 +2,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Alert = ({ visible, onOkPress, onCancelPress, title, message }) => {
+const Alert = ({ visible, onOkPress, onCancelPress, title, message, showOk = true }) => {
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
       <View style={styles.modalBackground}>
@@ -12,9 +12,9 @@ const Alert = ({ visible, onOkPress, onCancelPress, title, message }) => {
 
           {/* Buttons */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={onOkPress}>
+            {showOk && <TouchableOpacity style={styles.button} onPress={onOkPress}>
               <Text style={styles.buttonText}>OK</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> }
 
            {onCancelPress && <TouchableOpacity style={styles.button} onPress={onCancelPress}>
               <Text style={styles.buttonText}>Cancel</Text>

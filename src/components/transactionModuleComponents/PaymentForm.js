@@ -6,7 +6,7 @@ import { Colors, Commons } from '../../utils';
 const isEqual = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
-
+const fieldsToBeNumeric = ['cash', 'online', 'creditCard', 'debitCard', 'voucher'];
 const PaymentDetailForm = ({
   data,
   headers,
@@ -90,7 +90,7 @@ const PaymentDetailForm = ({
         return (
           <View key={index} style={styles.inputContainer}>
             <Text>{headers[prompt]}</Text>
-            
+
             <InputComponent
               placeholder={headers[prompt]}
               placeholderColor={Colors.grey}
@@ -101,6 +101,8 @@ const PaymentDetailForm = ({
               value={Commons.formatCommaSeparated(fieldKey in paymentValues ? paymentValues[fieldKey].toString() : fieldValue.toString())} // Display payment value
               icon={false}
               debounceEnabled={false}
+              keyboardType={fieldsToBeNumeric.includes(prompt) ? 'decimal-pad' : 'default'}
+              inputMode={'decimal'}
             />
           </View>
         );
